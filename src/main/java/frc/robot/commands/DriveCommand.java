@@ -2,15 +2,22 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
+import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.commands.A05DriveCommand;
 import org.a05annex.util.AngleD;
 import org.a05annex.util.AngleUnit;
+import org.a05annex.util.Utl;
 
 /**
  * Drive command is here because you will likely need to override the serve (targeting, competition specific reason)
  */
 public class DriveCommand extends A05DriveCommand {
+
+    private final PhotonVisionSubsystem m_photonVisionSubsystem = PhotonVisionSubsystem.getInstance();
+
+    private A05Constants.DriverSettings m_driver;
 
     /**
      * Default command for DriveSubsystem. Left stick moves the robot field-relatively, and right stick X rotates.
@@ -19,6 +26,8 @@ public class DriveCommand extends A05DriveCommand {
      */
     public DriveCommand(XboxController xbox, A05Constants.DriverSettings driver) {
         super(xbox, driver);
+
+        m_driver = driver;
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
     }
@@ -36,11 +45,17 @@ public class DriveCommand extends A05DriveCommand {
         //super.execute();
 
         conditionStick();
-        m_driveSubsystem.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);
 
-        SmartDashboard.putNumber("Drive Forward", m_conditionedSpeed*(new AngleD(m_conditionedDirection).subtract(m_navx.getHeading()).cos()));
-        SmartDashboard.putNumber("Drive Strafe: ", m_conditionedSpeed*(new AngleD(m_conditionedDirection).subtract(m_navx.getHeading()).sin()));
-        SmartDashboard.putNumber("Rotation:", m_conditionedRotate);
-        SmartDashboard.putNumber("NavX", m_navx.getHeading().getDegrees());
+        if(m_driveXbox.getAButton() && m_photonVisionSubsystem.hasTarget(Constants.DRIVE_CAMERA)) {
+            m_conditionedDirection = (m_photonVisionSubsystem.getTarget(Constants.DRIVE_CAMERA).getYaw() < 0)
+                    ? m_conditionedDirection.setDegrees(180.0) : m_conditionedDirection.setDegrees(0.0);
+
+            double speedDistance = Utl.clip(m_photonVisionSubsystem.getTarget(Constants.DRIVE_CAMERA).getYaw()/30.0, 0.0, 0.5);
+            m_conditionedSpeed = Utl.clip(speedDistance, m_lastConditionedSpeed - m_driver.getDriveSpeedMaxInc(),
+                    m_lastConditionedSpeed + m_driver.getDriveSpeedMaxInc());
+            m_lastConditionedSpeed = m_conditionedSpeed;
+        }
+
+        m_driveSubsystem.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);
     }
 }

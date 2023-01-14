@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.XboxController;
 import org.a05annex.frc.A05Constants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.photonvision.PhotonCamera;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -30,17 +31,17 @@ public final class Constants extends A05Constants
     }
 
 
-    //TODO: Set which cameras you have
     public static final boolean HAS_USB_CAMERA = false;
     public static final boolean HAS_LIMELIGHT = false;
 
+    public static final PhotonCamera DRIVE_CAMERA = new PhotonCamera("Camera 1");
+    public static final PhotonCamera CLAW_CAMERA = new PhotonCamera("Camera 2");
 
     /*
         DRIVE_XBOX_PORT = 0 (Set in A05Constants)
         Port 0 is whichever controller was plugged in first, not a specific port.
     */
-    //TODO: Comment in if you want 2nd controller, you also need to uncomment something in RobotContainer
-    //public static final int ALT_XBOX_PORT = 1; // 2nd Controller for more controls
+    public static final int ALT_XBOX_PORT = 1; // 2nd Controller for more controls
 
     // kP for keeping drive at the same orientation
     public static double DRIVE_ORIENTATION_kP = 1.2;
@@ -52,7 +53,6 @@ public final class Constants extends A05Constants
     // the bolt pattern is 27" square, wheels are 2.75" in from the bolt pattern or centered on the
     // corners of a 21.5"(0.5461m) square.
     //TODO: set calibration constants here for your relevant robot. rf = right front, lr = left rear, etc
-    //TODO: Verify dimensions of your robot
     /**
      * The geometry and calibration specific to a swerve drive robot base. We currently have 2 bases, the first being
      * a <i>prototyping/practice</i> base that should always be in working condition for drive tuning/testing,
