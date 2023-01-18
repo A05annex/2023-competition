@@ -48,9 +48,9 @@ public class DriveCommand extends A05DriveCommand {
 
         if(m_driveXbox.getAButton() && m_photonVisionSubsystem.hasTarget(Constants.DRIVE_CAMERA)) {
             m_conditionedDirection = (m_photonVisionSubsystem.getTarget(Constants.DRIVE_CAMERA).getYaw() < 0)
-                    ? m_conditionedDirection.setDegrees(180.0) : m_conditionedDirection.setDegrees(0.0);
+                    ? m_conditionedDirection.setDegrees(270.0) : m_conditionedDirection.setDegrees(90.0);
 
-            double speedDistance = Utl.clip(m_photonVisionSubsystem.getTarget(Constants.DRIVE_CAMERA).getYaw()/30.0, 0.0, 0.5);
+            double speedDistance = Utl.clip(Math.abs(m_photonVisionSubsystem.getYawOffsetAverage(Constants.DRIVE_CAMERA)/30), 0.0, 1.0);
             m_conditionedSpeed = Utl.clip(speedDistance, m_lastConditionedSpeed - m_driver.getDriveSpeedMaxInc(),
                     m_lastConditionedSpeed + m_driver.getDriveSpeedMaxInc());
             m_lastConditionedSpeed = m_conditionedSpeed;

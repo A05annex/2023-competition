@@ -19,6 +19,8 @@ public class PhotonVisionSubsystem extends SubsystemBase {
      * than trying to construct an instance of this class.)
      */
     private final static PhotonVisionSubsystem INSTANCE = new PhotonVisionSubsystem();
+    private double yawOffsetAverage = 0.0;
+    private double yawOffsetAverageAlpha = 0.3;
 
     /**
      * Returns the Singleton instance of this PhotonVisionSubsystem. This static method
@@ -40,7 +42,7 @@ public class PhotonVisionSubsystem extends SubsystemBase {
         //       in the constructor or in the robot coordination class, such as RobotContainer.
         //       Also, you can call addChild(name, sendableChild) to associate sendables with the subsystem
         //       such as SpeedControllers, Encoders, DigitalInputs, etc.
-        setPipeline(Constants.DRIVE_CAMERA, PIPELINES.CONE);
+        setPipeline(Constants.DRIVE_CAMERA, PIPELINES.CUBE);
     }
 
     public int getPipeline(PhotonCamera camera) {
@@ -71,5 +73,9 @@ public class PhotonVisionSubsystem extends SubsystemBase {
         return camera.getLatestResult().getBestTarget();
     }
 
+    public double getYawOffsetAverage(PhotonCamera camera) {
+        yawOffsetAverage = (yawOffsetAverageAlpha * getTarget(camera).getYaw()) + (1-yawOffsetAverageAlpha) * yawOffsetAverage;
+        return yawOffsetAverage;
+    }
 }
 
