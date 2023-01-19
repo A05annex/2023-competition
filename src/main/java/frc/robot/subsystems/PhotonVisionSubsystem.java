@@ -19,9 +19,14 @@ public class PhotonVisionSubsystem extends SubsystemBase {
      * than trying to construct an instance of this class.)
      */
     private final static PhotonVisionSubsystem INSTANCE = new PhotonVisionSubsystem();
-    private double yawOffsetAverage = 0.0;
-    private double yawOffsetAverageAlpha = 0.3;
 
+    private double yawOffsetAverage = 0.0;
+    public double yawOffsetAverageAlpha = 0.9;
+
+    private double areaOffsetAverage = 0.0;
+    public double areaOffsetAverageAlpha = 0.9;
+
+    public PhotonPipelineResult lastResult = null;
     /**
      * Returns the Singleton instance of this PhotonVisionSubsystem. This static method
      * should be used, rather than the constructor, to get the single instance
@@ -42,7 +47,7 @@ public class PhotonVisionSubsystem extends SubsystemBase {
         //       in the constructor or in the robot coordination class, such as RobotContainer.
         //       Also, you can call addChild(name, sendableChild) to associate sendables with the subsystem
         //       such as SpeedControllers, Encoders, DigitalInputs, etc.
-        setPipeline(Constants.DRIVE_CAMERA, PIPELINES.CUBE);
+        setPipeline(Constants.DRIVE_CAMERA, PIPELINES.APRILTAGS);
     }
 
     public int getPipeline(PhotonCamera camera) {
@@ -65,17 +70,34 @@ public class PhotonVisionSubsystem extends SubsystemBase {
         }
     }
 
-    public boolean hasTarget(PhotonCamera camera) {
-        return camera.getLatestResult().hasTargets();
+    public void updateLastTarget(PhotonCamera camera) {
+        PhotonPipelineResult old = lastResult;
+        lastResult = camera.getLatestResult();
+        if(!lastResult.hasTargets()) {
+            lastResult = old;
+        }
     }
 
-    public PhotonTrackedTarget getTarget(PhotonCamera camera) {
-        return camera.getLatestResult().getBestTarget();
+    public boolean hasTarget(PhotonPipelineResult result) {
+        return result.hasTargets();
     }
 
-    public double getYawOffsetAverage(PhotonCamera camera) {
-        yawOffsetAverage = (yawOffsetAverageAlpha * getTarget(camera).getYaw()) + (1-yawOffsetAverageAlpha) * yawOffsetAverage;
+    public double getYawOffsetAverage(PhotonPipelineResult result) {
+        if(result.hasTargets()) {
+            yawOffsetAverage = yawOffsetAverageAlpha * result.getBestTarget().getYaw() + (1 - yawOffsetAverageAlpha) * yawOffsetAverage;
+        } else {
+            yawOffsetAverage = 0.0;
+        }
         return yawOffsetAverage;
+    }
+
+    public double getAreaOffsetAverage(PhotonPipelineResult result) {
+        if(result.hasTargets()){
+            areaOffsetAverage = areaOffsetAverageAlpha * result.getBestTarget().getArea() + (1 - areaOffsetAverageAlpha) * areaOffsetAverage;
+        } else {
+            areaOffsetAverage = 0.0;
+        }
+        return areaOffsetAverage;
     }
 }
 

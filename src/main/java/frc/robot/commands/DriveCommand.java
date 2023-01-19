@@ -9,6 +9,8 @@ import org.a05annex.frc.commands.A05DriveCommand;
 import org.a05annex.util.AngleD;
 import org.a05annex.util.AngleUnit;
 import org.a05annex.util.Utl;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 /**
  * Drive command is here because you will likely need to override the serve (targeting, competition specific reason)
@@ -43,17 +45,27 @@ public class DriveCommand extends A05DriveCommand {
         //TODO: Refer to the documentation. Much of the code you want to run is already packaged in callable methods
         //This runs the default swerve calculations for xbox control
         //super.execute();
-
         conditionStick();
+        m_photonVisionSubsystem.updateLastTarget(Constants.DRIVE_CAMERA);
 
-        if(m_driveXbox.getAButton() && m_photonVisionSubsystem.hasTarget(Constants.DRIVE_CAMERA)) {
-            m_conditionedDirection = (m_photonVisionSubsystem.getTarget(Constants.DRIVE_CAMERA).getYaw() < 0)
-                    ? m_conditionedDirection.setDegrees(270.0) : m_conditionedDirection.setDegrees(90.0);
+        Constants.updateConstant("area alpha", m_photonVisionSubsystem.areaOffsetAverageAlpha);
+        Constants.updateConstant("yaw alpha", m_photonVisionSubsystem.yawOffsetAverageAlpha);
 
-            double speedDistance = Utl.clip(Math.abs(m_photonVisionSubsystem.getYawOffsetAverage(Constants.DRIVE_CAMERA)/30), 0.0, 1.0);
+        SmartDashboard.putNumber("areaCalc", -Utl.clip((Utl.clip(m_photonVisionSubsystem.getAreaOffsetAverage(m_photonVisionSubsystem.lastResult), 0.0, 6.0)-3.0)/6.0, -1.0, 1.0));
+        SmartDashboard.putBoolean("hasTarget", m_photonVisionSubsystem.lastResult.hasTargets());
+
+        if(m_driveXbox.getAButton() && m_photonVisionSubsystem.hasTarget(m_photonVisionSubsystem.lastResult)) {
+            m_conditionedDirection.atan2(Utl.clip(m_photonVisionSubsystem.getYawOffsetAverage(m_photonVisionSubsystem.lastResult)/30, -1.0, 1.0),
+                    -Utl.clip((Utl.clip(m_photonVisionSubsystem.getAreaOffsetAverage(m_photonVisionSubsystem.lastResult), 0.0, 6.0)-3)/3, -1.0, 1.0));
+
+            double speedDistance = Math.pow(Utl.clip(Math.abs(m_photonVisionSubsystem.getYawOffsetAverage(m_photonVisionSubsystem.lastResult)/30), 0.0, 1.0), 1.75) +
+                    Math.pow(Utl.clip(Math.abs((Utl.clip(m_photonVisionSubsystem.getAreaOffsetAverage(m_photonVisionSubsystem.lastResult), 0.0, 6.0)-3.0)/3.0), 0.0, 1.0), 1.75);
             m_conditionedSpeed = Utl.clip(speedDistance, m_lastConditionedSpeed - m_driver.getDriveSpeedMaxInc(),
                     m_lastConditionedSpeed + m_driver.getDriveSpeedMaxInc());
             m_lastConditionedSpeed = m_conditionedSpeed;
+        } else if(m_driveXbox.getAButton()) {
+            m_conditionedSpeed = m_lastConditionedSpeed;
+            m_conditionedDirection = m_lastConditionedDirection;
         }
 
         m_driveSubsystem.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);
