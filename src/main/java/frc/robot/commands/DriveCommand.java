@@ -45,14 +45,13 @@ public class DriveCommand extends A05DriveCommand {
         //TODO: Refer to the documentation. Much of the code you want to run is already packaged in callable methods
         //This runs the default swerve calculations for xbox control
         //super.execute();
-        conditionStick();
         m_photonVisionSubsystem.updateLastTarget(Constants.DRIVE_CAMERA);
 
-        Constants.updateConstant("area alpha", m_photonVisionSubsystem.areaOffsetAverageAlpha);
-        Constants.updateConstant("yaw alpha", m_photonVisionSubsystem.yawOffsetAverageAlpha);
+        //Constants.updateConstant("area alpha", m_photonVisionSubsystem.areaOffsetAverageAlpha);
+        //Constants.updateConstant("yaw alpha", m_photonVisionSubsystem.yawOffsetAverageAlpha);
 
-        SmartDashboard.putNumber("areaCalc", -Utl.clip((Utl.clip(m_photonVisionSubsystem.getAreaOffsetAverage(m_photonVisionSubsystem.lastResult), 0.0, 6.0)-3.0)/6.0, -1.0, 1.0));
-        SmartDashboard.putBoolean("hasTarget", m_photonVisionSubsystem.lastResult.hasTargets());
+        //SmartDashboard.putNumber("areaCalc", -Utl.clip((Utl.clip(m_photonVisionSubsystem.getAreaOffsetAverage(m_photonVisionSubsystem.lastResult), 0.0, 6.0)-3.0)/6.0, -1.0, 1.0));
+        //SmartDashboard.putBoolean("hasTarget", m_photonVisionSubsystem.lastResult.hasTargets());
 
         if(m_driveXbox.getAButton() && m_photonVisionSubsystem.hasTarget(m_photonVisionSubsystem.lastResult)) {
             m_conditionedDirection.atan2(Utl.clip(m_photonVisionSubsystem.getYawOffsetAverage(m_photonVisionSubsystem.lastResult)/30, -1.0, 1.0),
@@ -66,6 +65,8 @@ public class DriveCommand extends A05DriveCommand {
         } else if(m_driveXbox.getAButton()) {
             m_conditionedSpeed = m_lastConditionedSpeed;
             m_conditionedDirection = m_lastConditionedDirection;
+        } else {
+            conditionStick();
         }
 
         m_driveSubsystem.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);
