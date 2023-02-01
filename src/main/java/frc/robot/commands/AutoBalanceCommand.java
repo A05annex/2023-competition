@@ -2,23 +2,20 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.RobotContainer;
 import org.a05annex.frc.NavX;
 import org.a05annex.frc.subsystems.DriveSubsystem;
 import org.a05annex.util.AngleConstantD;
-import org.a05annex.util.AngleD;
 
 
 public class AutoBalanceCommand extends CommandBase {
-    private final NavX m_navX = NavX.getInstance();
-    private NavX.NavInfo m_navInfo = m_navX.getNavInfo();
-    private AngleConstantD m_pitch = m_navInfo.pitch;
     private final DriveSubsystem m_driveSubsystem = DriveSubsystem.getInstance();
+
+    // you need to use roll as pitch and roll return the opposite values of what you expect
+    private AngleConstantD m_pitch = NavX.getInstance().getNavInfo().roll;
+    // track during how many cylces (20ms) the robot was balanced
     private int ticksBalanced = 0;
 
     private boolean isFinished = false;
-
 
 
     public AutoBalanceCommand() {
@@ -29,25 +26,27 @@ public class AutoBalanceCommand extends CommandBase {
 
     @Override
     public void initialize() {
-
+        isFinished = false;
+        ticksBalanced = 0;
+        m_pitch = NavX.getInstance().getNavInfo().roll;
     }
 
     @Override
     public void execute() {
+        m_pitch = NavX.getInstance().getNavInfo().roll; // set pitch again because getNavInfo does not auto update
         if (m_pitch.getDegrees() > 10) {
             m_driveSubsystem.swerveDrive(new AngleConstantD(AngleConstantD.ZERO), 0.15, 0.0);
             ticksBalanced = 0;
-        } else if (m_pitch.getDegrees() > 10) {
+        } else if (m_pitch.getDegrees() < -10) {
             m_driveSubsystem.swerveDrive(new AngleConstantD(AngleConstantD.ZERO), -0.15, 0.0);
             ticksBalanced = 0;
         } else {
             ticksBalanced++;
         }
-        SmartDashboard.putNumber("ticks bal.", ticksBalanced);
+
         SmartDashboard.putNumber("pitch", m_pitch.getDegrees());
-        SmartDashboard.putNumber("raw pitch", m_navInfo.rawPitch.getDegrees());
-        SmartDashboard.putNumber("roll", m_navInfo.roll.getDegrees());
-        SmartDashboard.putNumber("raw roll", m_navInfo.rawRoll.getDegrees());
+        SmartDashboard.putNumber("ticks balanced", ticksBalanced);
+        SmartDashboard.putBoolean("is finished", isFinished);
     }
 
     @Override
@@ -59,7 +58,5 @@ public class AutoBalanceCommand extends CommandBase {
     }
 
     @Override
-    public void end(boolean interrupted) {
-
-    }
+    public void end(boolean interrupted) {}
 }

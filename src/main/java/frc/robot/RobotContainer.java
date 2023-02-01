@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.commands.AutoBalanceCommand;
 import frc.robot.commands.DriveCommand;
 import org.a05annex.frc.A05RobotContainer;
 import org.a05annex.frc.commands.A05DriveCommand;
@@ -82,6 +83,7 @@ public class RobotContainer extends A05RobotContainer
         // Add button to command mappings here.
         // See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
 
-        m_xboxBack.whenPressed(new InstantCommand(m_navx::initializeHeadingAndNav)); // Reset the NavX field relativity
+        m_xboxBack.onTrue(new InstantCommand(m_navx::initializeHeadingAndNav)); // Reset the NavX field relativity
+        m_xboxA.whileTrue(new AutoBalanceCommand());
     }
 }
