@@ -1,25 +1,22 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.commands.A05DriveCommand;
-import org.a05annex.util.AngleD;
-import org.a05annex.util.AngleUnit;
 import org.a05annex.util.Utl;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 /**
  * Drive command is here because you will likely need to override the serve (targeting, competition specific reason)
  */
 public class DriveCommand extends A05DriveCommand {
 
-    private final PhotonVisionSubsystem m_photonVisionSubsystem = PhotonVisionSubsystem.getInstance();
+    private final PhotonVisionSubsystem m_photonSubsystem = PhotonVisionSubsystem.getInstance();
 
     private A05Constants.DriverSettings m_driver;
+
+    private final double speedSmoothingMultiplier = 1.75;
 
     /**
      * Default command for DriveSubsystem. Left stick moves the robot field-relatively, and right stick X rotates.
@@ -41,34 +38,44 @@ public class DriveCommand extends A05DriveCommand {
 
     @Override
     public void execute() {
-        //TODO: If you want to do special control like targeting, comment out super.execute() and add your own control code
-        //TODO: Refer to the documentation. Much of the code you want to run is already packaged in callable methods
-        //This runs the default swerve calculations for xbox control
-        //super.execute();
-        m_photonVisionSubsystem.updateLastTarget(Constants.DRIVE_CAMERA);
+        // grab last target. Prevents a new frame that could be missing a target from coming in until everything has run
+        m_photonSubsystem.updateLastTarget(Constants.DRIVE_CAMERA);
 
-        //Constants.updateConstant("area alpha", m_photonVisionSubsystem.areaOffsetAverageAlpha);
-        //Constants.updateConstant("yaw alpha", m_photonVisionSubsystem.yawOffsetAverageAlpha);
+        // if the A button is pressed and there was a target in the last frame
+        if(m_driveXbox.getAButton() && m_photonSubsystem.lastTargetFrame.hasTargets()) {
 
-        //SmartDashboard.putNumber("areaCalc", -Utl.clip((Utl.clip(m_photonVisionSubsystem.getAreaOffsetAverage(m_photonVisionSubsystem.lastResult), 0.0, 6.0)-3.0)/6.0, -1.0, 1.0));
-        //SmartDashboard.putBoolean("hasTarget", m_photonVisionSubsystem.lastResult.hasTargets());
+            // Get the ATan2 of the yaw offset and the area offset to calculate a direction to drive in
+            // Uses methods to smooth area and yaw to account for indecisive vision processing
+            m_conditionedDirection.atan2(m_photonSubsystem.getScaledCenteredYawOffsetAverage(m_photonSubsystem.lastTargetFrame, -30.0, 30.0),
+                    -m_photonSubsystem.getScaledCenteredAreaOffsetAverage(m_photonSubsystem.lastTargetFrame, 0.0, 6.0));
 
-        if(m_driveXbox.getAButton() && m_photonVisionSubsystem.hasTarget(m_photonVisionSubsystem.lastResult)) {
-            m_conditionedDirection.atan2(Utl.clip(m_photonVisionSubsystem.getYawOffsetAverage(m_photonVisionSubsystem.lastResult)/30, -1.0, 1.0),
-                    -Utl.clip((Utl.clip(m_photonVisionSubsystem.getAreaOffsetAverage(m_photonVisionSubsystem.lastResult), 0.0, 6.0)-3)/3, -1.0, 1.0));
+            // Find how fast to move the robot (value between 0.0 - 1.0)
+            // puts both speeds to a power greater than 1 to slow down the robot as it closes in (speedSmoothingMultiplier)
+            // Uses methods to smooth area and yaw to account for indecisive vision processing
+            double speedDistance = Math.pow(Math.abs(m_photonSubsystem.getScaledCenteredYawOffsetAverage(m_photonSubsystem.lastTargetFrame, -30.0, 30.0)), speedSmoothingMultiplier) +
+                    Math.pow(Math.abs(m_photonSubsystem.getScaledCenteredAreaOffsetAverage(m_photonSubsystem.lastTargetFrame, 0.0, 6.0)), speedSmoothingMultiplier);
 
-            double speedDistance = Math.pow(Utl.clip(Math.abs(m_photonVisionSubsystem.getYawOffsetAverage(m_photonVisionSubsystem.lastResult)/30), 0.0, 1.0), 1.75) +
-                    Math.pow(Utl.clip(Math.abs((Utl.clip(m_photonVisionSubsystem.getAreaOffsetAverage(m_photonVisionSubsystem.lastResult), 0.0, 6.0)-3.0)/3.0), 0.0, 1.0), 1.75);
+            // We apply a speed change limit to swerve to prevent burnouts and smooth robot movements
+            // value only changes by at most DriveSpeedMaxInc
             m_conditionedSpeed = Utl.clip(speedDistance, m_lastConditionedSpeed - m_driver.getDriveSpeedMaxInc(),
                     m_lastConditionedSpeed + m_driver.getDriveSpeedMaxInc());
+
+            //update lastConditionedSpeed
             m_lastConditionedSpeed = m_conditionedSpeed;
-        } else if(m_driveXbox.getAButton()) {
+        }
+        // if the A button is pressed but there was not a target in the last frame
+        else if(m_driveXbox.getAButton()) {
+            // Drive using the last set speeds
             m_conditionedSpeed = m_lastConditionedSpeed;
             m_conditionedDirection = m_lastConditionedDirection;
-        } else {
+        }
+        // A button not pressed
+        else {
+            // runs normal drive with joysticks code
             conditionStick();
         }
 
+        // Passes direction, speed, and rotation from above into the swerveDrive method which actually spins the wheels
         m_driveSubsystem.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);
     }
 }
