@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import org.a05annex.frc.A05Constants;
 import org.a05annex.util.Utl;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -71,14 +72,16 @@ public class PhotonVisionSubsystem extends SubsystemBase {
 
      // enum to store pipelines by name
     public enum PIPELINES {
-        CUBE(0),
-        CONE(1),
-        APRILTAGS(2);
+        CUBE(0, "Cube"),
+        CONE(1, "Cone"),
+        APRILTAGS(2, "AprilTag");
 
-        private final int index;
+        public final int index;
+        public final String name;
 
-        PIPELINES(int index) {
+        PIPELINES(int index, String name) {
             this.index = index;
+            this.name = name;
         }
     }
 
@@ -153,6 +156,21 @@ public class PhotonVisionSubsystem extends SubsystemBase {
         double center = (maxValue + minValue) / 2;
         double scale = (maxValue - minValue) / 2;
         return (areaOffsetAverage - center) / scale;
+    }
+
+    public PIPELINES intToPipeline(int pipeline) {
+        if(!(0 <= pipeline && pipeline <= 2)) {
+            if(A05Constants.getPrintDebug()) {
+                System.out.println("passed integer outside of 0-2 into inToPipeline()");
+            }
+            return null;
+        } else if(pipeline == 0) {
+            return PIPELINES.CUBE;
+        } else if(pipeline == 1) {
+            return  PIPELINES.CONE;
+        } else {
+            return PIPELINES.APRILTAGS;
+        }
     }
 }
 
