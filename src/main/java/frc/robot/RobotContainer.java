@@ -7,12 +7,12 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.commands.ArmStickCommand;
 import frc.robot.commands.DriveCommand;
+import frc.robot.subsystems.ArmSubsystem;
 import org.a05annex.frc.A05RobotContainer;
-import org.a05annex.frc.commands.A05DriveCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -24,13 +24,19 @@ public class RobotContainer extends A05RobotContainer
 {
     // The robot's subsystems and commands are defined here...
     // NavX, DriveSubsystem, DriveXbox have already been made in A05RobotContainer
-    //TODO: Add any additional subsystems and commands here
+
+    // Subsystems
+    ArmSubsystem m_armSubsystem = ArmSubsystem.getInstance();
+
+    // Commands
+    ArmStickCommand m_armStickCommand;
 
     //TODO: Uncomment if you have alternate xbox controller, you need to uncomment a constant too
-    //XboxController m_altXbox = new XboxController(Constants.ALT_XBOX_PORT);
+    XboxController m_altXbox = new XboxController(Constants.ALT_XBOX_PORT);
 
     // controller button declarations
     JoystickButton m_xboxA = new JoystickButton(m_driveXbox, 1);
+    JoystickButton m_altXboxA = new JoystickButton(m_altXbox, 1);
     JoystickButton m_xboxB = new JoystickButton(m_driveXbox, 2);
     JoystickButton m_xboxX = new JoystickButton(m_driveXbox, 3);
     JoystickButton m_xboxY = new JoystickButton(m_driveXbox, 4);
@@ -54,14 +60,10 @@ public class RobotContainer extends A05RobotContainer
                 m_robotSettings.m_lf, m_robotSettings.m_lr);
 
         m_driveCommand = new DriveCommand(m_driveXbox, m_driver);
-
-        //TODO: Use these if you want custom drive sensitivity
-//        A05DriveCommand.DRIVE_SPEED_GAIN = 0.7D;
-//        A05DriveCommand.DRIVE_SPEED_SENSITIVITY = 2.0D;
-//        A05DriveCommand.ROTATE_GAIN = 0.5D;
-//        A05DriveCommand.ROTATE_SENSITIVITY = 1.5D;
+        m_armStickCommand = new ArmStickCommand(m_altXbox);
 
         m_driveSubsystem.setDefaultCommand(m_driveCommand);
+        m_armSubsystem.setDefaultCommand(m_armStickCommand);
 
 
         //TODO: add auto
@@ -69,8 +71,8 @@ public class RobotContainer extends A05RobotContainer
         // Configure the button bindings
         configureButtonBindings();
     }
-    
-    
+
+
     /**
      * Use this method to define your button->command mappings. Buttons can be created by
      * instantiating a {@link GenericHID} or one of its subclasses ({@link
@@ -83,5 +85,7 @@ public class RobotContainer extends A05RobotContainer
         // See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
 
         m_xboxBack.onTrue(new InstantCommand(m_navx::initializeHeadingAndNav)); // Reset the NavX field relativity
+        m_xboxA.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
+        m_altXboxA.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
     }
 }

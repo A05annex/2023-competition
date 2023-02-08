@@ -5,8 +5,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.XboxController;
 import org.a05annex.frc.A05Constants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -21,26 +19,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public final class Constants extends A05Constants
 {
     public static final class CAN_Devices {
-        /*
         public static final int
                 // Non-Drive Motors
-                MOTOR1 = port number,
-                MOTOR2 = port number;
-         */
+                ARM_PIVOT_MOTOR = 14,
+                ARM_EXTENSION_MOTOR = 13,
+                CLAW_MOTOR = 12;
     }
 
 
-    //TODO: Set which cameras you have
-    public static final boolean HAS_USB_CAMERA = false;
-    public static final boolean HAS_LIMELIGHT = false;
-
-
-    /*
-        DRIVE_XBOX_PORT = 0 (Set in A05Constants)
-        Port 0 is whichever controller was plugged in first, not a specific port.
-    */
-    //TODO: Comment in if you want 2nd controller, you also need to uncomment something in RobotContainer
-    //public static final int ALT_XBOX_PORT = 1; // 2nd Controller for more controls
+    // Port 0 is whichever controller was plugged in first, not a specific port.
+    //DRIVE_XBOX_PORT = 0 (Set in A05Constants) Leave commented
+    public static final int ALT_XBOX_PORT = 1; // 2nd Controller for more controls
 
     // kP for keeping drive at the same orientation
     public static double DRIVE_ORIENTATION_kP = 1.2;
@@ -51,8 +40,6 @@ public final class Constants extends A05Constants
     // For competition, length and width from center of the wheels, in m (note chassis is 28" square,
     // the bolt pattern is 27" square, wheels are 2.75" in from the bolt pattern or centered on the
     // corners of a 21.5"(0.5461m) square.
-    //TODO: set calibration constants here for your relevant robot. rf = right front, lr = left rear, etc
-    //TODO: Verify dimensions of your robot
     /**
      * The geometry and calibration specific to a swerve drive robot base. We currently have 2 bases, the first being
      * a <i>prototyping/practice</i> base that should always be in working condition for drive tuning/testing,

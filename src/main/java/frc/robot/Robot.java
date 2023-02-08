@@ -5,9 +5,9 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.ArmSubsystem;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.A05Robot;
 
@@ -33,9 +33,6 @@ public class Robot extends A05Robot
         // Set the drive constants that are specific to this swerve geometry.
         // Some drive geometry is passed in RobotContainer's constructor
         Constants.setDriveOrientationkp(Constants.DRIVE_ORIENTATION_kP);
-        // TODO: If you are having trouble debugging an issue related to the a05annexLibrary, setting this to true -
-        // TODO: i.e. uncommenting the following line, will add a lot of debug logging to the console output, and
-        // TODO: may help you determine what is really happening.
         Constants.setPrintDebug(true);
 
         // Load the robot settings list
@@ -58,7 +55,11 @@ public class Robot extends A05Robot
     
     
     @Override
-    public void disabledPeriodic() {}
+    public void disabledPeriodic() {
+        SmartDashboard.putNumber("Pivot Position", ArmSubsystem.getInstance().getPivotPosition());
+        SmartDashboard.putNumber("Extension Position", ArmSubsystem.getInstance().getExtensionPosition());
+        SmartDashboard.putNumber("Ext. Calc. Pos.", ArmSubsystem.getInstance().pivotToExtension());
+    }
     
     
     /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
@@ -90,6 +91,8 @@ public class Robot extends A05Robot
     public void teleopPeriodic() {
         super.teleopPeriodic();
         A05Constants.printIDs();
+        SmartDashboard.putNumber("Pivot Position", ArmSubsystem.getInstance().getPivotPosition());
+        SmartDashboard.putNumber("Extension Position", ArmSubsystem.getInstance().getExtensionPosition());
     }
     
     @Override
