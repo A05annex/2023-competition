@@ -57,7 +57,7 @@ public class RobotContainer extends A05RobotContainer
         // finish swerve drive initialization for this specific robt.
         m_driveSubsystem.setDriveGeometry(m_robotSettings.m_length, m_robotSettings.m_width,
                 m_robotSettings.m_rf, m_robotSettings.m_rr,
-                m_robotSettings.m_lf, m_robotSettings.m_lr);
+                m_robotSettings.m_lf, m_robotSettings.m_lr, m_robotSettings.m_maxSpeedCalibration);
 
         m_driveCommand = new DriveCommand(m_driveXbox, m_driver);
         m_armStickCommand = new ArmStickCommand(m_altXbox);
@@ -85,7 +85,5 @@ public class RobotContainer extends A05RobotContainer
         // See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
 
         m_xboxBack.onTrue(new InstantCommand(m_navx::initializeHeadingAndNav)); // Reset the NavX field relativity
-        m_xboxA.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
-        m_altXboxA.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
     }
 }

@@ -20,8 +20,8 @@ public class ArmSubsystem extends SubsystemBase {
     private final SparkMaxPIDController m_pivotPID = m_pivot.getPIDController();
     // Array of positions. [starting position, min position, max position]
     private final double[] pivotPositions = {0.0, -10, 45};
-    private final double pivotKP = 0.2, pivotKI = 0.0, pivotKIZone = 0.0;
-    private final double pivotTicksPerRotation = 126.475;
+    private final double pivotKP = 0.1, pivotKI = 0.0, pivotKIZone = 0.0;
+    private final double pivotTicksPerRotation = 120.475;
 
 
     // Declaring everything for the extension motor
@@ -30,9 +30,9 @@ public class ArmSubsystem extends SubsystemBase {
     private final RelativeEncoder m_extensionEncoder = m_extension.getEncoder();
     private final SparkMaxPIDController m_extensionPID = m_extension.getPIDController();
     // Array of positions. [starting position, min position, max position]
-    private final double[] extensionPositions = {0.0, 0.0, 195.0};
+    private final double[] extensionPositions = {0.0, 0.0, 205.0};
     private final double extensionKP = 0.1, extensionKI = 0.0, extensionKIZone = 0.0;
-    private final double extensionTicksPerMeter = 157.480;
+    private final double extensionTicksPerInch = 3.939;
 
     private final double STOP_DEADBAND = 0.25;
 
@@ -86,7 +86,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     /**
-     * Resets all values to their start positions
+     * Resets all encoders to their start positions
      */
     public void initializeEncoders() {
         m_pivotEncoder.setPosition(pivotPositions[START_POSITION]);
@@ -114,13 +114,12 @@ public class ArmSubsystem extends SubsystemBase {
      * @param power speed between 0 and 1 of the motor.
      */
     public void setPivotPower(double power) {
-        if(getPivotPosition() > pivotPositions[MAX_POSITION] + STOP_DEADBAND) {
+        if(getPivotPosition() > pivotPositions[MAX_POSITION] - STOP_DEADBAND && power > 0) {
             setPivotPosition(pivotPositions[MAX_POSITION]);
         }
-        else if(getPivotPosition() < pivotPositions[MIN_POSITION] - STOP_DEADBAND) {
+        else if(getPivotPosition() < pivotPositions[MIN_POSITION] + STOP_DEADBAND && power < 0) {
             setPivotPosition(pivotPositions[MIN_POSITION]);
-        }
-        else {
+        } else {
             m_pivot.set(power * 0.3);
         }
         //setExtensionPosition(pivotToExtension());
@@ -137,10 +136,10 @@ public class ArmSubsystem extends SubsystemBase {
 
 
     public void setExtensionPower(double power) {
-        if(getExtensionPosition() > extensionPositions[MAX_POSITION] + STOP_DEADBAND) {
+        if(getExtensionPosition() > extensionPositions[MAX_POSITION] - STOP_DEADBAND && power > 0) {
             setExtensionPosition(extensionPositions[MAX_POSITION]);
         }
-        else if(getExtensionPosition() < extensionPositions[MIN_POSITION] - STOP_DEADBAND) {
+        else if(getExtensionPosition() < extensionPositions[MIN_POSITION] + STOP_DEADBAND && power < 0) {
             setExtensionPosition(extensionPositions[MIN_POSITION]);
         } else {
             m_extension.set(power * 0.5);
@@ -155,21 +154,26 @@ public class ArmSubsystem extends SubsystemBase {
         m_extensionPID.setReference(clippedPosition, CANSparkMax.ControlType.kPosition);
     }
 
-    public void stopAllMotors() {
-        m_pivot.stopMotor();
-        m_extension.stopMotor();
-    }
-
+    /**
+     * Reads the encoder position of the pivot motor and does trig to find the max extension of the arm that stays in
+     * the 48-inch extension limit
+     * @return position in encoder ticks that the extension motor should limit itself to
+     */
     public double pivotToExtension() {
-        AngleD angle = new AngleD().setRadians((getPivotPosition() / pivotTicksPerRotation) * AngleConstantD.TWO_PI.getRadians());
-        double distMeters = 1.5748/angle.sin();
-        return distMeters * extensionTicksPerMeter;
+        AngleD angle = new AngleD().setDegrees((getPivotPosition() / pivotTicksPerRotation) * 360);
+        double distInches = 44/angle.sin();
+        return 200 - (distInches * extensionTicksPerInch * 0.9);
     }
 
+    /**
+     * Reads the encoder position of the extension motor and does trig to find the max angle of the arm that stays in
+     * the 48-inch extension limit
+     * @return position in encoder ticks that the pivot motor should limit itself to
+     */
     public double extensionToPivot() {
-        double distMeters = getExtensionPosition() / extensionTicksPerMeter;
-        AngleD angle = new AngleD().asin(62/distMeters);
-        return (angle.getRadians() / AngleConstantD.TWO_PI.getRadians()) * pivotTicksPerRotation;
+        double distMeters = getExtensionPosition() / extensionTicksPerInch;
+        AngleD angle = new AngleD().asin(44/distMeters);
+        return 200.0 - (angle.getRadians() / AngleConstantD.TWO_PI.getRadians()) * pivotTicksPerRotation;
     }
 
 

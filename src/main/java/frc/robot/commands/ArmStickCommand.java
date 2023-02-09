@@ -10,6 +10,8 @@ public class ArmStickCommand extends CommandBase {
     private final ArmSubsystem m_armSubsystem = ArmSubsystem.getInstance();
     private final XboxController xbox;
     private final double DEADBAND = 0.05;
+    private boolean pivotWasSpinning;
+    private boolean extWasSpinning;
 
     public ArmStickCommand(XboxController xbox) {
         // each subsystem used by the command must be passed into the
@@ -20,23 +22,30 @@ public class ArmStickCommand extends CommandBase {
     }
 
     @Override
-    public void initialize() {}
+    public void initialize() {
+        pivotWasSpinning = false;
+        extWasSpinning = false;
+    }
 
     @Override
     public void execute() {
         double xboxRight = -xbox.getRightY();
         double xboxLeft = -xbox.getLeftY();
 
-        if (xboxRight > -DEADBAND && xboxRight < DEADBAND) {
+        if (xboxRight > -DEADBAND && xboxRight < DEADBAND && extWasSpinning) {
             m_armSubsystem.setExtensionPosition(m_armSubsystem.getExtensionPosition());
-        } else {
+            extWasSpinning = false;
+        } else if (!(xboxRight > -DEADBAND && xboxRight < DEADBAND)){
             m_armSubsystem.setExtensionPower(xboxRight);
+            extWasSpinning = true;
         }
 
-        if (xboxLeft > -DEADBAND && xboxLeft < DEADBAND) {
+        if (xboxLeft > -DEADBAND && xboxLeft < DEADBAND && pivotWasSpinning) {
             m_armSubsystem.setPivotPosition(m_armSubsystem.getPivotPosition());
-        } else {
+            pivotWasSpinning = false;
+        } else if(!(xboxLeft > -DEADBAND && xboxLeft < DEADBAND)){
             m_armSubsystem.setPivotPower(xboxLeft);
+            pivotWasSpinning = true;
         }
     }
 
@@ -46,7 +55,5 @@ public class ArmStickCommand extends CommandBase {
     }
 
     @Override
-    public void end(boolean interrupted) {
-        m_armSubsystem.stopAllMotors();
-    }
+    public void end(boolean interrupted) {}
 }

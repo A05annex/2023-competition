@@ -59,6 +59,7 @@ public class Robot extends A05Robot
         SmartDashboard.putNumber("Pivot Position", ArmSubsystem.getInstance().getPivotPosition());
         SmartDashboard.putNumber("Extension Position", ArmSubsystem.getInstance().getExtensionPosition());
         SmartDashboard.putNumber("Ext. Calc. Pos.", ArmSubsystem.getInstance().pivotToExtension());
+        A05Constants.printIDs();
     }
     
     
@@ -83,6 +84,9 @@ public class Robot extends A05Robot
         // Cancels autonomous command
         super.teleopInit();
         //TODO: Can add other things here
+
+        ArmSubsystem.getInstance().setExtensionPosition(ArmSubsystem.getInstance().getExtensionPosition());
+        ArmSubsystem.getInstance().setPivotPosition(ArmSubsystem.getInstance().getPivotPosition());
     }
     
     
@@ -93,6 +97,7 @@ public class Robot extends A05Robot
         A05Constants.printIDs();
         SmartDashboard.putNumber("Pivot Position", ArmSubsystem.getInstance().getPivotPosition());
         SmartDashboard.putNumber("Extension Position", ArmSubsystem.getInstance().getExtensionPosition());
+        SmartDashboard.putNumber("Calc. Pos.", ArmSubsystem.getInstance().pivotToExtension());
     }
     
     @Override
