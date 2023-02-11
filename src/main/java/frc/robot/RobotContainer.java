@@ -7,8 +7,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.ArmStickCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.ArmSubsystem;
@@ -57,14 +57,14 @@ public class RobotContainer extends A05RobotContainer
         // finish swerve drive initialization for this specific robt.
         m_driveSubsystem.setDriveGeometry(m_robotSettings.m_length, m_robotSettings.m_width,
                 m_robotSettings.m_rf, m_robotSettings.m_rr,
-                m_robotSettings.m_lf, m_robotSettings.m_lr, m_robotSettings.m_maxSpeedCalibration);
+                m_robotSettings.m_lf, m_robotSettings.m_lr,
+                m_robotSettings.m_maxSpeedCalibration);
 
         m_driveCommand = new DriveCommand(m_driveXbox, m_driver);
         m_armStickCommand = new ArmStickCommand(m_altXbox);
 
         m_driveSubsystem.setDefaultCommand(m_driveCommand);
         m_armSubsystem.setDefaultCommand(m_armStickCommand);
-
 
         //TODO: add auto
 
