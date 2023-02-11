@@ -53,6 +53,7 @@ public final class Constants extends A05Constants
     // the bolt pattern is 27" square, wheels are 2.75" in from the bolt pattern or centered on the
     // corners of a 21.5"(0.5461m) square.
     //TODO: set calibration constants here for your relevant robot. rf = right front, lr = left rear, etc
+    //TODO: Verify dimensions of your robot
     /**
      * The geometry and calibration specific to a swerve drive robot base. We currently have 2 bases, the first being
      * a <i>prototyping/practice</i> base that should always be in working condition for drive tuning/testing,
@@ -69,9 +70,9 @@ public final class Constants extends A05Constants
      */
     public static final A05Constants.RobotSettings[] ROBOT_SETTINGS = {
             new A05Constants.RobotSettings(0, "Competition", 0.5461, 0.5461, 2.700, 1.161,
-                    2.703, 2.443),
+                    2.703, 2.443, 1.0954),
             new A05Constants.RobotSettings(1, "Practice", 0.5969, 0.5969, 5.240, 5.654,
-                    0.969, 5.039)
+                    0.969, 5.039, 1.0403)
     };
 
     public static final A05Constants.AutonomousPath[] AUTONOMOUS_PATHS = {
