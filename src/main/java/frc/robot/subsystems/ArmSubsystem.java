@@ -21,7 +21,7 @@ public class ArmSubsystem extends SubsystemBase {
     // Array of positions. [starting position, min position, max position]
     private final double[] pivotPositions = {0.0, -10, 45};
     private final double pivotKP = 0.1, pivotKI = 0.0, pivotKIZone = 0.0;
-    private final double pivotTicksPerRotation = 120.475;
+    private final double pivotTicksPerRotation = 30.309 * 4; //Reading from 0 to 90 degrees * 4 = full rotation
 
 
     // Declaring everything for the extension motor
@@ -30,9 +30,9 @@ public class ArmSubsystem extends SubsystemBase {
     private final RelativeEncoder m_extensionEncoder = m_extension.getEncoder();
     private final SparkMaxPIDController m_extensionPID = m_extension.getPIDController();
     // Array of positions. [starting position, min position, max position]
-    private final double[] extensionPositions = {0.0, 0.0, 205.0};
-    private final double extensionKP = 0.1, extensionKI = 0.0, extensionKIZone = 0.0;
-    private final double extensionTicksPerInch = 3.939;
+    private final double[] extensionPositions = {0.0, 0.0, 210.0};
+    private final double extensionKP = 0.3, extensionKI = 0.0, extensionKIZone = 0.0;
+    private final double extensionTicksPerInch = 3.7989887133;
 
     private final double STOP_DEADBAND = 0.25;
 
@@ -154,6 +154,10 @@ public class ArmSubsystem extends SubsystemBase {
         m_extensionPID.setReference(clippedPosition, CANSparkMax.ControlType.kPosition);
     }
 
+    public void goToCalcPos() {
+        setExtensionPosition(pivotToExtension());
+    }
+
     /**
      * Reads the encoder position of the pivot motor and does trig to find the max extension of the arm that stays in
      * the 48-inch extension limit
@@ -161,7 +165,7 @@ public class ArmSubsystem extends SubsystemBase {
      */
     public double pivotToExtension() {
         AngleD angle = new AngleD().setDegrees((getPivotPosition() / pivotTicksPerRotation) * 360);
-        double distInches = 44/angle.sin();
+        double distInches = 39.5/angle.sin();
         return 200 - (distInches * extensionTicksPerInch * 0.9);
     }
 
@@ -172,10 +176,14 @@ public class ArmSubsystem extends SubsystemBase {
      */
     public double extensionToPivot() {
         double distMeters = getExtensionPosition() / extensionTicksPerInch;
-        AngleD angle = new AngleD().asin(44/distMeters);
+        AngleD angle = new AngleD().asin(39.5/distMeters);
         return 200.0 - (angle.getRadians() / AngleConstantD.TWO_PI.getRadians()) * pivotTicksPerRotation;
     }
 
+    public void stopAllMotors() {
+        m_extension.stopMotor();
+        m_pivot.stopMotor();
+    }
 
     @Override
     public void periodic() {}

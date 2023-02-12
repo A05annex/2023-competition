@@ -8,6 +8,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ClawSubsystem;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.A05Robot;
 
@@ -60,6 +61,7 @@ public class Robot extends A05Robot
         SmartDashboard.putNumber("Extension Position", ArmSubsystem.getInstance().getExtensionPosition());
         SmartDashboard.putNumber("Ext. Calc. Pos.", ArmSubsystem.getInstance().pivotToExtension());
         A05Constants.printIDs();
+        SmartDashboard.putNumber("Claw Position", ClawSubsystem.getInstance().getPosition());
     }
     
     

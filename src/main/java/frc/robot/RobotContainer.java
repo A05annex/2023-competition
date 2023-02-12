@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.ArmStickCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ClawSubsystem;
 import org.a05annex.frc.A05RobotContainer;
 
 /**
@@ -27,6 +28,7 @@ public class RobotContainer extends A05RobotContainer
 
     // Subsystems
     ArmSubsystem m_armSubsystem = ArmSubsystem.getInstance();
+    ClawSubsystem m_clawSubsystem = ClawSubsystem.getInstance();
 
     // Commands
     ArmStickCommand m_armStickCommand;
@@ -38,6 +40,7 @@ public class RobotContainer extends A05RobotContainer
     JoystickButton m_xboxA = new JoystickButton(m_driveXbox, 1);
     JoystickButton m_altXboxA = new JoystickButton(m_altXbox, 1);
     JoystickButton m_xboxB = new JoystickButton(m_driveXbox, 2);
+    JoystickButton m_altXboxB = new JoystickButton(m_altXbox, 2);
     JoystickButton m_xboxX = new JoystickButton(m_driveXbox, 3);
     JoystickButton m_xboxY = new JoystickButton(m_driveXbox, 4);
     JoystickButton m_xboxLeftBumper = new JoystickButton(m_driveXbox, 5);
@@ -85,5 +88,10 @@ public class RobotContainer extends A05RobotContainer
         // See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
 
         m_xboxBack.onTrue(new InstantCommand(m_navx::initializeHeadingAndNav)); // Reset the NavX field relativity
+        m_altXboxA.whileTrue(new InstantCommand(m_armSubsystem::goToCalcPos));
+        m_altXboxB.whileTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
+        m_xboxB.onTrue(new InstantCommand(m_clawSubsystem::goToClosed));
+        m_xboxA.onTrue(new InstantCommand(m_clawSubsystem::goToOpen));
+        m_xboxX.onTrue(new InstantCommand(m_clawSubsystem::stop));
     }
 }
