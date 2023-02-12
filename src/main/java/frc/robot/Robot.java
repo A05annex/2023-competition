@@ -62,6 +62,7 @@ public class Robot extends A05Robot
         SmartDashboard.putNumber("Ext. Calc. Pos.", ArmSubsystem.getInstance().pivotToExtension());
         A05Constants.printIDs();
         SmartDashboard.putNumber("Claw Position", ClawSubsystem.getInstance().getPosition());
+        SmartDashboard.putNumber("Claw Temp", ClawSubsystem.getInstance().getMotorTemp());
     }
     
     
@@ -100,6 +101,8 @@ public class Robot extends A05Robot
         SmartDashboard.putNumber("Pivot Position", ArmSubsystem.getInstance().getPivotPosition());
         SmartDashboard.putNumber("Extension Position", ArmSubsystem.getInstance().getExtensionPosition());
         SmartDashboard.putNumber("Calc. Pos.", ArmSubsystem.getInstance().pivotToExtension());
+        SmartDashboard.putNumber("Claw Position", ClawSubsystem.getInstance().getPosition());
+        SmartDashboard.putNumber("Claw Temp", ClawSubsystem.getInstance().getMotorTemp());
     }
     
     @Override

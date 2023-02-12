@@ -15,9 +15,8 @@ public class ClawSubsystem extends SubsystemBase {
     private final RelativeEncoder m_encoder = m_motor.getEncoder();
     private final SparkMaxPIDController m_motorPID = m_motor.getPIDController();
     // Array of positions. [starting position, open, fully closed, cube, cone]
-    private final double[] positions = {0.0, 0.190476, 0.0, 0.095238, 0.0};
-    private final double kP = 0.8, kI = 0.01, kIZone = 1.0;
-
+    private final double[] positions = {0.0, 0.0, 8, 3, 0.0};
+    private final double kP = 0.4, kI = 0.0005, kIZone = 1.0;
     // Values to use as indexers for the position list
     private final int START_POSITION = 0, OPEN = 1, CLOSED = 2, CUBE = 3, CONE = 4;
     private int currentIndex;
@@ -51,6 +50,8 @@ public class ClawSubsystem extends SubsystemBase {
     private ClawSubsystem() {
         setPID(m_motorPID, kP, kI, kIZone);
         initializeEncoders();
+        m_encoder.setPositionConversionFactor(42.0);
+        m_encoder.setMeasurementPeriod(8);
     }
 
     /**
@@ -103,6 +104,10 @@ public class ClawSubsystem extends SubsystemBase {
 
     public void stop() {
         m_motor.stopMotor();
+    }
+
+    public double getMotorTemp() {
+        return m_motor.getMotorTemperature();
     }
 }
 
