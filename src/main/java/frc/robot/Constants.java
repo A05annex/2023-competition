@@ -6,7 +6,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.XboxController;
 import org.a05annex.frc.A05Constants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -28,11 +27,6 @@ public final class Constants extends A05Constants
                 MOTOR2 = port number;
          */
     }
-
-
-    //TODO: Set which cameras you have
-    public static final boolean HAS_USB_CAMERA = false;
-    public static final boolean HAS_LIMELIGHT = false;
 
 
     /*
@@ -81,6 +75,12 @@ public final class Constants extends A05Constants
     public static final A05Constants.DriverSettings[] DRIVER_SETTINGS = {
             new A05Constants.DriverSettings("programmer", 0)
     };
+
+    private static final DigitalInput switch6 = new DigitalInput(6);
+
+    public static Boolean readMirrorSwitch() {
+        return switch6.get();
+    }
 
     // Connect values to SmartDashboard, if you change the value in smart dashboard it changes the const
     // (speed adjusting etc.) By having two methods, you can optionally add the bounds
