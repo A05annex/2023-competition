@@ -83,6 +83,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api"
     testImplementation "org.junit.jupiter:junit-jupiter-params"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+    testRuntimeOnly(files('libs/a05annexUtil-0.9.5.jar'))
 }
 
 // Simulation configuration (e.g. environment variables).
