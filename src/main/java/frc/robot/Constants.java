@@ -5,8 +5,7 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.XboxController;
+
 import org.a05annex.frc.A05Constants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.photonvision.PhotonCamera;
@@ -52,8 +51,6 @@ public final class Constants extends A05Constants
     // For competition, length and width from center of the wheels, in m (note chassis is 28" square,
     // the bolt pattern is 27" square, wheels are 2.75" in from the bolt pattern or centered on the
     // corners of a 21.5"(0.5461m) square.
-    //TODO: set calibration constants here for your relevant robot. rf = right front, lr = left rear, etc
-    //TODO: Verify dimensions of your robot
     /**
      * The geometry and calibration specific to a swerve drive robot base. We currently have 2 bases, the first being
      * a <i>prototyping/practice</i> base that should always be in working condition for drive tuning/testing,
