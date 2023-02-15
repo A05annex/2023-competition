@@ -113,6 +113,8 @@ public class TestArmGeometry {
     @DisplayName("test clipping, but dong an angle sweep with invalid long length")
     void TestClippingBySweep() {
         System.out.println("---------------------------------------------------------------------------------");
+        System.out.println("TestClippingBySweep");
+        System.out.println("---------------------------------------------------------------------------------");
         for (double degrees = -5.0; degrees <= 150.0; degrees += 5.0) {
             AngleD pivotAngle = new AngleD().setDegrees(degrees);
             double x = 120.0 * pivotAngle.sin();
@@ -130,6 +132,8 @@ public class TestArmGeometry {
     @Test
     @DisplayName("test old clipping, but dong an angle sweep with invalid long length")
     void TestOldClippingBySweep() {
+        System.out.println("---------------------------------------------------------------------------------");
+        System.out.println("TestOldClippingBySweep");
         System.out.println("---------------------------------------------------------------------------------");
         for (double degrees = -5.0; degrees <= 150.0; degrees += 5.0) {
             AngleD pivotAngle = new AngleD().setDegrees(degrees);
