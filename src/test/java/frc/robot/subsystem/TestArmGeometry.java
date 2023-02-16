@@ -110,7 +110,7 @@ public class TestArmGeometry {
     }
 
     @Test
-    @DisplayName("test clipping, but dong an angle sweep with invalid long length")
+    @DisplayName("test clipping, by doing an angle sweep with invalid long length")
     void TestClippingBySweep() {
         System.out.println("---------------------------------------------------------------------------------");
         System.out.println("TestClippingBySweep");
@@ -130,7 +130,7 @@ public class TestArmGeometry {
         }
     }
     @Test
-    @DisplayName("test old clipping, but dong an angle sweep with invalid long length")
+    @DisplayName("test old clipping, by doing an angle sweep.")
     void TestOldClippingBySweep() {
         System.out.println("---------------------------------------------------------------------------------");
         System.out.println("TestOldClippingBySweep");
@@ -143,7 +143,7 @@ public class TestArmGeometry {
             double distInches = 39.5 / pivotAngle.sin();
             double extensionPosition = 200 - (distInches * 3.377 * 0.9);
             extensionPosition = Utl.clip(extensionPosition, 0, 210);
-
+            // get the 2d location so the path can be graphed.
             Point2D.Double location = ArmGeometry.getArmLocationFromPositions(
                     pivotPosition, extensionPosition);
             System.out.println(String.format(
