@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.ArmStickCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
@@ -31,7 +30,6 @@ public class RobotContainer extends A05RobotContainer
     ClawSubsystem m_clawSubsystem = ClawSubsystem.getInstance();
 
     // Commands
-    ArmStickCommand m_armStickCommand;
 
     //TODO: Uncomment if you have alternate xbox controller, you need to uncomment a constant too
     XboxController m_altXbox = new XboxController(Constants.ALT_XBOX_PORT);
@@ -64,12 +62,8 @@ public class RobotContainer extends A05RobotContainer
                 m_robotSettings.m_maxSpeedCalibration);
 
         m_driveCommand = new DriveCommand(m_driveXbox, m_driver);
-        m_armStickCommand = new ArmStickCommand(m_altXbox);
 
         m_driveSubsystem.setDefaultCommand(m_driveCommand);
-        m_armSubsystem.setDefaultCommand(m_armStickCommand);
-
-        //TODO: add auto
 
         // Configure the button bindings
         configureButtonBindings();
@@ -88,10 +82,11 @@ public class RobotContainer extends A05RobotContainer
         // See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
 
         m_xboxBack.onTrue(new InstantCommand(m_navx::initializeHeadingAndNav)); // Reset the NavX field relativity
-        m_altXboxA.whileTrue(new InstantCommand(m_armSubsystem::goToCalcPos));
-        m_altXboxB.whileTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
-        m_xboxB.onTrue(new InstantCommand(m_clawSubsystem::goToClosed));
-        m_xboxA.onTrue(new InstantCommand(m_clawSubsystem::goToOpen));
-        m_xboxX.onTrue(new InstantCommand(m_clawSubsystem::stop));
+        m_xboxY.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpPivotUp));
+        m_xboxX.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpPivotDown));
+        m_xboxB.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpExtensionUp));
+        m_xboxA.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpExtensionDown));
+        m_xboxLeftBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
+        m_xboxRightBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
     }
 }

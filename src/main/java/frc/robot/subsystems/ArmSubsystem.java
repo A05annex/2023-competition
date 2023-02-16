@@ -8,7 +8,6 @@ import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import org.a05annex.frc.A05Constants;
-import org.a05annex.util.AngleConstantD;
 import org.a05annex.util.AngleD;
 import org.a05annex.util.Utl;
 
@@ -30,7 +29,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final RelativeEncoder m_extensionEncoder = m_extension.getEncoder();
     private final SparkMaxPIDController m_extensionPID = m_extension.getPIDController();
     // Array of positions. [starting position, min position, max position]
-    private final double[] extensionPositions = {0.0, 0.0, 210.0};
+    private final double[] extensionPositions = {210.0, 0.0, 210.0};
     private final double extensionKP = 0.3, extensionKI = 0.0, extensionKIZone = 0.0;
     private final double extensionTicksPerInch = 3.7989887133;
 
@@ -38,6 +37,61 @@ public class ArmSubsystem extends SubsystemBase {
 
     // Values to use as indexers for the position lists
     private final int START_POSITION = 0, MIN_POSITION = 1, MAX_POSITION = 2;
+
+    /**
+     * Stores notable arm positions along with methods to update and go to them
+     */
+    public enum ArmPositions {
+        RETRACTED(0, 210),
+        CONE_HIGH(15, 50),
+        CONE_MEDIUM(25, 30),
+        CUBE_HIGH(15, 55),
+        CUBE_MEDIUM(25,60),
+        HYBRID(30, 100);
+
+        private final ArmSubsystem armSubsystem = ArmSubsystem.getInstance();
+
+        public static ArmPositions currentPosition = RETRACTED;
+        public static double bump;
+
+        private double pivot;
+        private double extension;
+
+        ArmPositions(double pivot, double extension) {
+            this.pivot = pivot;
+            this.extension = extension;
+        }
+
+        public double getPivot() {
+            return pivot;
+        }
+
+        public double getExtension() {
+            return extension;
+        }
+
+        public static void bumpPivotUp() {
+            currentPosition.pivot += bump;
+        }
+
+        public static void bumpPivotDown() {
+            currentPosition.pivot -= bump;
+        }
+
+        public static void bumpExtensionUp() {
+            currentPosition.extension += bump;
+        }
+
+        public static void bumpExtensionDown() {
+            currentPosition.extension += bump;
+        }
+
+        public void goTo() {
+            armSubsystem.setPivotPosition(pivot);
+            armSubsystem.setExtensionPosition(extension);
+            currentPosition = this;
+        }
+    }
 
 
     /**
@@ -111,7 +165,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     /**
      * Sets the speed of the pivot motor but stops the motor if the position exceeds the minimum or maximum position
-     * @param power speed between 0 and 1 of the motor.
+     * @param power speed between -1 and 1 for the motor.
      */
     public void setPivotPower(double power) {
         if(getPivotPosition() > pivotPositions[MAX_POSITION] - STOP_DEADBAND && power > 0) {
@@ -125,6 +179,10 @@ public class ArmSubsystem extends SubsystemBase {
         //setExtensionPosition(pivotToExtension());
     }
 
+    /**
+     * Sets the pivot motor to position, but will clip the value to stay within min and max positions
+     * @param position encoder tick to go to
+     */
     public void setPivotPosition(double position) {
         double clippedPosition = Utl.clip(position, pivotPositions[MIN_POSITION], pivotPositions[MAX_POSITION]);
         if(A05Constants.getPrintDebug() && clippedPosition != position) {
@@ -133,8 +191,10 @@ public class ArmSubsystem extends SubsystemBase {
         m_pivotPID.setReference(clippedPosition, CANSparkMax.ControlType.kPosition);
     }
 
-
-
+    /**
+     * Sets the speed of the extension motor but stops the motor if the position exceeds the minimum or maximum position
+     * @param power speed between -1 and 1 for the motor.
+     */
     public void setExtensionPower(double power) {
         if(getExtensionPosition() > extensionPositions[MAX_POSITION] - STOP_DEADBAND && power > 0) {
             setExtensionPosition(extensionPositions[MAX_POSITION]);
@@ -146,6 +206,10 @@ public class ArmSubsystem extends SubsystemBase {
         }
     }
 
+    /**
+     * Sets the extension motor to position, but will clip the value to stay within min and max positions
+     * @param position encoder tick to go to
+     */
     public void setExtensionPosition(double position) {
         double clippedPosition = Utl.clip(position, extensionPositions[MIN_POSITION], extensionPositions[MAX_POSITION]);
         if(A05Constants.getPrintDebug() && clippedPosition != position) {
@@ -154,13 +218,9 @@ public class ArmSubsystem extends SubsystemBase {
         m_extensionPID.setReference(clippedPosition, CANSparkMax.ControlType.kPosition);
     }
 
-    public void goToCalcPos() {
-        setExtensionPosition(pivotToExtension());
-    }
-
     /**
-     * Reads the encoder position of the pivot motor and does trig to find the max extension of the arm that stays in
-     * the 48-inch extension limit
+     * Reads the encoder position of the pivot motor and does trig to find the max extension point of the arm that stays
+     * in the 48-inch extension limit
      * @return position in encoder ticks that the extension motor should limit itself to
      */
     public double pivotToExtension() {
@@ -170,22 +230,15 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     /**
-     * Reads the encoder position of the extension motor and does trig to find the max angle of the arm that stays in
-     * the 48-inch extension limit
-     * @return position in encoder ticks that the pivot motor should limit itself to
+     * Stops all motors. Does not persist so if something is periodically powering motors, this won't work.
      */
-    public double extensionToPivot() {
-        double distMeters = getExtensionPosition() / extensionTicksPerInch;
-        AngleD angle = new AngleD().asin(39.5/distMeters);
-        return 200.0 - (angle.getRadians() / AngleConstantD.TWO_PI.getRadians()) * pivotTicksPerRotation;
-    }
-
     public void stopAllMotors() {
         m_extension.stopMotor();
         m_pivot.stopMotor();
     }
 
-    @Override
-    public void periodic() {}
+    public void periodic() {
+        Constants.updateConstant("bump", ArmPositions.bump);
+    }
 }
 
