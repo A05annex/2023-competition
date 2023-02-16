@@ -138,7 +138,7 @@ public class ArmGeometry {
      */
     public static final double HORIZONTAL_ARM_PIVOT_TO_FRAME = 14.0;
     /**
-     * The vertical distance fr4om the floor to the arm pivot.
+     * The vertical distance from the floor to the arm pivot.
      */
     public static final double VERTICAL_FLOOR_TO_ARM_PIVOT = 18.25; // Need a measurement
 
