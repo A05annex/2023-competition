@@ -22,10 +22,13 @@ public class PhotonVisionSubsystem extends SubsystemBase {
     private final static PhotonVisionSubsystem INSTANCE = new PhotonVisionSubsystem();
 
     private double yawOffsetAverage = 0.0;
-    public double yawOffsetAverageAlpha = 0.9;
+    private final double yawOffsetAverageAlpha = 0.9;
 
     private double areaOffsetAverage = 0.0;
-    public double areaOffsetAverageAlpha = 0.9;
+    private final double areaOffsetAverageAlpha = 0.9;
+
+    private double pitchOffsetAverage = 0.0;
+    private final double pitchOffsetAverageAlpha = 0.9;
 
     public PhotonPipelineResult lastTargetFrame = null;
     
@@ -110,13 +113,14 @@ public class PhotonVisionSubsystem extends SubsystemBase {
     }
 
     /**
-     * Like getYawOffsetAverage, updates the average, but centers and scales to be between -1.0 and 1.0
+     * Smooths out yaw values to account for inconsistent object recognition using exponential moving average formula,
+     * but centers and scales to be between -1.0 and 1.0
      * @param frame Frame you would like to grab the target from and pass into the yaw average
      * @param minValue minimum expected value of what the target yaw will be
      * @param maxValue maximum expected value of what the target yaw will be
      * @return returns yawOffsetAverage that is clipped, centered and scaled between -1.0 and 1.0
      */
-    public double getScaledCenteredYawOffsetAverage(PhotonPipelineResult frame, double minValue, double maxValue) {
+    public double getYawOffsetAverage(PhotonPipelineResult frame, double minValue, double maxValue) {
         double yaw = Utl.clip(frame.getBestTarget().getYaw(), minValue, maxValue);
         if(frame.hasTargets()) {
             yawOffsetAverage = yawOffsetAverageAlpha * yaw + (1 - yawOffsetAverageAlpha) * yawOffsetAverage;
@@ -126,9 +130,29 @@ public class PhotonVisionSubsystem extends SubsystemBase {
         return (yawOffsetAverage - center) / scale;
     }
 
+    /**
+     * Smooths out yaw values to account for inconsistent object recognition using exponential moving average formula,
+     * but offsets the target, then centers and scales to be between -1.0 and 1.0
+     * @param frame Frame you would like to grab the target from and pass into the yaw average
+     * @param minValue minimum expected value of what the target yaw will be
+     * @param maxValue maximum expected value of what the target yaw will be
+     * @param offset offset from center you want (between min and max, not -1 and 1)
+     * @return returns yawOffsetAverage that is clipped, centered and scaled between -1.0 and 1.0, but shifted
+     */
+    public double getYawOffsetAverage(PhotonPipelineResult frame, double minValue, double maxValue, double offset) {
+        double yaw = Utl.clip(frame.getBestTarget().getYaw(), minValue, maxValue);
+        if(frame.hasTargets()) {
+            yawOffsetAverage = yawOffsetAverageAlpha * yaw + (1 - yawOffsetAverageAlpha) * yawOffsetAverage;
+        }
+        double center = (maxValue + minValue) / 2;
+        double scale = (maxValue - minValue) / 2;
+        return Utl.clip((yawOffsetAverage - center - offset) / scale, minValue, maxValue);
+    }
+
+
 
     /**
-     * Smooths out Area values to account for inconsistent object recognition using exponential moving average formula
+     * Smooths out area values to account for inconsistent object recognition using exponential moving average formula
      * @param frame Frame you would like to grab the target from and pass into the yaw average
      * @return Smoothed out area offset
      */
@@ -142,13 +166,14 @@ public class PhotonVisionSubsystem extends SubsystemBase {
     }
 
     /**
-     * Like {@link #getAreaOffsetAverage(PhotonPipelineResult)}, updates the average, but centers and scales to be between -1.0 and 1.0
+     * Smooths out area values to account for inconsistent object recognition using exponential moving average formula,
+     * but centers and scales to be between -1.0 and 1.0
      * @param frame Frame you would like to grab the target from and pass into the area average
      * @param minValue minimum expected value of what the target area will be
      * @param maxValue maximum expected value of what the target area will be
      * @return returns areaOffsetAverage that is clipped, centered and scaled between -1.0 and 1.0
      */
-    public double getScaledCenteredAreaOffsetAverage(PhotonPipelineResult frame, double minValue, double maxValue) {
+    public double getAreaOffsetAverage(PhotonPipelineResult frame, double minValue, double maxValue) {
         double area = Utl.clip(frame.getBestTarget().getArea(), minValue, maxValue);
         if(frame.hasTargets()) {
             areaOffsetAverage = areaOffsetAverageAlpha * area + (1 - areaOffsetAverageAlpha) * areaOffsetAverage;
@@ -156,6 +181,78 @@ public class PhotonVisionSubsystem extends SubsystemBase {
         double center = (maxValue + minValue) / 2;
         double scale = (maxValue - minValue) / 2;
         return (areaOffsetAverage - center) / scale;
+    }
+
+    /**
+     * Smooths out area values to account for inconsistent object recognition using exponential moving average formula,
+     * but offsets the target, then centers and scales to be between -1.0 and 1.0
+     * @param frame Frame you would like to grab the target from and pass into the yaw average
+     * @param minValue minimum expected value of what the target yaw will be
+     * @param maxValue maximum expected value of what the target yaw will be
+     * @param offset offset from center you want (between min and max, not -1 and 1)
+     * @return returns yawOffsetAverage that is clipped, centered and scaled between -1.0 and 1.0, but shifted
+     */
+    public double getAreaOffsetAverage(PhotonPipelineResult frame, double minValue, double maxValue, double offset) {
+        double yaw = Utl.clip(frame.getBestTarget().getYaw(), minValue, maxValue);
+        if(frame.hasTargets()) {
+            areaOffsetAverage = areaOffsetAverageAlpha * yaw + (1 - areaOffsetAverageAlpha) * areaOffsetAverage;
+        }
+        double center = (maxValue + minValue) / 2;
+        double scale = (maxValue - minValue) / 2;
+        return Utl.clip((areaOffsetAverage - center - offset) / scale, minValue, maxValue);
+    }
+
+
+
+    /**
+     * Smooths out pitch values to account for inconsistent object recognition using exponential moving average formula
+     * @param frame Frame you would like to grab the target from and pass into the yaw average
+     * @return Smoothed out area offset
+     */
+    public double getPitchOffsetAverage(PhotonPipelineResult frame) {
+        if(frame.hasTargets()){
+            pitchOffsetAverage = pitchOffsetAverageAlpha * frame.getBestTarget().getArea() + (1 - pitchOffsetAverageAlpha) * pitchOffsetAverage;
+        } else {
+            pitchOffsetAverage = 0.0;
+        }
+        return pitchOffsetAverage;
+    }
+
+    /**
+     * Smooths out pitch values to account for inconsistent object recognition using exponential moving average formula,
+     * but centers and scales to be between -1.0 and 1.0
+     * @param frame Frame you would like to grab the target from and pass into the area average
+     * @param minValue minimum expected value of what the target area will be
+     * @param maxValue maximum expected value of what the target area will be
+     * @return returns areaOffsetAverage that is clipped, centered and scaled between -1.0 and 1.0
+     */
+    public double getPitchOffsetAverage(PhotonPipelineResult frame, double minValue, double maxValue) {
+        double area = Utl.clip(frame.getBestTarget().getArea(), minValue, maxValue);
+        if(frame.hasTargets()) {
+            pitchOffsetAverage = pitchOffsetAverageAlpha * area + (1 - pitchOffsetAverageAlpha) * pitchOffsetAverage;
+        }
+        double center = (maxValue + minValue) / 2;
+        double scale = (maxValue - minValue) / 2;
+        return (pitchOffsetAverage - center) / scale;
+    }
+
+    /**
+     * Smooths out pitch values to account for inconsistent object recognition using exponential moving average formula,
+     * but offsets the target, then centers and scales to be between -1.0 and 1.0
+     * @param frame Frame you would like to grab the target from and pass into the yaw average
+     * @param minValue minimum expected value of what the target yaw will be
+     * @param maxValue maximum expected value of what the target yaw will be
+     * @param offset offset from center you want (between min and max, not -1 and 1)
+     * @return returns yawOffsetAverage that is clipped, centered and scaled between -1.0 and 1.0, but shifted
+     */
+    public double getPitchOffsetAverage(PhotonPipelineResult frame, double minValue, double maxValue, double offset) {
+        double yaw = Utl.clip(frame.getBestTarget().getYaw(), minValue, maxValue);
+        if(frame.hasTargets()) {
+            pitchOffsetAverage = pitchOffsetAverageAlpha * yaw + (1 - pitchOffsetAverageAlpha) * pitchOffsetAverage;
+        }
+        double center = (maxValue + minValue) / 2;
+        double scale = (maxValue - minValue) / 2;
+        return Utl.clip((pitchOffsetAverage - center - offset) / scale, minValue, maxValue);
     }
 
     public PIPELINES intToPipeline(int pipeline) {
