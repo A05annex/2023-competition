@@ -32,7 +32,7 @@ public class ArmStickCommand extends CommandBase {
         double xboxRight = -xbox.getRightY();
         double xboxLeft = -xbox.getLeftY();
 
-        /*
+
         if (xboxRight > -DEADBAND && xboxRight < DEADBAND && extWasSpinning) {
             m_armSubsystem.setExtensionPosition(m_armSubsystem.getExtensionPosition());
             extWasSpinning = false;
@@ -40,16 +40,16 @@ public class ArmStickCommand extends CommandBase {
             m_armSubsystem.setExtensionPower(xboxRight);
             extWasSpinning = true;
         }
-        */
+
 
         if (xboxLeft > -DEADBAND && xboxLeft < DEADBAND && pivotWasSpinning) {
             m_armSubsystem.setPivotPosition(m_armSubsystem.getPivotPosition());
             pivotWasSpinning = false;
-            m_armSubsystem.setExtensionPosition(m_armSubsystem.pivotToExtension());
+            //m_armSubsystem.setExtensionPosition(m_armSubsystem.pivotToExtension());
         } else if(!(xboxLeft > -DEADBAND && xboxLeft < DEADBAND)){
             m_armSubsystem.setPivotPower(xboxLeft);
             pivotWasSpinning = true;
-            m_armSubsystem.setExtensionPosition(m_armSubsystem.pivotToExtension());
+            //m_armSubsystem.setExtensionPosition(m_armSubsystem.pivotToExtension());
         }
     }
 
