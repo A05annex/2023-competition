@@ -1,11 +1,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.commands.A05DriveCommand;
 import org.a05annex.frc.subsystems.DriveSubsystem;
+import org.a05annex.util.AngleConstantD;
 import org.a05annex.util.Utl;
 
 
@@ -22,6 +24,11 @@ public class SampleAprilTagPositionCommand extends A05DriveCommand {
     // changing this will make the
     private final double yawOffset = 0.0, areaOffset = 0.0;
 
+    private final double yawThreshold = 0.0, areaThreshold = 0.0;
+
+    private int ticksAligned = 0;
+    private boolean alignedWithAprilTag = false;
+
     public SampleAprilTagPositionCommand(XboxController xbox, A05Constants.DriverSettings driver) {
         super(xbox, driver);
         // each subsystem used by the command must be passed into the
@@ -34,44 +41,71 @@ public class SampleAprilTagPositionCommand extends A05DriveCommand {
         m_lastConditionedDirection.setRadians(0.0);
         m_lastConditionedSpeed = 0.0;
         m_lastConditionedRotate = 0.0;
+        alignedWithAprilTag = false;
+        ticksAligned = 0;
+        m_driveSubsystem.setHeading(AngleConstantD.ZERO);
     }
 
     @Override
     public void execute() {
-        // grab last target. Prevents a new frame that could be missing a target from coming in until everything has run
-        m_photonSubsystem.updateLastTarget(Constants.DRIVE_CAMERA);
+        // checks to see if we have aligned with an AprilTag yet.
+        if (!alignedWithAprilTag) {
+            // grab last target. Prevents a new frame that could be missing a target from coming in until everything has run
+            m_photonSubsystem.updateLastTarget(Constants.DRIVE_CAMERA);
+            m_photonSubsystem.calcYawOffsetAverage(m_photonSubsystem.lastTargetFrame, -30.0, 30.0, yawOffset);
+            m_photonSubsystem.calcAreaOffsetAverage(m_photonSubsystem.lastTargetFrame, 0.0, 6.0, areaOffset);
 
-        // there was a target in the last frame
-        if(m_photonSubsystem.lastTargetFrame.hasTargets()) {
+            // was there was a target in the last frame
+            if(m_photonSubsystem.lastTargetFrame.hasTargets()) {
 
-            // Get the ATan2 of the yaw offset and the area offset to calculate a direction to drive in
-            // Uses methods to smooth area and yaw to account for indecisive vision processing
-            m_conditionedDirection.atan2(m_photonSubsystem.getYawOffsetAverage(m_photonSubsystem.lastTargetFrame, -30.0, 30.0, yawOffset),
-                    -m_photonSubsystem.getAreaOffsetAverage(m_photonSubsystem.lastTargetFrame, 0.0, 6.0, areaOffset));
+                // Get the ATan2 of the yaw offset and the area offset to calculate a direction to drive in
+                // Uses methods to smooth area and yaw to account for indecisive vision processing
+                m_conditionedDirection.atan2(m_photonSubsystem.getYawOffsetAverage(-30.0, 30.0, yawOffset),
+                        -m_photonSubsystem.getAreaOffsetAverage(0.0, 6.0, areaOffset));
 
-            // Find how fast to move the robot (value between 0.0 - 1.0)
-            // puts both speeds to a power greater than 1 to slow down the robot as it closes in (speedSmoothingMultiplier)
-            // Uses methods to smooth area and yaw to account for indecisive vision processing
-            double speedDistance = Math.pow(Math.abs(m_photonSubsystem.getYawOffsetAverage(m_photonSubsystem.lastTargetFrame, -30.0, 30.0)), speedSmoothingMultiplier) +
-                    Math.pow(Math.abs(m_photonSubsystem.getAreaOffsetAverage(m_photonSubsystem.lastTargetFrame, 0.0, 6.0)), speedSmoothingMultiplier);
+                // Find how fast to move the robot (value between 0.0 - 1.0)
+                // puts both speeds to a power greater than 1 to slow down the robot as it closes in (speedSmoothingMultiplier)
+                // Uses methods to smooth area and yaw to account for indecisive vision processing
+                double speedDistance = Math.pow(Math.abs(m_photonSubsystem.getYawOffsetAverage(-30.0, 30.0, yawOffset)), speedSmoothingMultiplier) +
+                        Math.pow(Math.abs(m_photonSubsystem.getAreaOffsetAverage(0.0, 6.0, areaOffset)), speedSmoothingMultiplier);
 
-            // We apply a speed change limit to swerve to prevent burnouts and smooth robot movements
-            // value only changes by at most DriveSpeedMaxInc
-            m_conditionedSpeed = Utl.clip(speedDistance, m_lastConditionedSpeed - maxSpeedDelta,
-                    m_lastConditionedSpeed + maxSpeedDelta);
+                // We apply a speed change limit to swerve to prevent burnouts and smooth robot movements
+                // value only changes by at most DriveSpeedMaxInc
+                m_conditionedSpeed = Utl.clip(speedDistance, m_lastConditionedSpeed - maxSpeedDelta,
+                        m_lastConditionedSpeed + maxSpeedDelta);
 
-            //update lastConditionedSpeed
-            m_lastConditionedSpeed = m_conditionedSpeed;
+                m_conditionedSpeed = Utl.clip(m_conditionedSpeed, 0.0, 0.25);
+
+                //update lastConditionedSpeed
+                m_lastConditionedSpeed = m_conditionedSpeed;
+                m_lastConditionedDirection = m_conditionedDirection;
+            }
+            // if the A button is pressed but there was not a target in the last frame
+            else {
+                // Drive using the last set speeds
+                m_conditionedSpeed = 0;
+                m_conditionedDirection = m_lastConditionedDirection;
+            }
+
+            // Passes direction, speed, and rotation from above into the swerveDrive method which actually spins the wheels
+            m_driveSubsystem.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);
+
+            // Is the robot close enough to where it should be?
+            if (Math.abs(m_photonSubsystem.getYawOffsetAverage()) < yawThreshold && Math.abs(m_photonSubsystem.getAreaOffsetAverage()) < areaThreshold) {
+                // Yes? add 1 to the counter
+                ticksAligned++;
+                if (ticksAligned >= 25) { // 25 ticks. 25 * 20 ms = 0.5 seconds
+                    alignedWithAprilTag = true;
+                }
+            }
+            else {
+                // No? reset the counter
+                ticksAligned = 0;
+            }
         }
-        // if the A button is pressed but there was not a target in the last frame
         else {
-            // Drive using the last set speeds
-            m_conditionedSpeed = m_lastConditionedSpeed;
-            m_conditionedDirection = m_lastConditionedDirection;
+            //m_driveSubsystem.translate(0.0, 1.0);
         }
-
-        // Passes direction, speed, and rotation from above into the swerveDrive method which actually spins the wheels
-        m_driveSubsystem.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);
     }
 
     @Override

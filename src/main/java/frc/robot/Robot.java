@@ -6,8 +6,10 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.A05Robot;
 
@@ -58,7 +60,9 @@ public class Robot extends A05Robot
     
     
     @Override
-    public void disabledPeriodic() {}
+    public void disabledPeriodic() {
+        A05Constants.printIDs();
+    }
     
     
     /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
@@ -90,6 +94,8 @@ public class Robot extends A05Robot
     public void teleopPeriodic() {
         super.teleopPeriodic();
         A05Constants.printIDs();
+        SmartDashboard.putNumber("yaw offset", PhotonVisionSubsystem.getInstance().getYawOffsetAverage());
+        SmartDashboard.putNumber("area offset", PhotonVisionSubsystem.getInstance().getAreaOffsetAverage());
     }
     
     @Override

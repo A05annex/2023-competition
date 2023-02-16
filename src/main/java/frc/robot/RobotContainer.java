@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.OneMeterDriveCommand;
 import frc.robot.commands.PipelineScanCommand;
 import frc.robot.commands.SampleAprilTagPositionCommand;
 import frc.robot.subsystems.PhotonVisionSubsystem;
@@ -30,6 +31,8 @@ public class RobotContainer extends A05RobotContainer
     SampleAprilTagPositionCommand m_sampleAprilTagPositionCommand;
 
     PhotonVisionSubsystem m_photonVisionSubsystem = PhotonVisionSubsystem.getInstance();
+
+    PipelineScanCommand m_pipelineScanCommand;
 
     XboxController m_altXbox = new XboxController(Constants.ALT_XBOX_PORT);
 
@@ -60,6 +63,8 @@ public class RobotContainer extends A05RobotContainer
 
         m_driveCommand = new DriveCommand(m_driveXbox, m_driver);
 
+        m_pipelineScanCommand = new PipelineScanCommand(Constants.DRIVE_CAMERA);
+
         m_sampleAprilTagPositionCommand = new SampleAprilTagPositionCommand(m_driveXbox, m_driver);
 
         m_driveSubsystem.setDefaultCommand(m_driveCommand);
@@ -80,8 +85,9 @@ public class RobotContainer extends A05RobotContainer
         // Add button to command mappings here.
         // See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
 
-        m_xboxBack.onTrue(new InstantCommand(m_navx::initializeHeadingAndNav)); // Reset the NavX field relativity
-        m_xboxA.onTrue(m_sampleAprilTagPositionCommand);
-        m_xboxX.onTrue(new PipelineScanCommand(Constants.DRIVE_CAMERA));
+        m_xboxBack.whileTrue(new InstantCommand(m_navx::initializeHeadingAndNav)); // Reset the NavX field relativity
+        m_xboxA.whileTrue(new SampleAprilTagPositionCommand(m_driveXbox, m_driver));
+        m_xboxX.whileTrue(m_pipelineScanCommand);
+        m_xboxY.whileTrue(new OneMeterDriveCommand());
     }
 }
