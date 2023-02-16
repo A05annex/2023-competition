@@ -30,7 +30,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final RelativeEncoder m_extensionEncoder = m_extension.getEncoder();
     private final SparkMaxPIDController m_extensionPID = m_extension.getPIDController();
     // Array of positions. [starting position, min position, max position]
-    private final double[] extensionPositions = {0.0, 0.0, 210.0};
+    private final double[] extensionPositions = {0.0, 0.0, 172.0};
     private final double extensionKP = 0.3, extensionKI = 0.0, extensionKIZone = 0.0;
     private final double extensionTicksPerInch = 3.7989887133;
 
@@ -142,7 +142,7 @@ public class ArmSubsystem extends SubsystemBase {
         else if(getExtensionPosition() < extensionPositions[MIN_POSITION] + STOP_DEADBAND && power < 0) {
             setExtensionPosition(extensionPositions[MIN_POSITION]);
         } else {
-            m_extension.set(power * 0.5);
+            m_extension.set(power * 1.0);
         }
     }
 
