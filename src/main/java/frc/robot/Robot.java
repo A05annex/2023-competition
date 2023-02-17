@@ -5,11 +5,7 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.A05Robot;
 
@@ -35,10 +31,7 @@ public class Robot extends A05Robot
         // Set the drive constants that are specific to this swerve geometry.
         // Some drive geometry is passed in RobotContainer's constructor
         Constants.setDriveOrientationkp(Constants.DRIVE_ORIENTATION_kP);
-        // TODO: If you are having trouble debugging an issue related to the a05annexLibrary, setting this to true -
-        // TODO: i.e. uncommenting the following line, will add a lot of debug logging to the console output, and
-        // TODO: may help you determine what is really happening.
-        Constants.setPrintDebug(true);
+        Constants.setPrintDebug(false);
 
         // Load the robot settings list
         Collections.addAll(A05Constants.ROBOT_SETTINGS_LIST,Constants.ROBOT_SETTINGS);
@@ -71,7 +64,6 @@ public class Robot extends A05Robot
     {
         // Sets up autonomous command
         super.autonomousInit();
-        //TODO: Add other things here (setting limelight pipeline)
     }
     
     
@@ -85,7 +77,6 @@ public class Robot extends A05Robot
     {
         // Cancels autonomous command
         super.teleopInit();
-        //TODO: Can add other things here
     }
     
     
@@ -94,8 +85,6 @@ public class Robot extends A05Robot
     public void teleopPeriodic() {
         super.teleopPeriodic();
         A05Constants.printIDs();
-        SmartDashboard.putNumber("yaw offset", PhotonVisionSubsystem.getInstance().getYawOffsetAverage());
-        SmartDashboard.putNumber("area offset", PhotonVisionSubsystem.getInstance().getAreaOffsetAverage());
     }
     
     @Override

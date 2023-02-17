@@ -1,10 +1,10 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.a05annex.frc.A05Constants;
+import org.a05annex.frc.NavX;
 import org.a05annex.frc.commands.A05DriveCommand;
 import org.a05annex.frc.subsystems.DriveSubsystem;
 import org.a05annex.util.AngleConstantD;
@@ -52,8 +52,8 @@ public class SampleAprilTagPositionCommand extends A05DriveCommand {
         if (!alignedWithAprilTag) {
             // grab last target. Prevents a new frame that could be missing a target from coming in until everything has run
             m_photonSubsystem.updateLastTarget(Constants.DRIVE_CAMERA);
-            m_photonSubsystem.calcYawOffsetAverage(m_photonSubsystem.lastTargetFrame, -30.0, 30.0, yawOffset);
-            m_photonSubsystem.calcAreaOffsetAverage(m_photonSubsystem.lastTargetFrame, 0.0, 6.0, areaOffset);
+            m_photonSubsystem.calcYawOffsetAverage(m_photonSubsystem.lastTargetFrame, -30.0, 30.0);
+            m_photonSubsystem.calcAreaOffsetAverage(m_photonSubsystem.lastTargetFrame, 0.0, 6.0);
 
             // was there was a target in the last frame
             if(m_photonSubsystem.lastTargetFrame.hasTargets()) {
@@ -66,19 +66,24 @@ public class SampleAprilTagPositionCommand extends A05DriveCommand {
                 // Find how fast to move the robot (value between 0.0 - 1.0)
                 // puts both speeds to a power greater than 1 to slow down the robot as it closes in (speedSmoothingMultiplier)
                 // Uses methods to smooth area and yaw to account for indecisive vision processing
-                double speedDistance = Math.pow(Math.abs(m_photonSubsystem.getYawOffsetAverage(-30.0, 30.0, yawOffset)), speedSmoothingMultiplier) +
-                        Math.pow(Math.abs(m_photonSubsystem.getAreaOffsetAverage(0.0, 6.0, areaOffset)), speedSmoothingMultiplier);
+                double speedDistance = Utl.length(Math.pow(Math.abs(m_photonSubsystem.getYawOffsetAverage(-30.0, 30.0, yawOffset)), speedSmoothingMultiplier),
+                        Math.pow(Math.abs(m_photonSubsystem.getAreaOffsetAverage(0.0, 6.0, areaOffset)), speedSmoothingMultiplier));
 
                 // We apply a speed change limit to swerve to prevent burnouts and smooth robot movements
                 // value only changes by at most DriveSpeedMaxInc
                 m_conditionedSpeed = Utl.clip(speedDistance, m_lastConditionedSpeed - maxSpeedDelta,
                         m_lastConditionedSpeed + maxSpeedDelta);
 
-                m_conditionedSpeed = Utl.clip(m_conditionedSpeed, 0.0, 0.25);
+                // Limit to half speed to make sure the camera can always see the AprilTag
+                m_conditionedSpeed = Utl.clip(m_conditionedSpeed, 0.0, 0.5);
+
+                // Set rotation to be the offset from straight
+                m_conditionedRotate = -NavX.getInstance().getHeading().getRadians() / AngleConstantD.TWO_PI.getRadians();
 
                 //update lastConditionedSpeed
                 m_lastConditionedSpeed = m_conditionedSpeed;
                 m_lastConditionedDirection = m_conditionedDirection;
+                m_lastConditionedRotate = m_conditionedRotate;
             }
             // if the A button is pressed but there was not a target in the last frame
             else {
