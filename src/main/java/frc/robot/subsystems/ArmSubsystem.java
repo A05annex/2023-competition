@@ -121,6 +121,8 @@ public class ArmSubsystem extends SubsystemBase {
 
         setPID(m_pivotPID, pivotKP, pivotKI, pivotKIZone);
         setPID(m_extensionPID, extensionKP, extensionKI, extensionKIZone);
+
+        m_pivotPID.setOutputRange(-0.3, 0.3);
     }
 
 
