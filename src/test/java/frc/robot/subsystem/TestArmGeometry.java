@@ -120,13 +120,19 @@ public class TestArmGeometry {
             double x = 120.0 * pivotAngle.sin();
             double y = 120.0 * pivotAngle.cos();
             ArmGeometry.ArmPositions positions = ArmGeometry.getArmPositionsFromLocation(x, y);
+            boolean validPivot = (positions.getPivotPosition() >= ArmGeometry.PIVOT_MIN_POSITION) &&
+                    (positions.getPivotPosition() <= ArmGeometry.PIVOT_MAX_POSITION);
             boolean clipped = positions.clipToValidInPlay();
             Point2D.Double location = ArmGeometry.getArmLocationFromPositions(
                     positions.getPivotPosition(), positions.getExtensionPosition());
             System.out.println(String.format(
-                    "location: (%7.2f,%7.2f); positions: (%7.2f,%7.2f) - valid:%b; back to location: (%7.2f,%7.2f)",
-                    x, y, positions.getPivotPosition(), positions.getExtensionPosition(), clipped,
+                    "angle(deg) = %7.2f; positions: (%7.2f,%7.2f) - valid:%b; back to location: (%7.2f,%7.2f)",
+                    pivotAngle.getDegrees(), positions.getPivotPosition(), positions.getExtensionPosition(), clipped,
                     location.x, location.y ));
+            if (validPivot) {
+                assertEquals(pivotAngle.getDegrees(),
+                        ArmGeometry.getPivotAngleFromPosition(positions.getPivotPosition()).getDegrees(), 0.0001);
+            }
         }
     }
     @Test
