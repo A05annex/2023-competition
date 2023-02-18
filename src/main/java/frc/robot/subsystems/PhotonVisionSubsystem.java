@@ -71,9 +71,9 @@ public class PhotonVisionSubsystem extends SubsystemBase {
 
      // enum to store pipelines by name
     public enum PIPELINES {
-        CUBE(0, "Cube"),
+        CUBE(2, "Cube"),
         CONE(1, "Cone"),
-        APRILTAGS(2, "AprilTag");
+        APRILTAGS(0, "AprilTag");
 
         public final int index;
         public final String name;
