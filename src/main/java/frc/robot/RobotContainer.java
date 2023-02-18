@@ -90,8 +90,7 @@ public class RobotContainer extends A05RobotContainer
         m_xboxBack.onTrue(new InstantCommand(m_navx::initializeHeadingAndNav)); // Reset the NavX field relativity
         m_altXboxA.whileTrue(new InstantCommand(m_armSubsystem::goToCalcPos));
         m_altXboxB.whileTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
-        m_xboxB.onTrue(new InstantCommand(m_clawSubsystem::goToClosed));
-        m_xboxA.onTrue(new InstantCommand(m_clawSubsystem::goToOpen));
-        m_xboxX.onTrue(new InstantCommand(m_clawSubsystem::stop));
+        m_xboxB.onTrue(new InstantCommand(m_clawSubsystem::close));
+        m_xboxA.onTrue(new InstantCommand(m_clawSubsystem::open));
     }
 }
