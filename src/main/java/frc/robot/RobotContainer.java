@@ -7,9 +7,11 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.ArmStickCommand;
+import frc.robot.commands.ArmStickPositionCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
@@ -31,7 +33,7 @@ public class RobotContainer extends A05RobotContainer
     ClawSubsystem m_clawSubsystem = ClawSubsystem.getInstance();
 
     // Commands
-    ArmStickCommand m_armStickCommand;
+    Command m_armStickCommand;
 
     //TODO: Uncomment if you have alternate xbox controller, you need to uncomment a constant too
     XboxController m_altXbox = new XboxController(Constants.ALT_XBOX_PORT);
@@ -64,7 +66,7 @@ public class RobotContainer extends A05RobotContainer
                 m_robotSettings.m_maxSpeedCalibration);
 
         m_driveCommand = new DriveCommand(m_driveXbox, m_driver);
-        m_armStickCommand = new ArmStickCommand(m_altXbox);
+        m_armStickCommand = new ArmStickPositionCommand(m_altXbox);
 
         m_driveSubsystem.setDefaultCommand(m_driveCommand);
         m_armSubsystem.setDefaultCommand(m_armStickCommand);
