@@ -2,11 +2,13 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PhotonVisionSubsystem;
+import org.a05annex.frc.commands.AbsoluteTranslateCommand;
 import org.a05annex.frc.subsystems.DriveSubsystem;
 
 
 public class OneMeterDriveCommand extends CommandBase {
     private final DriveSubsystem driveSubsystem = DriveSubsystem.getInstance();
+    AbsoluteTranslateCommand absoluteTranslateCommand = new AbsoluteTranslateCommand(0.0, 1.0);
 
     public OneMeterDriveCommand() {
         // each subsystem used by the command must be passed into the
@@ -16,7 +18,7 @@ public class OneMeterDriveCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        driveSubsystem.translate(1.0, 0.0);
+        absoluteTranslateCommand.initialize();
     }
 
     @Override
@@ -26,8 +28,7 @@ public class OneMeterDriveCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        // TODO: Make this return true when this Command no longer needs to run execute()
-        return false;
+        return absoluteTranslateCommand.isFinished();
     }
 
     @Override

@@ -132,13 +132,13 @@ public class PhotonVisionSubsystem extends SubsystemBase {
      * Returns the yawOffsetAverage but scales and centers it to be a double between -1 and 1
      * @param minValue minimum expected value of what the target yaw will be
      * @param maxValue maximum expected value of what the target will be
-     * @param offset offset the average (between min and max)
+     * @param goal yaw value to target (keep between min and max)
      * @return translates the yawOffsetAverage to be a number between -1 and 1
      */
-    public double getYawOffsetAverage(double minValue, double maxValue, double offset) {
+    public double getYawOffsetAverage(double minValue, double maxValue, double goal) {
         double center = (maxValue + minValue) / 2.0;
         double scale = (maxValue - minValue) / 2.0;
-        return Utl.clip((yawOffsetAverage - center - offset) / scale, -1.0, 1.0);
+        return Utl.clip((yawOffsetAverage - center) / scale  -  (goal - center) / scale , -1.0, 1.0);
     }
 
     /**
@@ -177,13 +177,13 @@ public class PhotonVisionSubsystem extends SubsystemBase {
      * Returns the areaOffsetAverage but scales and centers it to be a double between -1 and 1
      * @param minValue minimum expected value of what the target yaw will be
      * @param maxValue maximum expected value of what the target will be
-     * @param offset offset the average (between min and max)
+     * @param goal area value to target (keep between min and max)
      * @return translates the areaOffsetAverage to be a number between -1 and 1
      */
-    public double getAreaOffsetAverage(double minValue, double maxValue, double offset) {
+    public double getAreaOffsetAverage(double minValue, double maxValue, double goal) {
         double center = (maxValue + minValue) / 2.0;
         double scale = (maxValue - minValue) / 2.0;
-        return Utl.clip((areaOffsetAverage - center - offset) / scale, -1.0, 1.0);
+        return Utl.clip((areaOffsetAverage - center) / scale  -  (goal - center) / scale , -1.0, 1.0);
     }
 
 
@@ -223,13 +223,13 @@ public class PhotonVisionSubsystem extends SubsystemBase {
      * Returns the pitchOffsetAverage but scales and centers it to be a double between -1 and 1
      * @param minValue minimum expected value of what the target yaw will be
      * @param maxValue maximum expected value of what the target will be
-     * @param offset offset the average (between min and max)
+     * @param goal pitch value to target (keep between min and max)
      * @return translates the pitchOffsetAverage to be a number between -1 and 1
      */
-    public double getPitchOffsetAverage(double minValue, double maxValue, double offset) {
+    public double getPitchOffsetAverage(double minValue, double maxValue, double goal) {
         double center = (maxValue + minValue) / 2.0;
         double scale = (maxValue - minValue) / 2.0;
-        return Utl.clip((pitchOffsetAverage - center - offset) / scale, -1.0, 1.0);
+        return Utl.clip((pitchOffsetAverage - center) / scale  -  (goal - center) / scale , -1.0, 1.0);
     }
 
     public PIPELINES intToPipeline(int pipeline) {
