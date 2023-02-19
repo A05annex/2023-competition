@@ -26,7 +26,7 @@ public final class Constants extends A05Constants
                 ARM_EXTENSION_MOTOR = 13;
     }
 
-    public static final int PNEUMATICS_OUT = 2, PNEUMATICS_IN = 1;
+    public static final int PNEUMATICS_FORWARD = 14, PNEUMATICS_REVERSE = 15;
 
     // Port 0 is whichever controller was plugged in first, not a specific port.
     //DRIVE_XBOX_PORT = 0 (Set in A05Constants) Leave commented

@@ -10,7 +10,7 @@ public class ClawSubsystem extends SubsystemBase {
 
 
     private final DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
-            Constants.PNEUMATICS_OUT, Constants.PNEUMATICS_IN);
+            Constants.PNEUMATICS_FORWARD, Constants.PNEUMATICS_REVERSE);
 
     /**
      * The Singleton instance of this ClawSubsystem. Code should use
