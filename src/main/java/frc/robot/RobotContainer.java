@@ -15,6 +15,7 @@ import frc.robot.commands.PipelineScanCommand;
 import frc.robot.commands.SampleAprilTagPositionCommand;
 import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.a05annex.frc.A05RobotContainer;
+import org.a05annex.frc.commands.AbsoluteTranslateCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -88,6 +89,7 @@ public class RobotContainer extends A05RobotContainer
         m_xboxBack.whileTrue(new InstantCommand(m_navx::initializeHeadingAndNav)); // Reset the NavX field relativity
         m_xboxA.whileTrue(new SampleAprilTagPositionCommand(m_driveXbox, m_driver));
         m_xboxX.whileTrue(m_pipelineScanCommand);
-        m_xboxY.whileTrue(new OneMeterDriveCommand());
+        m_xboxB.onTrue(new AbsoluteTranslateCommand(0.0, 1.0));
+        m_xboxY.onTrue(new OneMeterDriveCommand());
     }
 }
