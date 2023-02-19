@@ -42,12 +42,12 @@ public class ArmSubsystem extends SubsystemBase {
      * Stores notable arm positions along with methods to update and go to them
      */
     public enum ArmPositions {
-        RETRACTED(0, 210),
-        CONE_HIGH(15, 50),
-        CONE_MEDIUM(25, 30),
-        CUBE_HIGH(15, 55),
-        CUBE_MEDIUM(25,60),
-        HYBRID(30, 100);
+        RETRACTED(0.0, 210.0),
+        CONE_HIGH(16.52, 42.02),
+        CONE_MEDIUM(17.0, 180.97),
+        CUBE_HIGH(19.88, 53.6),
+        CUBE_MEDIUM(23.5,179.49),
+        HYBRID(33.92, 245.0);
 
         private final ArmSubsystem armSubsystem = ArmSubsystem.getInstance();
 
