@@ -92,5 +92,6 @@ public class RobotContainer extends A05RobotContainer
         m_altXboxB.whileTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
         m_xboxB.onTrue(new InstantCommand(m_clawSubsystem::close));
         m_xboxA.onTrue(new InstantCommand(m_clawSubsystem::open));
+        m_xboxX.onTrue(new InstantCommand(m_clawSubsystem::bleed));
     }
 }

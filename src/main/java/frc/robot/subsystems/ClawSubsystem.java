@@ -1,15 +1,13 @@
 package frc.robot.subsystems;
 
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ClawSubsystem extends SubsystemBase {
 
-
-    private final DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
+    private final DoubleSolenoid solenoid = new DoubleSolenoid(16, PneumaticsModuleType.REVPH,
             Constants.PNEUMATICS_FORWARD, Constants.PNEUMATICS_REVERSE);
 
     /**
