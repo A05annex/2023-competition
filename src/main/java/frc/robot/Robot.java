@@ -5,18 +5,12 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.ClawSubsystem;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.A05Robot;
-import org.a05annex.frc.NavX;
-
-import javax.print.attribute.standard.MediaSize;
 import java.util.Collections;
 
 
@@ -107,8 +101,6 @@ public class Robot extends A05Robot
     /** This method is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
-        //super.teleopPeriodic();
-        //A05Constants.printIDs();
         super.teleopPeriodic();
         A05Constants.printIDs();
         SmartDashboard.putNumber("Pivot Position", ArmSubsystem.getInstance().getPivotPosition());
