@@ -21,9 +21,8 @@ public final class Constants extends A05Constants
     public static final class CAN_Devices {
         public static final int
                 // Non-Drive Motors
-                ARM_PIVOT_MOTOR = 14,
-                ARM_EXTENSION_MOTOR = 13,
-                CLAW_MOTOR = 12;
+                ARM_PIVOT_MOTOR = 12,
+                ARM_EXTENSION_MOTOR = 13;
     }
 
 

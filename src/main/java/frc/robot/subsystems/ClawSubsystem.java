@@ -10,7 +10,7 @@ import frc.robot.Constants;
 
 public class ClawSubsystem extends SubsystemBase {
 
-    private final CANSparkMax m_motor = new CANSparkMax(Constants.CAN_Devices.CLAW_MOTOR,
+    private final CANSparkMax m_motor = new CANSparkMax(62,
             CANSparkMaxLowLevel.MotorType.kBrushless);
     private final RelativeEncoder m_encoder = m_motor.getEncoder();
     private final SparkMaxPIDController m_motorPID = m_motor.getPIDController();

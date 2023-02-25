@@ -18,7 +18,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final RelativeEncoder m_pivotEncoder = m_pivot.getEncoder();
     private final SparkMaxPIDController m_pivotPID = m_pivot.getPIDController();
     // Array of positions. [starting position, min position, max position]
-    private final double[] pivotPositions = {0.0, -10, 45};
+    private final double[] pivotPositions = {0.0, -100, 1560};
     private final double pivotKP = 0.1, pivotKI = 0.0, pivotKIZone = 0.0;
     private final double pivotTicksPerRotation = 30.309 * 4; //Reading from 0 to 90 degrees * 4 = full rotation
 
@@ -29,7 +29,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final RelativeEncoder m_extensionEncoder = m_extension.getEncoder();
     private final SparkMaxPIDController m_extensionPID = m_extension.getPIDController();
     // Array of positions. [starting position, min position, max position]
-    private final double[] extensionPositions = {210.0, 0.0, 210.0};
+    private final double[] extensionPositions = {247.8, 0.0, 247.8};
     private final double extensionKP = 0.3, extensionKI = 0.0, extensionKIZone = 0.0;
     private final double extensionTicksPerInch = 3.7989887133;
 
@@ -42,8 +42,8 @@ public class ArmSubsystem extends SubsystemBase {
      * Stores notable arm positions along with methods to update and go to them
      */
     public enum ArmPositions {
-        RETRACTED(0.0, 210.0),
-        CONE_HIGH(16.52, 42.02),
+        RETRACTED(0.0, 247.8),
+        CONE_HIGH(669, 46.24),
         CONE_MEDIUM(17.0, 180.97),
         CUBE_HIGH(19.88, 53.6),
         CUBE_MEDIUM(23.5,179.49),
@@ -122,7 +122,7 @@ public class ArmSubsystem extends SubsystemBase {
         setPID(m_pivotPID, pivotKP, pivotKI, pivotKIZone);
         setPID(m_extensionPID, extensionKP, extensionKI, extensionKIZone);
 
-        m_pivotPID.setOutputRange(-0.3, 0.3);
+        m_pivotPID.setOutputRange(-0.2, 0.2);
     }
 
 
