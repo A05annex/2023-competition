@@ -8,6 +8,7 @@ import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import org.a05annex.frc.A05Constants;
+import org.a05annex.util.AngleConstantD;
 import org.a05annex.util.AngleD;
 import org.a05annex.util.Utl;
 
@@ -220,6 +221,10 @@ public class ArmSubsystem extends SubsystemBase {
         m_extensionPID.setReference(clippedPosition, CANSparkMax.ControlType.kPosition);
     }
 
+    public void goToCalcPos() {
+        setExtensionPosition(pivotToExtension());
+    }
+
     /**
      * Reads the encoder position of the pivot motor and does trig to find the max extension point of the arm that stays
      * in the 48-inch extension limit
@@ -229,6 +234,17 @@ public class ArmSubsystem extends SubsystemBase {
         AngleD angle = new AngleD().setDegrees((getPivotPosition() / pivotTicksPerRotation) * 360);
         double distInches = 39.5/angle.sin();
         return 200 - (distInches * extensionTicksPerInch * 0.9);
+    }
+
+    /**
+     * Reads the encoder position of the extension motor and does trig to find the max angle of the arm that stays in
+     * the 48-inch extension limit
+     * @return position in encoder ticks that the pivot motor should limit itself to
+     */
+    public double extensionToPivot() {
+        double distMeters = getExtensionPosition() / extensionTicksPerInch;
+        AngleD angle = new AngleD().asin(39.5/distMeters);
+        return 200.0 - (angle.getRadians() / AngleConstantD.TWO_PI.getRadians()) * pivotTicksPerRotation;
     }
 
     /**

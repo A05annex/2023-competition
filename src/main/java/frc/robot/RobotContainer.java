@@ -88,5 +88,10 @@ public class RobotContainer extends A05RobotContainer
         m_xboxA.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpExtensionDown));
         m_xboxLeftBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
         m_xboxRightBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
+        m_altXboxA.whileTrue(new InstantCommand(m_armSubsystem::goToCalcPos));
+        m_altXboxB.whileTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
+        m_xboxB.onTrue(new InstantCommand(m_clawSubsystem::close));
+        m_xboxA.onTrue(new InstantCommand(m_clawSubsystem::open));
+        m_xboxX.onTrue(new InstantCommand(m_clawSubsystem::bleed));
     }
 }
