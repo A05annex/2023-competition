@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AutoBalanceCommand;
 import frc.robot.commands.DriveCommand;
+import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ClawSubsystem;
 import org.a05annex.frc.A05RobotContainer;
 
 /**
@@ -23,18 +25,27 @@ public class RobotContainer extends A05RobotContainer
 {
     // The robot's subsystems and commands are defined here...
     // NavX, DriveSubsystem, DriveXbox have already been made in A05RobotContainer
-    //TODO: Add any additional subsystems and commands here
+
+    // Subsystems
+    ArmSubsystem m_armSubsystem = ArmSubsystem.getInstance();
+    ClawSubsystem m_clawSubsystem = ClawSubsystem.getInstance();
+
+    // Commands
 
     //TODO: Uncomment if you have alternate xbox controller, you need to uncomment a constant too
-    //XboxController m_altXbox = new XboxController(Constants.ALT_XBOX_PORT);
+    XboxController m_altXbox = new XboxController(Constants.ALT_XBOX_PORT);
 
     // controller button declarations
     JoystickButton m_xboxA = new JoystickButton(m_driveXbox, 1);
+    JoystickButton m_altXboxA = new JoystickButton(m_altXbox, 1);
     JoystickButton m_xboxB = new JoystickButton(m_driveXbox, 2);
+    JoystickButton m_altXboxB = new JoystickButton(m_altXbox, 2);
     JoystickButton m_xboxX = new JoystickButton(m_driveXbox, 3);
     JoystickButton m_xboxY = new JoystickButton(m_driveXbox, 4);
     JoystickButton m_xboxLeftBumper = new JoystickButton(m_driveXbox, 5);
+    JoystickButton m_altXboxLeftBumper = new JoystickButton(m_altXbox, 5);
     JoystickButton m_xboxRightBumper = new JoystickButton(m_driveXbox, 6);
+    JoystickButton m_altXboxRightBumper = new JoystickButton(m_altXbox, 6);
     JoystickButton m_xboxBack = new JoystickButton(m_driveXbox, 7);
     JoystickButton m_xboxStart = new JoystickButton(m_driveXbox, 8);
     JoystickButton m_xboxLeftStickPress = new JoystickButton(m_driveXbox, 9);
@@ -64,8 +75,8 @@ public class RobotContainer extends A05RobotContainer
         // Configure the button bindings
         configureButtonBindings();
     }
-    
-    
+
+
     /**
      * Use this method to define your button->command mappings. Buttons can be created by
      * instantiating a {@link GenericHID} or one of its subclasses ({@link
@@ -78,6 +89,22 @@ public class RobotContainer extends A05RobotContainer
         // See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
 
         m_xboxBack.onTrue(new InstantCommand(m_navx::initializeHeadingAndNav)); // Reset the NavX field relativity
+
+        m_altXboxA.onTrue(new InstantCommand(m_clawSubsystem::open));
+        m_altXboxA.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when the button is released
+        m_altXboxB.onTrue(new InstantCommand(m_clawSubsystem::close));
+        m_altXboxB.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when the button is released
+
+        m_xboxLeftBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
+        m_xboxRightBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
+        m_altXboxLeftBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
+        m_altXboxRightBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
+
+        m_xboxY.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpPivotUp));
+        m_xboxX.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpPivotDown));
+        m_xboxB.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpExtensionUp));
+        m_xboxA.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpExtensionDown));
+
         m_xboxA.whileTrue(new AutoBalanceCommand());
     }
 }
