@@ -42,7 +42,9 @@ public class RobotContainer extends A05RobotContainer
     JoystickButton m_xboxX = new JoystickButton(m_driveXbox, 3);
     JoystickButton m_xboxY = new JoystickButton(m_driveXbox, 4);
     JoystickButton m_xboxLeftBumper = new JoystickButton(m_driveXbox, 5);
+    JoystickButton m_altXboxLeftBumper = new JoystickButton(m_altXbox, 5);
     JoystickButton m_xboxRightBumper = new JoystickButton(m_driveXbox, 6);
+    JoystickButton m_altXboxRightBumper = new JoystickButton(m_altXbox, 6);
     JoystickButton m_xboxBack = new JoystickButton(m_driveXbox, 7);
     JoystickButton m_xboxStart = new JoystickButton(m_driveXbox, 8);
     JoystickButton m_xboxLeftStickPress = new JoystickButton(m_driveXbox, 9);
@@ -82,16 +84,20 @@ public class RobotContainer extends A05RobotContainer
         // See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
 
         m_xboxBack.onTrue(new InstantCommand(m_navx::initializeHeadingAndNav)); // Reset the NavX field relativity
+
+        m_altXboxA.onTrue(new InstantCommand(m_clawSubsystem::open));
+        m_altXboxA.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when the button is released
+        m_altXboxB.onTrue(new InstantCommand(m_clawSubsystem::close));
+        m_altXboxB.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when the button is released
+
+        m_xboxLeftBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
+        m_xboxRightBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
+        m_altXboxLeftBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
+        m_altXboxRightBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
+
         m_xboxY.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpPivotUp));
         m_xboxX.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpPivotDown));
         m_xboxB.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpExtensionUp));
         m_xboxA.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpExtensionDown));
-        m_xboxLeftBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
-        m_xboxRightBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
-        m_altXboxA.whileTrue(new InstantCommand(m_armSubsystem::goToCalcPos));
-        m_altXboxB.whileTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
-        m_xboxB.onTrue(new InstantCommand(m_clawSubsystem::close));
-        m_xboxA.onTrue(new InstantCommand(m_clawSubsystem::open));
-        m_xboxX.onTrue(new InstantCommand(m_clawSubsystem::bleed));
     }
 }

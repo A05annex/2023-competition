@@ -73,18 +73,22 @@ public class ArmSubsystem extends SubsystemBase {
 
         public static void bumpPivotUp() {
             currentPosition.pivot += bump;
+            currentPosition.goTo();
         }
 
         public static void bumpPivotDown() {
             currentPosition.pivot -= bump;
+            currentPosition.goTo();
         }
 
         public static void bumpExtensionUp() {
             currentPosition.extension += bump;
+            currentPosition.goTo();
         }
 
         public static void bumpExtensionDown() {
             currentPosition.extension += bump;
+            currentPosition.goTo();
         }
 
         public void goTo() {
