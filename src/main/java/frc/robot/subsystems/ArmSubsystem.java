@@ -266,7 +266,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void periodic() {
-        Constants.updateConstant("bump", ArmPositions.bump);
+        ArmPositions.bump = Constants.updateConstant("bump", ArmPositions.bump);
     }
 }
 
