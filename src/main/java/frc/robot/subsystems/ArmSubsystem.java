@@ -19,7 +19,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final RelativeEncoder m_pivotEncoder = m_pivot.getEncoder();
     private final SparkMaxPIDController m_pivotPID = m_pivot.getPIDController();
     // Array of positions. [starting position, min position, max position]
-    private final double[] pivotPositions = {0.0, -10, 45};
+    private final double[] pivotPositions = {0.0, -45, 45};
     private final double pivotKP = 0.1, pivotKI = 0.0, pivotKIZone = 0.0;
     private final double pivotTicksPerRotation = 30.309 * 4; //Reading from 0 to 90 degrees * 4 = full rotation
 
@@ -57,6 +57,7 @@ public class ArmSubsystem extends SubsystemBase {
 
         private double pivot;
         private double extension;
+        private final double DEADBAND = 0.5;
 
         ArmPositions(double pivot, double extension) {
             this.pivot = pivot;
@@ -95,6 +96,11 @@ public class ArmSubsystem extends SubsystemBase {
             armSubsystem.setPivotPosition(pivot);
             armSubsystem.setExtensionPosition(extension);
             currentPosition = this;
+        }
+
+        public boolean isInPosition() {
+            return Math.abs(armSubsystem.getPivotPosition() - currentPosition.pivot) < DEADBAND &&
+                    Math.abs(armSubsystem.getExtensionPosition() - currentPosition.extension) < DEADBAND;
         }
     }
 

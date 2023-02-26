@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AutoBalanceCommand;
+import frc.robot.commands.AutoStartingPlaceCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
@@ -107,5 +108,6 @@ public class RobotContainer extends A05RobotContainer
         //m_xboxA.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpExtensionDown));
 
         m_xboxA.whileTrue(new AutoBalanceCommand());
+        m_xboxB.onTrue(new AutoStartingPlaceCommand());
     }
 }
