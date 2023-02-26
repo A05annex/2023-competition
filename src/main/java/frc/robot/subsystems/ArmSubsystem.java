@@ -45,8 +45,8 @@ public class ArmSubsystem extends SubsystemBase {
     public enum ArmPositions {
         RETRACTED(0.0, 247.8),
         CONE_HIGH(15.5, 27.0),
-        CONE_MEDIUM(16.0, 173.97),
-        CUBE_HIGH(18.0, 56.0),
+        CONE_MEDIUM(16.0, 157.0),
+        CUBE_HIGH(17.0, 52.0),
         CUBE_MEDIUM(20.5,179.49),
         HYBRID(33.92, 247.8);
 
