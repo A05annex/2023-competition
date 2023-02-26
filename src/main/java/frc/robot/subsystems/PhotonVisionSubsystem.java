@@ -25,8 +25,6 @@ public class PhotonVisionSubsystem extends SubsystemBase {
 
     private double pitchOffsetAverage = 0.0;
     private final double pitchOffsetAverageAlpha = 0.8;
-
-    public PhotonPipelineResult lastTargetFrame = null;
     
     /**
      * Returns the Singleton instance of this PhotonVisionSubsystem. This static method
@@ -88,12 +86,13 @@ public class PhotonVisionSubsystem extends SubsystemBase {
      * Gets the newest frame and updates it to lastTargetFrame if there is a target in the shot
      * @param camera camera for which you would like to update the last frame
      */
-    public void updateLastTarget(@NotNull PhotonCamera camera) {
+    public PhotonPipelineResult updateLastTarget(@NotNull PhotonCamera camera, PhotonPipelineResult lastTargetFrame) {
         PhotonPipelineResult old = lastTargetFrame;
         lastTargetFrame = camera.getLatestResult();
         if(!lastTargetFrame.hasTargets()) {
             lastTargetFrame = old;
         }
+        return lastTargetFrame;
     }
 
     /**

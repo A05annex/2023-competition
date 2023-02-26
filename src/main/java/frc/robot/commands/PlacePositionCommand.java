@@ -15,7 +15,7 @@ import org.a05annex.util.Utl;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 
-public class SampleAprilTagPositionCommand extends A05DriveCommand {
+public class PlacePositionCommand extends A05DriveCommand {
 
     private final PhotonVisionSubsystem m_photonSubsystem = PhotonVisionSubsystem.getInstance();
     private final DriveSubsystem m_driveSubsystem = DriveSubsystem.getInstance();
@@ -28,14 +28,14 @@ public class SampleAprilTagPositionCommand extends A05DriveCommand {
     private final double speedSmoothingMultiplier = 1.6;
 
     // changing this will make the
-    private final double yawOffset = 0, areaOffset = 8.0;
+    private final double yawOffset = 4.48, areaOffset = 12.0;
 
     private final double yawThreshold = 0.025, areaThreshold = 0.1;
 
     private int ticksAligned = 0;
     private boolean alignedWithAprilTag = false;
 
-    public SampleAprilTagPositionCommand(XboxController xbox, A05Constants.DriverSettings driver) {
+    public PlacePositionCommand(XboxController xbox, A05Constants.DriverSettings driver) {
         super(xbox, driver);
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
@@ -49,7 +49,7 @@ public class SampleAprilTagPositionCommand extends A05DriveCommand {
         m_lastConditionedRotate = 0.0;
         alignedWithAprilTag = false;
         ticksAligned = 0;
-        m_driveSubsystem.setHeading(AngleConstantD.ZERO);
+        m_driveSubsystem.setHeading(AngleConstantD.PI);
         lastFrame = Constants.DRIVE_CAMERA.getLatestResult();
     }
 
@@ -64,10 +64,13 @@ public class SampleAprilTagPositionCommand extends A05DriveCommand {
             if(lastFrame.hasTargets()) {
                 m_photonSubsystem.calcYawOffsetAverage(lastFrame, -7.5, 7.5);
                 m_photonSubsystem.calcAreaOffsetAverage(lastFrame, 0.0, 14.0);
+
                 // Get the ATan2 of the yaw offset and the area offset to calculate a direction to drive in
                 // Uses methods to smooth area and yaw to account for indecisive vision processing
                 m_conditionedDirection.atan2(m_photonSubsystem.getYawOffsetAverage(-7.5, 7.5, yawOffset),
                         -m_photonSubsystem.getAreaOffsetAverage(0.0, 14.0, areaOffset));
+
+                m_conditionedDirection.add(AngleConstantD.DEG_180);
 
                 // Find how fast to move the robot (value between 0.0 - 1.0)
                 // puts both speeds to a power greater than 1 to slow down the robot as it closes in (speedSmoothingMultiplier)
@@ -84,24 +87,23 @@ public class SampleAprilTagPositionCommand extends A05DriveCommand {
                 m_conditionedSpeed = Utl.clip(m_conditionedSpeed, 0.0, 0.4);
 
                 // Set rotation to be the offset from straight
-                m_conditionedRotate = -NavX.getInstance().getHeading().getRadians() / AngleConstantD.TWO_PI.getRadians();
-
-                //update lastConditionedSpeed
-                m_lastConditionedSpeed = m_conditionedSpeed;
-                m_lastConditionedDirection = m_conditionedDirection;
-                m_lastConditionedRotate = m_conditionedRotate;
+                if(NavX.getInstance().getNavInfo().yaw.getDegrees() > 0) {
+                    m_conditionedRotate = -1.0/180.0 * Math.abs(NavX.getInstance().getNavInfo().yaw.getDegrees()) + 1;
+                } else {
+                    m_conditionedRotate = (1.0 / 180.0) * Math.abs(NavX.getInstance().getNavInfo().yaw.getDegrees()) - 1;
+                }
             }
             // if the A button is pressed but there was not a target in the last frame
             else {
                 // Drive using the last set speeds
                 m_conditionedSpeed = 0.0;
                 m_conditionedDirection = new AngleD(AngleUnit.RADIANS, 0.0);
-                m_conditionedRotate = 0.0;
-
-                m_lastConditionedSpeed = m_conditionedSpeed;
-                m_lastConditionedDirection = m_conditionedDirection;
-                m_lastConditionedRotate = m_conditionedRotate;
+                //m_conditionedRotate = 0.0;
             }
+
+            m_lastConditionedSpeed = m_conditionedSpeed;
+            m_lastConditionedDirection = m_conditionedDirection;
+            m_lastConditionedRotate = m_conditionedRotate;
 
             // Passes direction, speed, and rotation from above into the swerveDrive method which actually spins the wheels
             m_driveSubsystem.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);

@@ -11,6 +11,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.A05Robot;
+import org.a05annex.frc.NavX;
+import org.a05annex.util.AngleConstantD;
+
 import java.util.Collections;
 
 
@@ -60,7 +63,7 @@ public class Robot extends A05Robot
     /** This method is called once each time the robot enters Disabled mode. */
     @Override
     public void disabledInit() {}
-    
+
     
     @Override
     public void disabledPeriodic() {
@@ -110,6 +113,8 @@ public class Robot extends A05Robot
 
         SmartDashboard.putNumber("Current Pivot", ArmSubsystem.ArmPositions.currentPosition.getPivot());
         SmartDashboard.putNumber("Current Extension", ArmSubsystem.ArmPositions.currentPosition.getExtension());
+        SmartDashboard.putNumber("raw heading", NavX.getInstance().getNavInfo().yaw.getDegrees());
+        SmartDashboard.putNumber("calc value", ((NavX.getInstance().getNavInfo().yaw.getDegrees() + AngleConstantD.PI.getDegrees()) / AngleConstantD.TWO_PI.getDegrees()));
     }
     
     @Override
