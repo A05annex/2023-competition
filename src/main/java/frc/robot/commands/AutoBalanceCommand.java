@@ -18,7 +18,7 @@ public class AutoBalanceCommand extends CommandBase {
 
     // how fast should the robot drive (0.0 - 1.0) when trying to balance
     private final double m_speed = 0.15;
-    private final double m_angle = 12.0;
+    private final double m_angle = 10.0;
 
     // track during how many cycles (20ms) the robot was balanced
     private int ticksBalanced = 0;
@@ -51,11 +51,11 @@ public class AutoBalanceCommand extends CommandBase {
         m_pitch = NavX.getInstance().getNavInfo().roll; // set pitch again because getNavInfo does not auto update
         if (m_pitch.getDegrees() > m_angle) {
             // drive backward and reset ticks balanced when tipped forward
-            m_driveSubsystem.swerveDrive(AngleConstantD.ZERO, -m_speed, 0.0);
+            m_driveSubsystem.swerveDrive(AngleConstantD.ZERO, m_speed, 0.0);
             ticksBalanced = 0;
         } else if (m_pitch.getDegrees() < -m_angle) {
             // drive forward and reset ticks balanced when tipped backward
-            m_driveSubsystem.swerveDrive(AngleConstantD.ZERO, m_speed, 0.0);
+            m_driveSubsystem.swerveDrive(AngleConstantD.ZERO, -m_speed, 0.0);
             ticksBalanced = 0;
         } else {
             // Stop robot and increment ticks balanced while not at full tilt

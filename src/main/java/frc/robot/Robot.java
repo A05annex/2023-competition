@@ -77,7 +77,8 @@ public class Robot extends A05Robot
     {
         // Sets up autonomous command
         super.autonomousInit();
-        //TODO: Add other things here (setting limelight pipeline)
+        ArmSubsystem.getInstance().setExtensionPosition(ArmSubsystem.getInstance().getExtensionPosition());
+        ArmSubsystem.getInstance().setPivotPosition(ArmSubsystem.getInstance().getPivotPosition());
     }
     
     
