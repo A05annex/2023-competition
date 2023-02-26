@@ -90,6 +90,6 @@ public class RobotContainer extends A05RobotContainer
         m_xboxA.whileTrue(new SampleAprilTagPositionCommand(m_driveXbox, m_driver));
         m_xboxX.whileTrue(m_pipelineScanCommand);
         m_xboxB.whileTrue(new AbsoluteTranslateCommand(0.0, 1.0));
-        m_xboxY.whileTrue(new OneMeterDriveCommand());
+        m_xboxY.onTrue(new OneMeterDriveCommand());
     }
 }
