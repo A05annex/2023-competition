@@ -8,6 +8,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DigitalInput;
 import org.a05annex.frc.A05Constants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.photonvision.PhotonCamera;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -30,6 +31,15 @@ public final class Constants extends A05Constants
 
     // Port 0 is whichever controller was plugged in first, not a specific port.
     //DRIVE_XBOX_PORT = 0 (Set in A05Constants) Leave commented
+    public static final int ALT_XBOX_PORT = 1; // 2nd Controller for more controls
+
+    public static final PhotonCamera DRIVE_CAMERA = new PhotonCamera("Camera 1");
+    public static final PhotonCamera CLAW_CAMERA = new PhotonCamera("Camera 2");
+
+    /*
+        DRIVE_XBOX_PORT = 0 (Set in A05Constants)
+        Port 0 is whichever controller was plugged in first, not a specific port.
+    */
     public static final int ALT_XBOX_PORT = 1; // 2nd Controller for more controls
 
     // kP for keeping drive at the same orientation

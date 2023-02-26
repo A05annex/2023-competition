@@ -1,13 +1,17 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.commands.A05DriveCommand;
+import org.a05annex.frc.subsystems.DriveSubsystem;
 
 /**
  * Drive command is here because you will likely need to override the serve (targeting, competition specific reason)
  */
 public class DriveCommand extends A05DriveCommand {
+
+    private final DriveSubsystem driveSubsystem = DriveSubsystem.getInstance();
 
     /**
      * Default command for DriveSubsystem. Left stick moves the robot field-relatively, and right stick X rotates.
@@ -18,6 +22,7 @@ public class DriveCommand extends A05DriveCommand {
         super(xbox, driver);
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
+        addRequirements(this.driveSubsystem);
     }
 
     @Override
@@ -27,12 +32,7 @@ public class DriveCommand extends A05DriveCommand {
 
     @Override
     public void execute() {
-        //TODO: If you want to do special control like targeting, comment out super.execute() and add your own control code
-        //TODO: Refer to the documentation. Much of the code you want to run is already packaged in callable methods
         //This runs the default swerve calculations for xbox control
-        //super.execute();
-
-        conditionStick();
-        m_driveSubsystem.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);
+        super.execute();
     }
 }

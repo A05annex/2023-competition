@@ -14,7 +14,12 @@ import frc.robot.commands.AutoStartingPlaceCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
+import frc.robot.commands.OneMeterDriveCommand;
+import frc.robot.commands.PipelineScanCommand;
+import frc.robot.commands.SampleAprilTagPositionCommand;
+import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.a05annex.frc.A05RobotContainer;
+import org.a05annex.frc.commands.AbsoluteTranslateCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -30,10 +35,13 @@ public class RobotContainer extends A05RobotContainer
     // Subsystems
     ArmSubsystem m_armSubsystem = ArmSubsystem.getInstance();
     ClawSubsystem m_clawSubsystem = ClawSubsystem.getInstance();
+    PhotonVisionSubsystem m_photonVisionSubsystem = PhotonVisionSubsystem.getInstance();
 
     // Commands
 
-    //TODO: Uncomment if you have alternate xbox controller, you need to uncomment a constant too
+    SampleAprilTagPositionCommand m_sampleAprilTagPositionCommand;
+    PipelineScanCommand m_pipelineScanCommand;
+
     XboxController m_altXbox = new XboxController(Constants.ALT_XBOX_PORT);
 
     // controller button declarations
@@ -67,6 +75,10 @@ public class RobotContainer extends A05RobotContainer
 
         m_driveCommand = new DriveCommand(m_driveXbox, m_driver);
 
+        m_pipelineScanCommand = new PipelineScanCommand(Constants.CLAW_CAMERA);
+
+        m_sampleAprilTagPositionCommand = new SampleAprilTagPositionCommand(m_driveXbox, m_driver);
+
         m_driveSubsystem.setDefaultCommand(m_driveCommand);
 
         if (m_autoCommand != null) {
@@ -91,11 +103,16 @@ public class RobotContainer extends A05RobotContainer
 
         m_xboxBack.onTrue(new InstantCommand(m_navx::initializeHeadingAndNav)); // Reset the NavX field relativity
 
+        m_xboxX.whileTrue(new SampleAprilTagPositionCommand(m_driveXbox, m_driver));
+        m_xboxB.whileTrue(new AbsoluteTranslateCommand(0.0, 1.0));
+        m_xboxY.onTrue(new OneMeterDriveCommand());
+
         m_altXboxA.onTrue(new InstantCommand(m_clawSubsystem::open));
         m_altXboxA.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when the button is released
         m_altXboxB.onTrue(new InstantCommand(m_clawSubsystem::close));
         m_altXboxB.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when the button is released
 
+        //Stop the arm motors if any bumper is pressed
         m_xboxLeftBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
         m_xboxRightBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
         m_altXboxLeftBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
@@ -108,6 +125,5 @@ public class RobotContainer extends A05RobotContainer
         //m_xboxA.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpExtensionDown));
 
         m_xboxA.whileTrue(new AutoBalanceCommand());
-        m_xboxB.onTrue(new AutoStartingPlaceCommand());
     }
 }

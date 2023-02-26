@@ -67,9 +67,9 @@ public class Robot extends A05Robot
         SmartDashboard.putNumber("Pivot Position", ArmSubsystem.getInstance().getPivotPosition());
         SmartDashboard.putNumber("Extension Position", ArmSubsystem.getInstance().getExtensionPosition());
         SmartDashboard.putNumber("Ext. Calc. Pos.", ArmSubsystem.getInstance().pivotToExtension());
-        //A05Constants.printIDs();
+        A05Constants.printIDs();
     }
-    
+
     
     /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
     @Override
