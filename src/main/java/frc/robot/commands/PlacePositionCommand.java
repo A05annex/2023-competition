@@ -54,7 +54,6 @@ public class PlacePositionCommand extends A05DriveCommand {
         ticksAligned = 0;
         m_driveSubsystem.setHeading(AngleConstantD.PI);
         lastFrame = Constants.DRIVE_CAMERA.getLatestResult();
-        SmartDashboard.putNumber("test", 0);
     }
 
     @Override
@@ -129,7 +128,6 @@ public class PlacePositionCommand extends A05DriveCommand {
             //m_driveSubsystem.translate(0.0, 1.0);
             m_driveSubsystem.swerveDrive(AngleConstantD.ZERO, 0.0, 0.0);
             isFinished = true;
-            SmartDashboard.putNumber("test", 1);
         }
     }
 
@@ -141,6 +139,5 @@ public class PlacePositionCommand extends A05DriveCommand {
 
     @Override
     public void end(boolean interrupted) {
-        SmartDashboard.putNumber("test", 2);
     }
 }

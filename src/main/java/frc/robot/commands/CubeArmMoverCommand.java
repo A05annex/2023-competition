@@ -1,23 +1,24 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
-import org.a05annex.frc.subsystems.DriveSubsystem;
 
 
-public class CubePlaceCommand extends CommandBase {
+public class CubeArmMoverCommand extends CommandBase {
     private final ArmSubsystem armSubsystem = ArmSubsystem.getInstance();
     private final ClawSubsystem clawSubsystem = ClawSubsystem.getInstance();
-    private final DriveSubsystem driveSubsystem = DriveSubsystem.getInstance();
+
     private final XboxController altXbox;
     private ArmSubsystem.ArmPositions position;
 
 
-    public CubePlaceCommand(XboxController altXbox) {
+    public CubeArmMoverCommand(XboxController altXbox) {
         this.altXbox = altXbox;
-        addRequirements(this.armSubsystem, this.clawSubsystem, this.driveSubsystem);
+
+        addRequirements(this.armSubsystem, this.clawSubsystem);
     }
 
     @Override
@@ -29,20 +30,20 @@ public class CubePlaceCommand extends CommandBase {
         } else if (altXbox.getPOV() == 180) {
             position = ArmSubsystem.ArmPositions.HYBRID;
         }
+
+        position.goTo();
     }
 
     @Override
-    public void execute() {
-
-    }
+    public void execute() {}
 
     @Override
     public boolean isFinished() {
-        return false;
+        return position.isInPosition();
     }
 
     @Override
     public void end(boolean interrupted) {
-
+        clawSubsystem.open();
     }
 }
