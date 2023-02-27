@@ -134,6 +134,7 @@ public class ArmSubsystem extends SubsystemBase {
         setPID(m_extensionPID, extensionKP, extensionKI, extensionKIZone);
 
         m_pivotPID.setOutputRange(-0.2, 0.2);
+        m_pivot.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
 

@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.*;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
-import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.a05annex.frc.A05RobotContainer;
 import org.a05annex.frc.commands.AbsoluteTranslateCommand;
 
@@ -120,5 +119,13 @@ public class RobotContainer extends A05RobotContainer
 
         //m_xboxA.whileTrue(new AutoBalanceCommand());
         m_xboxA.onTrue(new AutoStartingPlaceCommand());
+
+
+        // alt and drive B = retracted
+        // alt back = manual toggle
+        // alt x = cube place
+        // alt y = cone place
+        // drive start = robot relative toggle
+        // alt and drive a = claw release
     }
 }
