@@ -9,14 +9,9 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.AutoBalanceCommand;
-import frc.robot.commands.AutoStartingPlaceCommand;
-import frc.robot.commands.DriveCommand;
+import frc.robot.commands.*;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
-import frc.robot.commands.OneMeterDriveCommand;
-import frc.robot.commands.PipelineScanCommand;
-import frc.robot.commands.SampleAprilTagPositionCommand;
 import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.a05annex.frc.A05RobotContainer;
 import org.a05annex.frc.commands.AbsoluteTranslateCommand;
@@ -35,7 +30,6 @@ public class RobotContainer extends A05RobotContainer
     // Subsystems
     ArmSubsystem m_armSubsystem = ArmSubsystem.getInstance();
     ClawSubsystem m_clawSubsystem = ClawSubsystem.getInstance();
-    PhotonVisionSubsystem m_photonVisionSubsystem = PhotonVisionSubsystem.getInstance();
 
     // Commands
 
@@ -103,9 +97,9 @@ public class RobotContainer extends A05RobotContainer
 
         m_xboxBack.onTrue(new InstantCommand(m_navx::initializeHeadingAndNav)); // Reset the NavX field relativity
 
-        m_xboxX.whileTrue(new SampleAprilTagPositionCommand(m_driveXbox, m_driver));
+        m_xboxX.whileTrue(new PlacePositionCommand(m_driveXbox, m_driver));
         m_xboxB.whileTrue(new AbsoluteTranslateCommand(0.0, 1.0));
-        m_xboxY.onTrue(new OneMeterDriveCommand());
+        m_xboxY.whileTrue(new CubePlaceCommandGroup(m_altXbox, m_driver));
 
         m_altXboxA.onTrue(new InstantCommand(m_clawSubsystem::open));
         m_altXboxA.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when the button is released
@@ -124,6 +118,7 @@ public class RobotContainer extends A05RobotContainer
         //m_xboxB.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpExtensionUp));
         //m_xboxA.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpExtensionDown));
 
-        m_xboxA.whileTrue(new AutoBalanceCommand());
+        //m_xboxA.whileTrue(new AutoBalanceCommand());
+        m_xboxA.onTrue(new AutoStartingPlaceCommand());
     }
 }

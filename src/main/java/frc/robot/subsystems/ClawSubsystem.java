@@ -35,7 +35,7 @@ public class ClawSubsystem extends SubsystemBase {
     private ClawSubsystem() {}
 
     public void open() {
-        solenoid.set(DoubleSolenoid.Value.kReverse);
+        solenoid.set(DoubleSolenoid.Value.kForward);
     }
 
     public void off() {
@@ -43,7 +43,7 @@ public class ClawSubsystem extends SubsystemBase {
     }
 
     public void close() {
-        solenoid.set(DoubleSolenoid.Value.kForward);
+        solenoid.set(DoubleSolenoid.Value.kReverse);
     }
 }
 

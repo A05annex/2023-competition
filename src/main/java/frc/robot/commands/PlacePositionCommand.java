@@ -25,7 +25,7 @@ public class PlacePositionCommand extends A05DriveCommand {
     private final double maxSpeedDelta = 0.075;
 
     // puts movement to the power of this var
-    private final double speedSmoothingMultiplier = 1.6;
+    private final double speedSmoothingMultiplier = 1.9;
 
     // changing this will make the
     private final double yawOffset = 4.48, areaOffset = 12.0;
@@ -34,6 +34,8 @@ public class PlacePositionCommand extends A05DriveCommand {
 
     private int ticksAligned = 0;
     private boolean alignedWithAprilTag = false;
+
+    private boolean isFinished = false;
 
     public PlacePositionCommand(XboxController xbox, A05Constants.DriverSettings driver) {
         super(xbox, driver);
@@ -48,9 +50,11 @@ public class PlacePositionCommand extends A05DriveCommand {
         m_lastConditionedSpeed = 0.0;
         m_lastConditionedRotate = 0.0;
         alignedWithAprilTag = false;
+        isFinished = false;
         ticksAligned = 0;
         m_driveSubsystem.setHeading(AngleConstantD.PI);
         lastFrame = Constants.DRIVE_CAMERA.getLatestResult();
+        SmartDashboard.putNumber("test", 0);
     }
 
     @Override
@@ -84,7 +88,7 @@ public class PlacePositionCommand extends A05DriveCommand {
                         m_lastConditionedSpeed + maxSpeedDelta);
 
                 // Limit to half speed to make sure the camera can always see the AprilTag
-                m_conditionedSpeed = Utl.clip(m_conditionedSpeed, 0.0, 0.4);
+                m_conditionedSpeed = Utl.clip(m_conditionedSpeed, 0.0, 0.2);
 
                 // Set rotation to be the offset from straight
                 if(NavX.getInstance().getNavInfo().yaw.getDegrees() > 0) {
@@ -124,17 +128,19 @@ public class PlacePositionCommand extends A05DriveCommand {
         else {
             //m_driveSubsystem.translate(0.0, 1.0);
             m_driveSubsystem.swerveDrive(AngleConstantD.ZERO, 0.0, 0.0);
-            SmartDashboard.putBoolean("aligned", alignedWithAprilTag);
+            isFinished = true;
+            SmartDashboard.putNumber("test", 1);
         }
     }
 
     @Override
     public boolean isFinished() {
-        return false;
+        //SmartDashboard.putBoolean("aligned", isFinished);
+        return isFinished;
     }
 
     @Override
     public void end(boolean interrupted) {
-
+        SmartDashboard.putNumber("test", 2);
     }
 }

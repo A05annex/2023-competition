@@ -80,8 +80,8 @@ public class Robot extends A05Robot
     {
         // Sets up autonomous command
         super.autonomousInit();
-        ArmSubsystem.getInstance().setExtensionPosition(ArmSubsystem.getInstance().getExtensionPosition());
-        ArmSubsystem.getInstance().setPivotPosition(ArmSubsystem.getInstance().getPivotPosition());
+        //ArmSubsystem.getInstance().setExtensionPosition(ArmSubsystem.getInstance().getExtensionPosition());
+        //ArmSubsystem.getInstance().setPivotPosition(ArmSubsystem.getInstance().getPivotPosition());
     }
     
     
@@ -115,6 +115,7 @@ public class Robot extends A05Robot
         SmartDashboard.putNumber("Current Extension", ArmSubsystem.ArmPositions.currentPosition.getExtension());
         SmartDashboard.putNumber("raw heading", NavX.getInstance().getNavInfo().yaw.getDegrees());
         SmartDashboard.putNumber("calc value", ((NavX.getInstance().getNavInfo().yaw.getDegrees() + AngleConstantD.PI.getDegrees()) / AngleConstantD.TWO_PI.getDegrees()));
+        SmartDashboard.putData(ArmSubsystem.getInstance());
     }
     
     @Override
