@@ -43,7 +43,9 @@ public class RobotContainer extends A05RobotContainer
     JoystickButton m_xboxB = new JoystickButton(m_driveXbox, 2);
     JoystickButton m_altXboxB = new JoystickButton(m_altXbox, 2);
     JoystickButton m_xboxX = new JoystickButton(m_driveXbox, 3);
+    JoystickButton m_altXboxX = new JoystickButton(m_altXbox, 3);
     JoystickButton m_xboxY = new JoystickButton(m_driveXbox, 4);
+    JoystickButton m_altXboxY = new JoystickButton(m_altXbox, 4);
     JoystickButton m_xboxLeftBumper = new JoystickButton(m_driveXbox, 5);
     JoystickButton m_altXboxLeftBumper = new JoystickButton(m_altXbox, 5);
     JoystickButton m_xboxRightBumper = new JoystickButton(m_driveXbox, 6);
@@ -97,8 +99,8 @@ public class RobotContainer extends A05RobotContainer
         m_xboxBack.onTrue(new InstantCommand(m_navx::initializeHeadingAndNav)); // Reset the NavX field relativity
 
         m_xboxX.whileTrue(new PlacePositionCommand(m_driveXbox, m_driver));
-        m_xboxB.whileTrue(new AbsoluteTranslateCommand(0.0, 1.0));
-        m_xboxY.whileTrue(new CubePlaceCommandGroup(m_altXbox, m_driver));
+        //m_xboxB.whileTrue(new AbsoluteTranslateCommand(0.0, 1.0));
+        //m_xboxY.whileTrue(new CubePlaceCommandGroup(m_altXbox, m_driver));
 
         m_altXboxA.onTrue(new InstantCommand(m_clawSubsystem::open));
         m_altXboxA.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when the button is released
@@ -112,13 +114,18 @@ public class RobotContainer extends A05RobotContainer
         m_altXboxRightBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
 
 
-        //m_xboxY.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpPivotUp));
-        //m_xboxX.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpPivotDown));
-        //m_xboxB.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpExtensionUp));
-        //m_xboxA.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpExtensionDown));
+//        m_xboxY.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpPivotUp));
+//        m_xboxX.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpPivotDown));
+//        m_xboxB.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpExtensionUp));
+//        m_xboxA.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpExtensionDown));
 
         //m_xboxA.whileTrue(new AutoBalanceCommand());
-        m_xboxA.onTrue(new AutoStartingPlaceCommand());
+        //m_xboxA.onTrue(new AutoStartingPlaceCommand());
+
+        m_altXboxY.whileTrue(new ConePlaceCommandGroup(m_altXbox, m_driver));
+        m_altXboxY.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
+        m_altXboxX.whileTrue(new CubePlaceCommandGroup(m_altXbox, m_driver));
+        m_altXboxX.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
 
 
         // alt and drive B = retracted

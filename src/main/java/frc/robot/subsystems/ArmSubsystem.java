@@ -20,7 +20,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final SparkMaxPIDController m_pivotPID = m_pivot.getPIDController();
     // Array of positions. [starting position, min position, max position]
     private final double[] pivotPositions = {0.0, -45, 45};
-    private final double pivotKP = 0.1, pivotKI = 0.0, pivotKIZone = 0.0;
+    private final double pivotKP = 0.11, pivotKI = 0.001, pivotKIZone = 0.5;
     private final double pivotTicksPerRotation = 30.309 * 4; //Reading from 0 to 90 degrees * 4 = full rotation
 
 
@@ -31,7 +31,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final SparkMaxPIDController m_extensionPID = m_extension.getPIDController();
     // Array of positions. [starting position, min position, max position]
     private final double[] extensionPositions = {247.8, 0.0, 247.8};
-    private final double extensionKP = 0.3, extensionKI = 0.0, extensionKIZone = 0.0;
+    private final double extensionKP = 0.4, extensionKI = 0.0, extensionKIZone = 0.0;
     private final double extensionTicksPerInch = 3.7989887133;
 
     private final double STOP_DEADBAND = 0.25;
@@ -44,11 +44,13 @@ public class ArmSubsystem extends SubsystemBase {
      */
     public enum ArmPositions {
         RETRACTED(0.0, 247.8),
-        CONE_HIGH(15.5, 27.0),
+        CONE_HIGH(15.5, 23.0),
         CONE_MEDIUM(16.0, 157.0),
         CUBE_HIGH(17.0, 52.0),
         CUBE_MEDIUM(20.5,179.49),
-        HYBRID(33.92, 247.8);
+        HYBRID(33.92, 247.8),
+        SUBSTATION_CUBE(17, 153),
+        SUBSTATION_CONE(17, 136);
 
         private final ArmSubsystem armSubsystem = ArmSubsystem.getInstance();
 
@@ -88,7 +90,7 @@ public class ArmSubsystem extends SubsystemBase {
         }
 
         public static void bumpExtensionDown() {
-            currentPosition.extension += bump;
+            currentPosition.extension -= bump;
             currentPosition.goTo();
         }
 

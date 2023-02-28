@@ -13,7 +13,7 @@ public class PipelineScanCommand extends CommandBase {
     private final PhotonCamera camera;
 
     // Stores the current pipeline
-    private PhotonVisionSubsystem.PIPELINES currentPipeline;
+    private PhotonVisionSubsystem.PIPELINES currentPipeline = PhotonVisionSubsystem.PIPELINES.clawCurrent;
 
     // Counter to keep track of how many ticks it's been since there has been no target
     private int ticksLost;

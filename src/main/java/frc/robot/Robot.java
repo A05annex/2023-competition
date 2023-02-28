@@ -113,9 +113,7 @@ public class Robot extends A05Robot
 
         SmartDashboard.putNumber("Current Pivot", ArmSubsystem.ArmPositions.currentPosition.getPivot());
         SmartDashboard.putNumber("Current Extension", ArmSubsystem.ArmPositions.currentPosition.getExtension());
-        SmartDashboard.putNumber("raw heading", NavX.getInstance().getNavInfo().yaw.getDegrees());
-        SmartDashboard.putNumber("calc value", ((NavX.getInstance().getNavInfo().yaw.getDegrees() + AngleConstantD.PI.getDegrees()) / AngleConstantD.TWO_PI.getDegrees()));
-        SmartDashboard.putData(ArmSubsystem.getInstance());
+        SmartDashboard.putNumber("test", NavX.getInstance().getHeadingInfo().getClosestUpField().getDegrees());
     }
     
     @Override

@@ -73,6 +73,8 @@ public class PhotonVisionSubsystem extends SubsystemBase {
         CONE(1, "Cone"),
         APRILTAGS(0, "AprilTag");
 
+        public static PIPELINES clawCurrent = CONE;
+
         public final int index;
         public final String name;
 

@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants;
 import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.a05annex.frc.A05Constants;
-import org.a05annex.frc.NavX;
 import org.a05annex.frc.commands.A05DriveCommand;
 import org.a05annex.frc.subsystems.DriveSubsystem;
 import org.a05annex.util.AngleConstantD;
@@ -14,7 +13,7 @@ import org.a05annex.util.Utl;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 
-public class PlacePositionCommand extends A05DriveCommand {
+public class SubstationPositionCommand extends A05DriveCommand {
 
     private final PhotonVisionSubsystem m_photonSubsystem = PhotonVisionSubsystem.getInstance();
     private final DriveSubsystem m_driveSubsystem = DriveSubsystem.getInstance();
@@ -33,7 +32,7 @@ public class PlacePositionCommand extends A05DriveCommand {
     private final double areaMin = 0.0, areaMax = 5;
 
     // What target values should the robot try to drive to
-    private final double yawOffset = 9.47, areaOffset = 2.1;
+    private final double yawOffset = -17, areaOffset = 1.92;
 
     //
     private final double yawThreshold = 0.05, areaThreshold = 0.1;
@@ -43,7 +42,7 @@ public class PlacePositionCommand extends A05DriveCommand {
 
     private boolean isFinished = false;
 
-    public PlacePositionCommand(XboxController xbox, A05Constants.DriverSettings driver) {
+    public SubstationPositionCommand(XboxController xbox, A05Constants.DriverSettings driver) {
         super(xbox, driver);
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
@@ -78,9 +77,6 @@ public class PlacePositionCommand extends A05DriveCommand {
                 m_conditionedDirection.atan2(m_photonSubsystem.getYawOffsetAverage(yawMin, yawMax, yawOffset),
                         -m_photonSubsystem.getAreaOffsetAverage(areaMin, areaMax, areaOffset));
 
-                // Add pi because you are moving up field
-                m_conditionedDirection.add(AngleConstantD.PI);
-
                 // Find how fast to move the robot (value between 0.0 - 1.0)
                 // puts both speeds to a power greater than 1 to slow down the robot as it closes in (speedSmoothingMultiplier)
                 // Uses methods to smooth area and yaw to account for indecisive vision processing
@@ -105,7 +101,7 @@ public class PlacePositionCommand extends A05DriveCommand {
             m_lastConditionedSpeed = m_conditionedSpeed;
             m_lastConditionedDirection = m_conditionedDirection;
 
-            m_navx.setExpectedHeading(m_navx.getHeadingInfo().getClosestUpField());
+            m_navx.setExpectedHeading(m_navx.getHeadingInfo().getClosestDownField());
             m_conditionedRotate = new AngleD(m_navx.getHeadingInfo().expectedHeading).subtract(new AngleD(m_navx.getHeadingInfo().heading))
                     .getRadians() * A05Constants.getDriveOrientationkp();
 
