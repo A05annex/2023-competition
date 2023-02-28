@@ -15,7 +15,7 @@ public class ConePlaceCommandGroup extends SequentialCommandGroup {
         super(new PlacePositionCommand(altXbox, driver),
                 new ConditionalCommand(new AbsoluteTranslateCommand(0.0, -0.61), new AbsoluteTranslateCommand(0.0, 0.57), ConePlaceCommandGroup::direction),
                 new AbsoluteTranslateCommand(0.70, 0.0).withTimeout(1.5),
-                new ConeArmMoverCommand(altXbox));
+                new ConeArmMoveCommand(altXbox));
         SmartDashboard.putNumber("pov", altXbox.getPOV());
         ConePlaceCommandGroup.altXbox = altXbox;
     }

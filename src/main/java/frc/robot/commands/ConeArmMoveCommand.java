@@ -6,14 +6,14 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
 
 
-public class ConeArmMoverCommand extends CommandBase {
+public class ConeArmMoveCommand extends CommandBase {
     private final ArmSubsystem armSubsystem = ArmSubsystem.getInstance();
     private final ClawSubsystem clawSubsystem = ClawSubsystem.getInstance();
 
     private final XboxController altXbox;
     private ArmSubsystem.ArmPositions position;
 
-    public ConeArmMoverCommand(XboxController altXbox) {
+    public ConeArmMoveCommand(XboxController altXbox) {
         this.altXbox = altXbox;
 
         addRequirements(this.armSubsystem, this.clawSubsystem);
@@ -44,6 +44,8 @@ public class ConeArmMoverCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        clawSubsystem.open();
+        if (!interrupted) {
+            clawSubsystem.open();
+        }
     }
 }

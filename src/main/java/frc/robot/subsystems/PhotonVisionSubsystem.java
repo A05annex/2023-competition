@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.util.Utl;
 import org.jetbrains.annotations.NotNull;
@@ -42,11 +43,7 @@ public class PhotonVisionSubsystem extends SubsystemBase {
      * the {@link #getInstance()} method to get the singleton instance.
      */
     private PhotonVisionSubsystem() {
-        // TODO: Set the default command, if any, for this subsystem by calling setDefaultCommand(command)
-        //       in the constructor or in the robot coordination class, such as RobotContainer.
-        //       Also, you can call addChild(name, sendableChild) to associate sendables with the subsystem
-        //       such as SpeedControllers, Encoders, DigitalInputs, etc.
-        //setPipeline(Constants.DRIVE_CAMERA, PIPELINES.APRILTAGS);
+        setPipeline(Constants.CLAW_CAMERA, PIPELINES.CONE);
     }
 
     /**
@@ -65,6 +62,9 @@ public class PhotonVisionSubsystem extends SubsystemBase {
      */
     public void setPipeline(@NotNull PhotonCamera camera, @NotNull PIPELINES pipeline) {
         camera.setPipelineIndex(pipeline.index);
+        if (camera == Constants.CLAW_CAMERA) {
+            PIPELINES.clawCurrent = pipeline;
+        }
     }
 
      // enum to store pipelines by name
@@ -240,11 +240,11 @@ public class PhotonVisionSubsystem extends SubsystemBase {
             }
             return null;
         } else if(pipeline == 0) {
-            return PIPELINES.CUBE;
+            return PIPELINES.APRILTAGS;
         } else if(pipeline == 1) {
             return  PIPELINES.CONE;
         } else {
-            return PIPELINES.APRILTAGS;
+            return PIPELINES.CUBE;
         }
     }
 }

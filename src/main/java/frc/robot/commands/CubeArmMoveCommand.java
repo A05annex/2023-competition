@@ -1,13 +1,12 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
 
 
-public class CubeArmMoverCommand extends CommandBase {
+public class CubeArmMoveCommand extends CommandBase {
     private final ArmSubsystem armSubsystem = ArmSubsystem.getInstance();
     private final ClawSubsystem clawSubsystem = ClawSubsystem.getInstance();
 
@@ -15,7 +14,7 @@ public class CubeArmMoverCommand extends CommandBase {
     private ArmSubsystem.ArmPositions position;
 
 
-    public CubeArmMoverCommand(XboxController altXbox) {
+    public CubeArmMoveCommand(XboxController altXbox) {
         this.altXbox = altXbox;
 
         addRequirements(this.armSubsystem, this.clawSubsystem);
@@ -44,6 +43,8 @@ public class CubeArmMoverCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        clawSubsystem.open();
+        if (!interrupted) {
+            clawSubsystem.open();
+        }
     }
 }

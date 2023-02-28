@@ -8,7 +8,7 @@ import org.a05annex.frc.A05Constants;
 public class CubePlaceCommandGroup extends SequentialCommandGroup {
 
     public CubePlaceCommandGroup(XboxController altXbox, A05Constants.DriverSettings driver) {
-        super(new PlacePositionCommand(altXbox , driver), new CubeArmMoverCommand(altXbox));
+        super(new PlacePositionCommand(altXbox , driver), new CubeArmMoveCommand(altXbox));
     }
 
 }
