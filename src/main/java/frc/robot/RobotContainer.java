@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.*;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
+import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.a05annex.frc.A05RobotContainer;
-import org.a05annex.frc.commands.AbsoluteTranslateCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -27,8 +27,8 @@ public class RobotContainer extends A05RobotContainer
     // NavX, DriveSubsystem, DriveXbox have already been made in A05RobotContainer
 
     // Subsystems
-    ArmSubsystem m_armSubsystem = ArmSubsystem.getInstance();
     ClawSubsystem m_clawSubsystem = ClawSubsystem.getInstance();
+    PhotonVisionSubsystem photonSubsystem = PhotonVisionSubsystem.getInstance();
 
     // Commands
 
@@ -38,25 +38,26 @@ public class RobotContainer extends A05RobotContainer
     XboxController m_altXbox = new XboxController(Constants.ALT_XBOX_PORT);
 
     // controller button declarations
-    JoystickButton m_xboxA = new JoystickButton(m_driveXbox, 1);
-    JoystickButton m_altXboxA = new JoystickButton(m_altXbox, 1);
-    JoystickButton m_xboxB = new JoystickButton(m_driveXbox, 2);
-    JoystickButton m_altXboxB = new JoystickButton(m_altXbox, 2);
-    JoystickButton m_xboxX = new JoystickButton(m_driveXbox, 3);
-    JoystickButton m_altXboxX = new JoystickButton(m_altXbox, 3);
-    JoystickButton m_xboxY = new JoystickButton(m_driveXbox, 4);
-    JoystickButton m_altXboxY = new JoystickButton(m_altXbox, 4);
-    JoystickButton m_xboxLeftBumper = new JoystickButton(m_driveXbox, 5);
-    JoystickButton m_altXboxLeftBumper = new JoystickButton(m_altXbox, 5);
-    JoystickButton m_xboxRightBumper = new JoystickButton(m_driveXbox, 6);
-    JoystickButton m_altXboxRightBumper = new JoystickButton(m_altXbox, 6);
-    JoystickButton m_xboxBack = new JoystickButton(m_driveXbox, 7);
-    JoystickButton m_xboxStart = new JoystickButton(m_driveXbox, 8);
-    JoystickButton m_xboxLeftStickPress = new JoystickButton(m_driveXbox, 9);
-    JoystickButton m_xboxRightStickPress = new JoystickButton(m_driveXbox, 10);
-
-    // alt xbox controller buttons
-    //JoystickButton m_altXboxA = new JoystickButton(m_altXbox, 1);
+    @SuppressWarnings("unused")
+    JoystickButton
+            m_xboxA = new JoystickButton(m_driveXbox, 1),
+            m_altXboxA = new JoystickButton(m_altXbox, 1),
+            m_xboxB = new JoystickButton(m_driveXbox, 2),
+            m_altXboxB = new JoystickButton(m_altXbox, 2),
+            m_xboxX = new JoystickButton(m_driveXbox, 3),
+            m_altXboxX = new JoystickButton(m_altXbox, 3),
+            m_xboxY = new JoystickButton(m_driveXbox, 4),
+            m_altXboxY = new JoystickButton(m_altXbox, 4),
+            m_xboxLeftBumper = new JoystickButton(m_driveXbox, 5),
+            m_altXboxLeftBumper = new JoystickButton(m_altXbox, 5),
+            m_xboxRightBumper = new JoystickButton(m_driveXbox, 6),
+            m_altXboxRightBumper = new JoystickButton(m_altXbox, 6),
+            m_xboxBack = new JoystickButton(m_driveXbox, 7),
+            m_altXboxBack = new JoystickButton(m_altXbox, 7),
+            m_xboxStart = new JoystickButton(m_driveXbox, 8),
+            m_altXboxStart = new JoystickButton(m_altXbox, 8),
+            m_xboxLeftStickPress = new JoystickButton(m_driveXbox, 9),
+            m_xboxRightStickPress = new JoystickButton(m_driveXbox, 10);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
@@ -96,43 +97,57 @@ public class RobotContainer extends A05RobotContainer
         // Add button to command mappings here.
         // See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
 
-        m_xboxBack.onTrue(new InstantCommand(m_navx::initializeHeadingAndNav)); // Reset the NavX field relativity
+        // Reset field relative to current robot heading when drive Back is pressed
+        m_xboxBack.onTrue(new InstantCommand(m_navx::initializeHeadingAndNav));
 
-        m_xboxX.whileTrue(new PlacePositionCommand(m_driveXbox, m_driver));
-        //m_xboxB.whileTrue(new AbsoluteTranslateCommand(0.0, 1.0));
-        //m_xboxY.whileTrue(new CubePlaceCommandGroup(m_altXbox, m_driver));
+        // Toggle between robot and field relative when drive Start is pressed
+        m_xboxStart.onTrue(new InstantCommand(m_driveSubsystem::toggleDriveMode));
 
-        m_altXboxA.onTrue(new InstantCommand(m_clawSubsystem::open));
-        m_altXboxA.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when the button is released
-        m_altXboxB.onTrue(new InstantCommand(m_clawSubsystem::close));
-        m_altXboxB.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when the button is released
+        m_xboxLeftBumper.whileTrue(new FaceDownFieldCommand(m_driveXbox, m_driver));
+        m_xboxRightBumper.whileTrue(new FaceUpFieldCommand(m_driveXbox, m_driver));
 
-        //Stop the arm motors if any bumper is pressed
-        m_xboxLeftBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
-        m_xboxRightBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
-        m_altXboxLeftBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
-        m_altXboxRightBumper.onTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
+        // Retract and go upright with the arm when either controller's B button is pressed
+        m_xboxB.onTrue(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
+        m_altXboxB.onTrue(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
 
 
-//        m_xboxY.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpPivotUp));
-//        m_xboxX.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpPivotDown));
-//        m_xboxB.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpExtensionUp));
-//        m_xboxA.onTrue(new InstantCommand(ArmSubsystem.ArmPositions::bumpExtensionDown));
-
-        //m_xboxA.whileTrue(new AutoBalanceCommand());
-        //m_xboxA.onTrue(new AutoStartingPlaceCommand());
-
+        // Do the Cone Place Sequence while alt Y is pressed, go to retracted when it's released
         m_altXboxY.whileTrue(new ConePlaceCommandGroup(m_altXbox, m_driver));
         m_altXboxY.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
+
+        // Do the Cube Place Sequence while alt X is pressed, go to retracted when it's released
         m_altXboxX.whileTrue(new CubePlaceCommandGroup(m_altXbox, m_driver));
         m_altXboxX.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
 
+        // Do the Substation Pickup Sequence while alt X is pressed, go to retracted when it's released
+        m_altXboxA.whileTrue(new SubstationPickUpCommandGroup(m_altXbox, m_driver));
+        m_altXboxA.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
 
-        // alt and drive B = retracted
-        // alt back = manual toggle
-        // alt x = cube place
-        // alt y = cone place
-        // drive start = robot relative toggle
-        // alt and drive a = claw release
+
+        // Open the claw when alt left bumper is pressed and close it when the right one is pressed.
+        m_altXboxLeftBumper.onTrue(new InstantCommand(m_clawSubsystem::open));
+        m_altXboxLeftBumper.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when released
+        m_altXboxRightBumper.onTrue(new InstantCommand(m_clawSubsystem::close));
+        m_altXboxRightBumper.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when released
+
+        // Open the claw when drive A is pressed
+        m_xboxA.onTrue(new InstantCommand(m_clawSubsystem::open));
+        m_xboxA.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when released
+        // Close the claw when drive X is pressed
+        m_xboxX.onTrue(new InstantCommand(m_clawSubsystem::close));
+        m_xboxX.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when released
+
+        // Run the balancer while drive Y is pressed
+        m_xboxY.whileTrue(new AutoBalanceCommand());
+
+        // Toggle manual arm control when alt Back is pressed
+        m_altXboxBack.toggleOnTrue(new ManualArmCommand(m_altXbox));
+
+        m_altXboxA.onTrue(new InstantCommand(photonSubsystem::canDriveFalse));
+        m_altXboxA.onFalse(new InstantCommand(photonSubsystem::canDriveTrue));
+        m_altXboxY.onTrue(new InstantCommand(photonSubsystem::canDriveFalse));
+        m_altXboxY.onFalse(new InstantCommand(photonSubsystem::canDriveTrue));
+        m_altXboxX.onTrue(new InstantCommand(photonSubsystem::canDriveFalse));
+        m_altXboxX.onFalse(new InstantCommand(photonSubsystem::canDriveTrue));
     }
 }
