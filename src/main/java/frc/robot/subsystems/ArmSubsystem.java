@@ -44,13 +44,13 @@ public class ArmSubsystem extends SubsystemBase {
      */
     public enum ArmPositions {
         RETRACTED(0.0, 247.8),
-        CONE_HIGH(15.5, 23.0),
+        CONE_HIGH(14.5, 15.0),
         CONE_MEDIUM(16.0, 157.0),
         CUBE_HIGH(17.0, 52.0),
         CUBE_MEDIUM(20.5,179.49),
         HYBRID(33.92, 247.8),
-        SUBSTATION_CUBE(17, 153),
-        SUBSTATION_CONE(17, 136);
+        SUBSTATION_CUBE(18, 153),
+        SUBSTATION_CONE(17, 130);
 
         private final ArmSubsystem armSubsystem = ArmSubsystem.getInstance();
 
@@ -190,7 +190,7 @@ public class ArmSubsystem extends SubsystemBase {
         else if(getPivotPosition() < pivotPositions[MIN_POSITION] + STOP_DEADBAND && power < 0) {
             setPivotPosition(pivotPositions[MIN_POSITION]);
         } else {
-            m_pivot.set(power * 0.3);
+            m_pivot.set(power * 0.2);
         }
         //setExtensionPosition(pivotToExtension());
     }
@@ -218,7 +218,7 @@ public class ArmSubsystem extends SubsystemBase {
         else if(getExtensionPosition() < extensionPositions[MIN_POSITION] + STOP_DEADBAND && power < 0) {
             setExtensionPosition(extensionPositions[MIN_POSITION]);
         } else {
-            m_extension.set(power * 0.5);
+            m_extension.set(power);
         }
     }
 
