@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.photonvision.PhotonCamera;
@@ -25,7 +24,6 @@ public class PipelineScanCommand extends CommandBase {
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
         this.camera = camera;
-        SmartDashboard.putString("last target on", "init");
         addRequirements();
 
         coolDown = 0;
@@ -42,13 +40,9 @@ public class PipelineScanCommand extends CommandBase {
     public void execute() {
         // Is there a target?
         // Yes. great, send telemetry and reset the counter
-        SmartDashboard.putNumber("cool down", coolDown);
-        SmartDashboard.putNumber("ticks lost", ticksLost);
-
         if(coolDown <= 0) {
             if (camera.getLatestResult().hasTargets()) {
                 ticksLost = 0;
-                SmartDashboard.putString("last target on", currentPipeline.name);
             }
             // No Target.
             // Have you had a target recently? (last 5 ticks. 20ms * 5 = 0.1 seconds)
@@ -64,8 +58,6 @@ public class PipelineScanCommand extends CommandBase {
                     currentPipeline = PhotonVisionSubsystem.PIPELINES.CONE;
                 }
                 m_photonSubsystem.setPipeline(camera, currentPipeline);
-
-                SmartDashboard.putString("last target on", "none");
 
                 coolDown = 15; // 15 ticks. 15 * 0.02 = 0.3 seconds
             }

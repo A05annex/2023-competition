@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.a05annex.frc.A05Constants;
@@ -122,7 +121,6 @@ public class SampleAprilTagPositionCommand extends A05DriveCommand {
         else {
             //m_driveSubsystem.translate(0.0, 1.0);
             m_driveSubsystem.swerveDrive(AngleConstantD.ZERO, 0.0, 0.0);
-            SmartDashboard.putBoolean("aligned", alignedWithAprilTag);
         }
     }
 

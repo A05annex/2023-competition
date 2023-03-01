@@ -11,8 +11,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.A05Robot;
-import org.a05annex.frc.NavX;
-import org.a05annex.util.AngleConstantD;
 
 import java.util.Collections;
 
@@ -67,9 +65,6 @@ public class Robot extends A05Robot
     
     @Override
     public void disabledPeriodic() {
-        SmartDashboard.putNumber("Pivot Position", ArmSubsystem.getInstance().getPivotPosition());
-        SmartDashboard.putNumber("Extension Position", ArmSubsystem.getInstance().getExtensionPosition());
-        SmartDashboard.putNumber("Ext. Calc. Pos.", ArmSubsystem.getInstance().pivotToExtension());
         A05Constants.printIDs();
     }
 
@@ -80,8 +75,6 @@ public class Robot extends A05Robot
     {
         // Sets up autonomous command
         super.autonomousInit();
-        //ArmSubsystem.getInstance().setExtensionPosition(ArmSubsystem.getInstance().getExtensionPosition());
-        //ArmSubsystem.getInstance().setPivotPosition(ArmSubsystem.getInstance().getPivotPosition());
     }
     
     
@@ -95,7 +88,6 @@ public class Robot extends A05Robot
     {
         // Cancels autonomous command
         super.teleopInit();
-        //TODO: Can add other things here
 
         ArmSubsystem.getInstance().setExtensionPosition(ArmSubsystem.getInstance().getExtensionPosition());
         ArmSubsystem.getInstance().setPivotPosition(ArmSubsystem.getInstance().getPivotPosition());
@@ -107,13 +99,6 @@ public class Robot extends A05Robot
     public void teleopPeriodic() {
         super.teleopPeriodic();
         A05Constants.printIDs();
-        SmartDashboard.putNumber("Pivot Position", ArmSubsystem.getInstance().getPivotPosition());
-        SmartDashboard.putNumber("Extension Position", ArmSubsystem.getInstance().getExtensionPosition());
-        SmartDashboard.putNumber("Calc. Pos.", ArmSubsystem.getInstance().pivotToExtension());
-
-        SmartDashboard.putNumber("Current Pivot", ArmSubsystem.ArmPositions.currentPosition.getPivot());
-        SmartDashboard.putNumber("Current Extension", ArmSubsystem.ArmPositions.currentPosition.getExtension());
-        SmartDashboard.putNumber("test", NavX.getInstance().getHeadingInfo().getClosestUpField().getDegrees());
     }
     
     @Override
