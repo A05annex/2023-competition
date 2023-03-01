@@ -72,7 +72,8 @@ public final class Constants extends A05Constants
 
     public static final A05Constants.DriverSettings[] DRIVER_SETTINGS = {
             new A05Constants.DriverSettings("programmer", 0),
-            new A05Constants.DriverSettings("ocean", 1)
+            new A05Constants.DriverSettings("ocean", 1),
+            new A05Constants.DriverSettings("hayden", 2)
     };
 
     private static final DigitalInput switch6 = new DigitalInput(6);
