@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants;
 import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.a05annex.frc.A05Constants;
-import org.a05annex.frc.NavX;
 import org.a05annex.frc.commands.A05DriveCommand;
 import org.a05annex.frc.subsystems.DriveSubsystem;
 import org.a05annex.util.AngleConstantD;
@@ -14,7 +13,7 @@ import org.a05annex.util.Utl;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 
-public class PlacePositionCommand extends A05DriveCommand {
+public class ConePositionCommand extends A05DriveCommand {
 
     private final PhotonVisionSubsystem m_photonSubsystem = PhotonVisionSubsystem.getInstance();
     private final DriveSubsystem m_driveSubsystem = DriveSubsystem.getInstance();
@@ -43,7 +42,7 @@ public class PlacePositionCommand extends A05DriveCommand {
 
     private boolean isFinished = false;
 
-    public PlacePositionCommand(XboxController xbox, A05Constants.DriverSettings driver) {
+    public ConePositionCommand(XboxController xbox, A05Constants.DriverSettings driver) {
         super(xbox, driver);
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
