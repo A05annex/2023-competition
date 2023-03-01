@@ -19,6 +19,7 @@ public class SubstationArmMoveCommand extends CommandBase {
     @Override
     public void initialize() {
         ArmSubsystem.ArmPositions.SUBSTATION_CUBE.goTo();
+        clawSubsystem.open();
     }
 
     @Override
