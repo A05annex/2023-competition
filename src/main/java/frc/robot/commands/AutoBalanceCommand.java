@@ -21,7 +21,7 @@ public class AutoBalanceCommand extends CommandBase {
     // At what degree angle should the robot stop moving. (platform max tilt is 15°)
     private final double ANGLE = 10.0;
 
-    private double upField = navX.getHeadingInfo().getClosestDownOrUpField() == navX.getHeadingInfo().getClosestUpField() ? 1.0 : -1.0;
+    private double upField;
 
     private double speed = 0.0, rotation = 0.0;
 
@@ -42,18 +42,19 @@ public class AutoBalanceCommand extends CommandBase {
         isFinished = false;
         ticksBalanced = 0;
         m_pitch = NavX.getInstance().getNavInfo().roll;
+        upField = navX.getHeadingInfo().getClosestDownOrUpField() == navX.getHeadingInfo().getClosestDownField() ? -1.0 : 1.0;
     }
 
     @Override
     public void execute() {
-        upField = navX.getHeadingInfo().getClosestDownOrUpField() == navX.getHeadingInfo().getClosestUpField() ? 1.0 : -1.0;
+        upField = navX.getHeadingInfo().getClosestDownOrUpField().equals(navX.getHeadingInfo().getClosestDownField()) ? -1.0 : 1.0;
 
         m_pitch = NavX.getInstance().getNavInfo().roll; // set pitch again because getNavInfo does not auto update
-        if (m_pitch.getDegrees() > -ANGLE * upField) {
+        if (m_pitch.getDegrees() < -ANGLE) {
             // drive backward and reset ticks balanced when tipped forward
             speed = -SPEED;
             ticksBalanced = 0;
-        } else if (m_pitch.getDegrees() < ANGLE * upField) {
+        } else if (m_pitch.getDegrees() > ANGLE) {
             // drive forward and reset ticks balanced when tipped backward
             speed = SPEED;
             ticksBalanced = 0;
@@ -66,7 +67,7 @@ public class AutoBalanceCommand extends CommandBase {
         navX.setExpectedHeading(navX.getHeadingInfo().getClosestDownOrUpField());
         rotation = new AngleD(navX.getHeadingInfo().expectedHeading).subtract(new AngleD(navX.getHeadingInfo().heading))
                 .getRadians() * A05Constants.getDriveOrientationkp();
-        driveSubsystem.swerveDrive(AngleConstantD.ZERO, speed, rotation);
+        driveSubsystem.swerveDrive(AngleConstantD.ZERO, speed * upField, rotation);
     }
 
     @Override
