@@ -44,13 +44,13 @@ public class ArmSubsystem extends SubsystemBase {
      */
     public enum ArmPositions {
         RETRACTED(0.0, 247.8),
-        CONE_HIGH(14.5, 15.0),
+        CONE_HIGH(16.5, 15.0),
         CONE_MEDIUM(16.0, 157.0),
         CUBE_HIGH(17.0, 52.0),
         CUBE_MEDIUM(20.5,179.49),
         HYBRID(33.92, 247.8),
-        SUBSTATION_CUBE(18, 153),
-        SUBSTATION_CONE(17, 130);
+        SUBSTATION_CUBE(19, 135),
+        SUBSTATION_CONE(17, 125);
 
         private final ArmSubsystem armSubsystem = ArmSubsystem.getInstance();
 
@@ -135,7 +135,7 @@ public class ArmSubsystem extends SubsystemBase {
         setPID(m_pivotPID, pivotKP, pivotKI, pivotKIZone);
         setPID(m_extensionPID, extensionKP, extensionKI, extensionKIZone);
 
-        m_pivotPID.setOutputRange(-0.2, 0.2);
+        m_pivotPID.setOutputRange(-0.15, 0.2);
         m_pivot.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 

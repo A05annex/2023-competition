@@ -35,7 +35,7 @@ public class CubePositionCommand extends A05DriveCommand {
     private final double yawOffset = 9.47, areaOffset = 3.1;
 
     //
-    private final double yawThreshold = 0.05, areaThreshold = 0.1;
+    private final double yawThreshold = 0.2, areaThreshold = 0.15;
 
     private int ticksAligned = 0;
     private boolean alignedWithAprilTag = false;

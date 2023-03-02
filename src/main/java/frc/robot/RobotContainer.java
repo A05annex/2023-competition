@@ -103,8 +103,8 @@ public class RobotContainer extends A05RobotContainer
         // Toggle between robot and field relative when drive Start is pressed
         m_xboxStart.onTrue(new InstantCommand(m_driveSubsystem::toggleDriveMode));
 
-        m_xboxLeftBumper.whileTrue(new FaceDownFieldCommand(m_driveXbox, m_driver));
-        m_xboxRightBumper.whileTrue(new FaceUpFieldCommand(m_driveXbox, m_driver));
+        m_xboxLeftBumper.whileTrue(new FaceUpFieldCommand(m_driveXbox, m_driver));
+        m_xboxRightBumper.whileTrue(new FaceDownFieldCommand(m_driveXbox, m_driver));
 
         // Retract and go upright with the arm when either controller's B button is pressed
         m_xboxB.onTrue(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
@@ -143,6 +143,7 @@ public class RobotContainer extends A05RobotContainer
         // Toggle manual arm control when alt Back is pressed
         m_altXboxBack.toggleOnTrue(new ManualArmCommand(m_altXbox));
 
+        // Toggle the Can Drive box on the dashboard when any of the position commands are run
         m_altXboxA.onTrue(new InstantCommand(photonSubsystem::canDriveFalse));
         m_altXboxA.onFalse(new InstantCommand(photonSubsystem::canDriveTrue));
         m_altXboxY.onTrue(new InstantCommand(photonSubsystem::canDriveFalse));
