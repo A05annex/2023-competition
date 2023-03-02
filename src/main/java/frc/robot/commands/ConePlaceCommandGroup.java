@@ -12,8 +12,8 @@ public class ConePlaceCommandGroup extends SequentialCommandGroup {
 
     public ConePlaceCommandGroup(XboxController altXbox, A05Constants.DriverSettings driver) {
         super(new ConePositionCommand(altXbox, driver),
-                new ConditionalCommand(new AbsoluteTranslateCommand(0.0, -0.61), new AbsoluteTranslateCommand(0.0, 0.57), ConePlaceCommandGroup::direction),
-                new AbsoluteTranslateCommand(0.70, 0.0).withTimeout(1.5),
+                new ConditionalCommand(new AbsoluteTranslateCommand(0.0, -0.50, 0.5).withTimeout(1.5), new AbsoluteTranslateCommand(0.0, 0.57).withTimeout(1.5), ConePlaceCommandGroup::direction),
+                new AbsoluteTranslateCommand(0.65, 0.0, 0.5).withTimeout(1.5),
                 new ConeArmMoveCommand(altXbox));
         ConePlaceCommandGroup.altXbox = altXbox;
     }

@@ -32,7 +32,7 @@ public class ConePositionCommand extends A05DriveCommand {
     private final double areaMin = 0.0, areaMax = 5;
 
     // What target values should the robot try to drive to
-    private final double yawOffset = 9.47, areaOffset = 2.1;
+    private final double yawOffset = 9.47, areaOffset = 1.7;
 
     //
     private final double yawThreshold = 0.05, areaThreshold = 0.1;
