@@ -23,10 +23,10 @@ public class SubstationPositionCommand extends A05DriveCommand {
     // Biggest speed change that can happen in one tick
     private final double maxSpeedDelta = 0.075;
     // Max speed regardless of what the calculation finds
-    private final double maxSpeed = 0.25;
+    private final double maxSpeed = 0.3;
 
     // puts movement to the power of this var
-    private final double speedSmoothingMultiplier = 1.9;
+    private final double speedSmoothingMultiplier = 1.6;
 
     private final double yawMin = -24.5, yawMax = 24.5;
     private final double areaMin = 0.0, areaMax = 5;

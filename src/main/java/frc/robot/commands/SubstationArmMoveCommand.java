@@ -1,9 +1,9 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
-import frc.robot.subsystems.PhotonVisionSubsystem;
 
 
 public class SubstationArmMoveCommand extends CommandBase {
@@ -24,7 +24,7 @@ public class SubstationArmMoveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        if (PhotonVisionSubsystem.PIPELINES.clawCurrent == PhotonVisionSubsystem.PIPELINES.CONE) {
+        if (Constants.CLAW_CAMERA.getLatestResult().hasTargets()) {
             ArmSubsystem.ArmPositions.SUBSTATION_CONE.goTo();
         } else {
             ArmSubsystem.ArmPositions.SUBSTATION_CUBE.goTo();
