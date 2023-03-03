@@ -57,6 +57,8 @@ public class RobotContainer extends A05RobotContainer
             m_xboxStart = new JoystickButton(m_driveXbox, 8),
             m_altXboxStart = new JoystickButton(m_altXbox, 8),
             m_xboxLeftStickPress = new JoystickButton(m_driveXbox, 9),
+            m_altXboxLeftStickPress = new JoystickButton(m_altXbox, 9),
+            m_altXboxRightStickPress = new JoystickButton(m_altXbox, 10),
             m_xboxRightStickPress = new JoystickButton(m_driveXbox, 10);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -142,6 +144,9 @@ public class RobotContainer extends A05RobotContainer
 
         // Toggle manual arm control when alt Back is pressed
         m_altXboxBack.toggleOnTrue(new ManualArmCommand(m_altXbox));
+
+        m_altXboxLeftStickPress.onTrue(new InstantCommand(ArmSubsystem.ArmPositions.SUBSTATION_CUBE::goTo));
+        m_altXboxRightStickPress.onTrue(new InstantCommand(ArmSubsystem.ArmPositions.SUBSTATION_CONE::goTo));
 
         // Toggle the Can Drive box on the dashboard when any of the position commands are run
         m_altXboxA.onTrue(new InstantCommand(photonSubsystem::canDriveFalse));
