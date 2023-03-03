@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.NavX;
 import org.a05annex.frc.subsystems.DriveSubsystem;
@@ -18,9 +17,9 @@ public class AutoBalanceCommand extends CommandBase {
     private AngleConstantD m_pitch = navX.getNavInfo().roll;
 
     // how fast should the robot drive (0.0 - 1.0) when trying to balance
-    private double SPEED = 0.15;
+    private final double SPEED = 0.175;
     // At what degree angle should the robot stop moving. (platform max tilt is 15°)
-    private double ANGLE = 10.0;
+    private final double ANGLE = 12.0;
 
     private double upField;
 
@@ -69,9 +68,6 @@ public class AutoBalanceCommand extends CommandBase {
         rotation = new AngleD(navX.getHeadingInfo().expectedHeading).subtract(new AngleD(navX.getHeadingInfo().heading))
                 .getRadians() * A05Constants.getDriveOrientationkp();
         driveSubsystem.swerveDrive(AngleConstantD.ZERO, speed * upField, rotation);
-
-        Constants.updateConstant("angle", ANGLE);
-        Constants.updateConstant("speed", SPEED);
     }
 
     @Override
