@@ -51,6 +51,8 @@ public class Robot extends A05Robot
         SmartDashboard.putData("Hybrid", new InstantCommand(ArmSubsystem.ArmPositions.HYBRID::goTo));
         SmartDashboard.putData("Retracted", new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
 
+        Constants.updateConstant("angle", 0.0);
+        Constants.updateConstant("speed", 0.0);
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         setRobotContainer(new RobotContainer());
