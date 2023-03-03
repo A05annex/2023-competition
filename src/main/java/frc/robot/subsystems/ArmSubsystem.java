@@ -50,7 +50,7 @@ public class ArmSubsystem extends SubsystemBase {
         CUBE_MEDIUM(20.5,179.49),
         HYBRID(33.92, 247.8),
         SUBSTATION_CUBE(19, 135),
-        SUBSTATION_CONE(17, 125);
+        SUBSTATION_CONE(17, 130);
 
         private final ArmSubsystem armSubsystem = ArmSubsystem.getInstance();
 
