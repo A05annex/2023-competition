@@ -32,7 +32,7 @@ public class SubstationPositionCommand extends A05DriveCommand {
     private final double areaMin = 0.0, areaMax = 5;
 
     // What target values should the robot try to drive to
-    private final double yawOffset = -17, areaOffset = 1.85;
+    private final double yawOffset = -17, areaOffset = 1.9;
 
     //
     private final double yawThreshold = 0.05, areaThreshold = 0.1;
