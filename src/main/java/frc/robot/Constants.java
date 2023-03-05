@@ -22,11 +22,11 @@ public final class Constants extends A05Constants
     public static final class CAN_Devices {
         public static final int
                 // Non-Drive Motors
-                ARM_PIVOT_MOTOR = 14,
-                ARM_EXTENSION_MOTOR = 13,
-                CLAW_MOTOR = 12;
+                ARM_PIVOT_MOTOR = 12,
+                ARM_EXTENSION_MOTOR = 13;
     }
 
+    public static final int PNEUMATICS_FORWARD = 14, PNEUMATICS_REVERSE = 15;
 
     // Port 0 is whichever controller was plugged in first, not a specific port.
     //DRIVE_XBOX_PORT = 0 (Set in A05Constants) Leave commented
