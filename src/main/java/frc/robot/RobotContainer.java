@@ -16,6 +16,8 @@ import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
 import org.a05annex.frc.A05RobotContainer;
+import org.a05annex.frc.commands.AbsoluteSmartTranslateCommand;
+import org.a05annex.frc.commands.AbsoluteTranslateCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -43,6 +45,8 @@ public class RobotContainer extends A05RobotContainer
     JoystickButton m_altXboxA = new JoystickButton(m_altXbox, 1);
     JoystickButton m_xboxB = new JoystickButton(m_driveXbox, 2);
     JoystickButton m_altXboxB = new JoystickButton(m_altXbox, 2);
+    JoystickButton m_altXboxX = new JoystickButton(m_altXbox, 3);
+    JoystickButton m_altXboxY = new JoystickButton(m_altXbox, 4);
     JoystickButton m_xboxX = new JoystickButton(m_driveXbox, 3);
     JoystickButton m_xboxY = new JoystickButton(m_driveXbox, 4);
     JoystickButton m_xboxLeftBumper = new JoystickButton(m_driveXbox, 5);
@@ -92,6 +96,8 @@ public class RobotContainer extends A05RobotContainer
         m_xboxBack.onTrue(new InstantCommand(m_navx::initializeHeadingAndNav)); // Reset the NavX field relativity
         m_altXboxA.whileTrue(new InstantCommand(m_armSubsystem::goToCalcPos));
         m_altXboxB.whileTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
+        m_altXboxX.onTrue(new AbsoluteTranslateCommand(0.0, 1.0));
+        m_altXboxY.onTrue(new AbsoluteSmartTranslateCommand(0.0, 1.0, 5000.0, 1000000.0));
         m_xboxB.onTrue(new InstantCommand(m_clawSubsystem::close));
         m_xboxA.onTrue(new InstantCommand(m_clawSubsystem::open));
         m_xboxX.onTrue(new InstantCommand(m_clawSubsystem::bleed));
