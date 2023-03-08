@@ -20,7 +20,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final SparkMaxPIDController m_pivotPID = m_pivot.getPIDController();
     // Array of positions. [starting position, min position, max position]
     private final double[] pivotPositions = {0.0, -45, 45};
-    private final double pivotKP = 0.11, pivotKI = 0.001, pivotKIZone = 0.5;
+    private final double pivotKP = 0.00005, pivotKI = 0.000, pivotKIZone = 0.0, pivotKff = 0.000156;
     private final double pivotTicksPerRotation = 30.309 * 4; //Reading from 0 to 90 degrees * 4 = full rotation
 
 
@@ -30,8 +30,8 @@ public class ArmSubsystem extends SubsystemBase {
     private final RelativeEncoder m_extensionEncoder = m_extension.getEncoder();
     private final SparkMaxPIDController m_extensionPID = m_extension.getPIDController();
     // Array of positions. [starting position, min position, max position]
-    private final double[] extensionPositions = {247.8, 0.0, 247.8};
-    private final double extensionKP = 0.4, extensionKI = 0.0, extensionKIZone = 0.0;
+    private final double[] extensionPositions = {111.51, 0.0, 111.51};
+    private final double extensionKP = 0.00005, extensionKI = 0.0, extensionKIZone = 0.0, extensionKff = 0.000156;
     private final double extensionTicksPerInch = 3.7989887133;
 
     private final double STOP_DEADBAND = 0.25;
@@ -43,14 +43,14 @@ public class ArmSubsystem extends SubsystemBase {
      * Stores notable arm positions along with methods to update and go to them
      */
     public enum ArmPositions {
-        RETRACTED(0.0, 247.8),
-        CONE_HIGH(16.5, 15.0),
-        CONE_MEDIUM(16.0, 157.0),
-        CUBE_HIGH(17.0, 52.0),
-        CUBE_MEDIUM(20.5,179.49),
-        HYBRID(33.92, 247.8),
-        SUBSTATION_CUBE(19, 135),
-        SUBSTATION_CONE(17, 125);
+        RETRACTED(0.0, 111.51),
+        CONE_HIGH(16.5, 6.75),
+        CONE_MEDIUM(16.0, 70.65),
+        CUBE_HIGH(17.0, 23.4),
+        CUBE_MEDIUM(20.5,88.77),
+        HYBRID(33.92, 111.51),
+        SUBSTATION_CUBE(19, 60.75),
+        SUBSTATION_CONE(17, 56.25);
 
         private final ArmSubsystem armSubsystem = ArmSubsystem.getInstance();
 
@@ -132,11 +132,13 @@ public class ArmSubsystem extends SubsystemBase {
     private ArmSubsystem() {
         initializeEncoders();
 
-        setPID(m_pivotPID, pivotKP, pivotKI, pivotKIZone);
-        setPID(m_extensionPID, extensionKP, extensionKI, extensionKIZone);
+        setPID(m_pivotPID, pivotKP, pivotKI, pivotKIZone, pivotKff);
+        setPID(m_extensionPID, extensionKP, extensionKI, extensionKIZone, extensionKff);
 
-        m_pivotPID.setOutputRange(-0.15, 0.2);
+        m_pivotPID.setOutputRange(-1.0, 1.0);
+        m_extensionPID.setOutputRange(-1.0, 1.0);
         m_pivot.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        m_extension.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
 
@@ -147,11 +149,11 @@ public class ArmSubsystem extends SubsystemBase {
      * @param kI kI value you wish to apply
      * @param kIZone Distance away from target to start applying kI
      */
-    private void setPID(SparkMaxPIDController motor, double kP, double kI, double kIZone) {
+    private void setPID(SparkMaxPIDController motor, double kP, double kI, double kIZone, double kFF) {
         motor.setP(kP);
         motor.setI(kI);
         motor.setIZone(kIZone);
-        motor.setFF(0.0);
+        motor.setFF(kFF);
         motor.setD(0.0);
     }
 
@@ -204,7 +206,12 @@ public class ArmSubsystem extends SubsystemBase {
         if(A05Constants.getPrintDebug() && clippedPosition != position) {
             System.out.println("Pivot motor was requested to go to position: " + position + " but was outside limits");
         }
-        m_pivotPID.setReference(clippedPosition, CANSparkMax.ControlType.kPosition);
+        m_pivotPID.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
+        m_pivotPID.setSmartMotionMaxVelocity(2000.0, 0);
+        m_pivotPID.setSmartMotionMaxAccel(2000.0, 0);
+        m_pivotPID.setSmartMotionMinOutputVelocity(0.0, 0);
+        m_pivotPID.setSmartMotionAllowedClosedLoopError(0.1, 0);
+        m_pivotPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion);
     }
 
     /**
@@ -231,7 +238,12 @@ public class ArmSubsystem extends SubsystemBase {
         if(A05Constants.getPrintDebug() && clippedPosition != position) {
             System.out.println("Extension motor was requested to go to position: " + position + " but was outside limits");
         }
-        m_extensionPID.setReference(clippedPosition, CANSparkMax.ControlType.kPosition);
+        m_extensionPID.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
+        m_extensionPID.setSmartMotionMaxVelocity(6000.0, 0);
+        m_extensionPID.setSmartMotionMaxAccel(10000.0, 0);
+        m_extensionPID.setSmartMotionMinOutputVelocity(0.0, 0);
+        m_extensionPID.setSmartMotionAllowedClosedLoopError(0.1, 0);
+        m_extensionPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion);
     }
 
     public void goToCalcPos() {

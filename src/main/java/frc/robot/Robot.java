@@ -62,7 +62,9 @@ public class Robot extends A05Robot
     
     /** This method is called once each time the robot enters Disabled mode. */
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+        ArmSubsystem.getInstance().stopAllMotors();
+    }
 
     
     @Override
