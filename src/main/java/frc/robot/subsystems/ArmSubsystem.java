@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import org.a05annex.frc.A05Constants;
@@ -44,10 +45,10 @@ public class ArmSubsystem extends SubsystemBase {
      */
     public enum ArmPositions {
         RETRACTED(0.0, 111.51),
-        CONE_HIGH(16.5, 6.75),
-        CONE_MEDIUM(16.0, 70.65),
-        CUBE_HIGH(17.0, 23.4),
-        CUBE_MEDIUM(20.5,88.77),
+        CONE_HIGH(16.0, 0),
+        CONE_MEDIUM(17.3, 69.15),
+        CUBE_HIGH(20.21, 14.68),
+        CUBE_MEDIUM(24.14,85.96),
         HYBRID(33.92, 111.51),
         SUBSTATION_CUBE(19, 60.75),
         SUBSTATION_CONE(17, 56.25);
@@ -282,6 +283,8 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void periodic() {
         ArmPositions.bump = Constants.updateConstant("bump", ArmPositions.bump);
+        SmartDashboard.putNumber("pivot", getPivotPosition());
+        SmartDashboard.putNumber("ext.", getExtensionPosition());
     }
 }
 
