@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.ArmStickCommand;
 import frc.robot.commands.ArmStickPositionCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.ArmSubsystem;
@@ -97,7 +96,7 @@ public class RobotContainer extends A05RobotContainer
         m_altXboxA.whileTrue(new InstantCommand(m_armSubsystem::goToCalcPos));
         m_altXboxB.whileTrue(new InstantCommand(m_armSubsystem::stopAllMotors));
         m_altXboxX.onTrue(new AbsoluteTranslateCommand(0.0, 1.0));
-        m_altXboxY.onTrue(new AbsoluteSmartTranslateCommand(0.0, 1.0, 5000.0, 1000000.0));
+        m_altXboxY.onTrue(new AbsoluteSmartTranslateCommand(0.0, 1.0, 1.0, 10000.0));
         m_xboxB.onTrue(new InstantCommand(m_clawSubsystem::close));
         m_xboxA.onTrue(new InstantCommand(m_clawSubsystem::open));
         m_xboxX.onTrue(new InstantCommand(m_clawSubsystem::bleed));
