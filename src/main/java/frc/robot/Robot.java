@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.A05Robot;
+import org.a05annex.frc.NavX;
 
 import java.util.Collections;
 
@@ -70,6 +71,9 @@ public class Robot extends A05Robot
     @Override
     public void disabledPeriodic() {
         A05Constants.printIDs();
+        SmartDashboard.putNumber("heading", NavX.getInstance().getHeading().getDegrees());
+        SmartDashboard.putNumber("raw yaw", NavX.getInstance().getNavInfo().rawYaw.getDegrees());
+        SmartDashboard.putNumber("yaw", NavX.getInstance().getNavInfo().yaw.getDegrees());
     }
 
     
@@ -104,6 +108,9 @@ public class Robot extends A05Robot
     public void teleopPeriodic() {
         super.teleopPeriodic();
         A05Constants.printIDs();
+        SmartDashboard.putNumber("heading", NavX.getInstance().getHeading().getDegrees());
+        SmartDashboard.putNumber("raw yaw", NavX.getInstance().getNavInfo().rawYaw.getDegrees());
+        SmartDashboard.putNumber("yaw", NavX.getInstance().getNavInfo().yaw.getDegrees());
     }
     
     @Override
