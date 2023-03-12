@@ -43,11 +43,11 @@ public class ManualArmCommand extends CommandBase {
 
 
         if (xboxLeft > -DEADBAND && xboxLeft < DEADBAND && pivotWasSpinning) {
-            m_armSubsystem.setPivotPosition(m_armSubsystem.getPivotPosition());
+            m_armSubsystem.setPivotPositionDelta(0.0);
             pivotWasSpinning = false;
             //m_armSubsystem.setExtensionPosition(m_armSubsystem.pivotToExtension());
         } else if(!(xboxLeft > -DEADBAND && xboxLeft < DEADBAND)){
-            m_armSubsystem.setPivotPower(xboxLeft);
+            m_armSubsystem.setPivotPositionDelta(xboxLeft * 8.0);
             pivotWasSpinning = true;
             //m_armSubsystem.setExtensionPosition(m_armSubsystem.pivotToExtension());
         }

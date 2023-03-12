@@ -92,6 +92,7 @@ public class Robot extends A05Robot
     {
         // Cancels autonomous command
         super.teleopInit();
+        ArmSubsystem.getInstance().enableInit();
 
         ArmSubsystem.getInstance().setExtensionPosition(ArmSubsystem.getInstance().getExtensionPosition());
         ArmSubsystem.getInstance().setPivotPosition(ArmSubsystem.getInstance().getPivotPosition());

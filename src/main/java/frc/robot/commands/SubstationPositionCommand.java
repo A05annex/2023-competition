@@ -26,16 +26,16 @@ public class SubstationPositionCommand extends A05DriveCommand {
     private final double maxSpeed = 0.3;
 
     // puts movement to the power of this var
-    private final double speedSmoothingMultiplier = 1.6;
+    private final double speedSmoothingMultiplier = 1.0;
 
     private final double yawMin = -24.5, yawMax = 24.5;
     private final double areaMin = 0.0, areaMax = 5;
 
     // What target values should the robot try to drive to
-    private final double yawOffset = -17, areaOffset = 1.92;
+    private final double yawOffset = -21.3, areaOffset = 0.81;
 
     //
-    private final double yawThreshold = 0.05, areaThreshold = 0.1;
+    private final double yawThreshold = 0.025, areaThreshold = 0.0125;
 
     private int ticksAligned = 0;
     private boolean alignedWithAprilTag = false;
