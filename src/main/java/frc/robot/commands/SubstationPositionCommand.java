@@ -23,19 +23,19 @@ public class SubstationPositionCommand extends A05DriveCommand {
     // Biggest speed change that can happen in one tick
     private final double maxSpeedDelta = 0.075;
     // Max speed regardless of what the calculation finds
-    private final double maxSpeed = 0.3;
+    private final double maxSpeed = 0.6;
 
     // puts movement to the power of this var
-    private final double speedSmoothingMultiplier = 1.0;
+    private final double speedSmoothingMultiplier = 1.3;
 
     private final double yawMin = -24.5, yawMax = 24.5;
     private final double areaMin = 0.0, areaMax = 5;
 
     // What target values should the robot try to drive to
-    private final double yawOffset = -21.3, areaOffset = 0.81;
+    private final double yawOffset = -13.14, areaOffset = 1.41;
 
     //
-    private final double yawThreshold = 0.025, areaThreshold = 0.0125;
+    private final double yawThreshold = 0.05, areaThreshold = 0.0225;
 
     private int ticksAligned = 0;
     private boolean alignedWithAprilTag = false;
@@ -112,7 +112,7 @@ public class SubstationPositionCommand extends A05DriveCommand {
             if (Math.abs(m_photonSubsystem.getYawOffsetAverage(-30.0, 30.0, yawOffset)) < yawThreshold && Math.abs(m_photonSubsystem.getAreaOffsetAverage(0.0, 7.0, areaOffset)) < areaThreshold) {
                 // Yes? add 1 to the counter
                 ticksAligned++;
-                if (ticksAligned >= 25) { // 25 ticks. 25 * 20 ms = 0.5 seconds
+                if (ticksAligned >= 20) { // 20 ticks. 20 * 20 ms = 0.4 seconds
                     alignedWithAprilTag = true;
                 }
             }

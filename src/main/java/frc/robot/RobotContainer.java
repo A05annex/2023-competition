@@ -64,6 +64,7 @@ public class RobotContainer extends A05RobotContainer
     {
         super();
         // finish swerve drive initialization for this specific robt.
+        m_navx.setYawCalibrationFactorr(m_robotSettings.m_navxYawCalibration);
         m_driveSubsystem.setDriveGeometry(m_robotSettings.m_length, m_robotSettings.m_width,
                 m_robotSettings.m_rf, m_robotSettings.m_rr,
                 m_robotSettings.m_lf, m_robotSettings.m_lr,
@@ -150,5 +151,7 @@ public class RobotContainer extends A05RobotContainer
         m_altXboxY.onFalse(new InstantCommand(photonSubsystem::canDriveTrue));
         m_altXboxX.onTrue(new InstantCommand(photonSubsystem::canDriveFalse));
         m_altXboxX.onFalse(new InstantCommand(photonSubsystem::canDriveTrue));
+
+        m_altXboxStart.whileTrue(new SubstationPositionCommand(m_altXbox, m_driver));
     }
 }
