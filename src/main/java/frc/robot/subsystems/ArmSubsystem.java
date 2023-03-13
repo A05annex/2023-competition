@@ -29,12 +29,14 @@ public class ArmSubsystem extends SubsystemBase {
     //Array of positions. [starting position, min position, max position]
     private final double[] pivotPositions = {0.0, -45, 45};
 
-    private final double supportKP = 0.00005, supportKI = 0.000, supportKIZone = 0.0, supportKff = 0.000156;
+    private final double supportSmKp = 0.00005, supportSmKi = 0.000, supportSmKiZone = 0.0, supportSmKff = 0.000156;
+    private final double supportPosKp = 0.00005, supportPosKi = 0.000, supportPosKiZone = 0.0, supportPosKff = 0.000156;
     private final double tensionKP = 0.00005, tensionKff = 0.000156;
 
     private final double pivotTicksPerRotation = 30.309 * 4; //Reading from 0 to 90 degrees * 4 = full rotation
 
     private double lastPivotSetReference = 0.0;
+    private CANSparkMax.ControlType lastPivotDriveMode = CANSparkMax.ControlType.kPosition;
 
     // Declaring everything for the extension motor
     private final CANSparkMax m_extension = new CANSparkMax(Constants.CAN_Devices.ARM_EXTENSION_MOTOR,
@@ -155,7 +157,7 @@ public class ArmSubsystem extends SubsystemBase {
         backwardPID.setOutputRange(-1.0, 1.0);
         backwardSupportPivot.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-        setPivotPIDs(forwardPID, backwardPID);
+        setPivotSmartMotionPIDs(forwardPID, backwardPID);
 
         // Initialize the extension motor
         m_extension.restoreFactoryDefaults();
@@ -196,9 +198,26 @@ public class ArmSubsystem extends SubsystemBase {
         enableInit = true;
     }
 
-    private void setPivotPIDs(SparkMaxPIDController support, SparkMaxPIDController tension) {
+    private void setPivotSmartMotionPIDs(SparkMaxPIDController support, SparkMaxPIDController tension) {
         setPID(tension, tensionKP, 0.0, 0.0, tensionKff);
-        setPID(support, supportKP, supportKI, supportKIZone, supportKff);
+        setPID(support, supportSmKp, supportSmKi, supportSmKiZone, supportSmKff);
+
+        support.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
+        support.setSmartMotionMaxVelocity(2000.0, 0);
+        support.setSmartMotionMaxAccel(2000.0, 0);
+        support.setSmartMotionMinOutputVelocity(0.0, 0);
+        support.setSmartMotionAllowedClosedLoopError(0.1, 0);
+
+        tension.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
+        tension.setSmartMotionMaxVelocity(2000.0, 0);
+        tension.setSmartMotionMaxAccel(2000.0, 0);
+        tension.setSmartMotionMinOutputVelocity(0.0, 0);
+        tension.setSmartMotionAllowedClosedLoopError(0.1, 0);
+    }
+
+    private void setPivotPosPIDs(SparkMaxPIDController support, SparkMaxPIDController tension) {
+        setPID(tension, tensionKP, 0.0, 0.0, tensionKff);
+        setPID(support, supportSmKp, supportSmKi, supportSmKiZone, supportSmKff);
 
         support.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
         support.setSmartMotionMaxVelocity(2000.0, 0);
@@ -256,6 +275,7 @@ public class ArmSubsystem extends SubsystemBase {
         forwardPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion);
         backwardPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion);
         lastPivotSetReference =  clippedPosition;
+
     }
 
     public void setPivotPositionDelta(double delta) {
