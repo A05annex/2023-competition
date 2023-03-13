@@ -34,6 +34,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     private final double pivotTicksPerRotation = 30.309 * 4; //Reading from 0 to 90 degrees * 4 = full rotation
 
+    private double lastPivotSetReference = 0.0;
 
     // Declaring everything for the extension motor
     private final CANSparkMax m_extension = new CANSparkMax(Constants.CAN_Devices.ARM_EXTENSION_MOTOR,
@@ -188,8 +189,10 @@ public class ArmSubsystem extends SubsystemBase {
         }
         //Removed play and resetting the backward encoder so it can be held in place
         backwardEncoder.setPosition(pivotPositions[START_POSITION]);
+        forwardPID.setReference(pivotPositions[START_POSITION], CANSparkMax.ControlType.kSmartMotion);
         backwardPID.setReference(pivotPositions[START_POSITION], CANSparkMax.ControlType.kSmartMotion);
 
+        lastPivotSetReference = pivotPositions[START_POSITION];
         enableInit = true;
     }
 
@@ -226,19 +229,11 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     /**
-     * Resets all encoders to their start positions
-     */
-    public void initializeEncoders() {
-        forwardEncoder.setPosition(pivotPositions[START_POSITION]);
-        m_extensionEncoder.setPosition(extensionPositions[START_POSITION]);
-    }
-
-    /**
      * Method to send the position of the pivot motor
      * @return Double of the current location of the pivot motor
      */
     public double getPivotPosition() {
-        return backwardEncoder.getPosition();
+        return lastPivotSetReference;
     }
 
     /**
@@ -247,22 +242,6 @@ public class ArmSubsystem extends SubsystemBase {
      */
     public double getExtensionPosition() {
         return m_extensionEncoder.getPosition();
-    }
-
-    /**
-     * Sets the speed of the pivot motor but stops the motor if the position exceeds the minimum or maximum position
-     * @param power speed between -1 and 1 for the motor.
-     */
-    public void setPivotPower(double power) {
-        if(getPivotPosition() > pivotPositions[MAX_POSITION] - STOP_DEADBAND && power > 0) {
-            setPivotPosition(pivotPositions[MAX_POSITION]);
-        }
-        else if(getPivotPosition() < pivotPositions[MIN_POSITION] + STOP_DEADBAND && power < 0) {
-            setPivotPosition(pivotPositions[MIN_POSITION]);
-        } else {
-            backwardSupportPivot.set(power * 0.2);
-        }
-        //setExtensionPosition(pivotToExtension());
     }
 
     /**
@@ -276,13 +255,20 @@ public class ArmSubsystem extends SubsystemBase {
         }
         forwardPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion);
         backwardPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion);
+        lastPivotSetReference =  clippedPosition;
     }
 
     public void setPivotPositionDelta(double delta) {
         double currentPos = (forwardEncoder.getPosition() + backwardEncoder.getPosition())/2;
-
-        forwardPID.setReference(currentPos + delta, CANSparkMax.ControlType.kSmartMotion);
-        backwardPID.setReference(currentPos + delta, CANSparkMax.ControlType.kSmartMotion);
+        double clippedPosition = Utl.clip(currentPos + delta,
+                pivotPositions[MIN_POSITION], pivotPositions[MAX_POSITION]);
+        if(A05Constants.getPrintDebug() && clippedPosition != (currentPos + delta)) {
+            System.out.println("Pivot motor was requested to go to position: " + (currentPos + delta) +
+                    " but was outside limits");
+        }
+        forwardPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion);
+        backwardPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion);
+        lastPivotSetReference =  clippedPosition;
     }
 
     /**
