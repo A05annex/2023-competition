@@ -30,7 +30,8 @@ public class ArmSubsystem extends SubsystemBase {
     private final double[] pivotPositions = {0.0, -45, 45};
 
     private final double supportSmKp = 0.00005, supportSmKi = 0.000, supportSmKiZone = 0.0, supportSmKff = 0.000156;
-    private final double supportPosKp = 0.00005, supportPosKi = 0.000, supportPosKiZone = 0.0, supportPosKff = 0.000156;
+    private final double supportMaxRPM = 2000.0, supportMaxRPMs = 2000.0, supportMaxErr = 0.1;
+    private final double supportPosKp = 0.00005, supportPosKi = 0.000, supportPosKiZone = 0.0;
     private final double tensionKP = 0.00005, tensionKff = 0.000156;
 
     private final double pivotTicksPerRotation = 30.309 * 4; //Reading from 0 to 90 degrees * 4 = full rotation
@@ -172,10 +173,11 @@ public class ArmSubsystem extends SubsystemBase {
             return;
         }
         // Lock the forward (supporting) motor to start pos.
-        forwardPID.setReference(pivotPositions[START_POSITION], CANSparkMax.ControlType.kSmartMotion);
+        setPivotPosPIDs(forwardPID, backwardPID);
+        forwardPID.setReference(pivotPositions[START_POSITION], CANSparkMax.ControlType.kPosition);
         // 0.5 amps, just enough to tension
         backwardPID.setReference(0.5, CANSparkMax.ControlType.kVoltage);
-
+        // apply power until the motor stops moving.
         double lastPos = backwardEncoder.getPosition();
         while(true) {
             try {
@@ -191,45 +193,38 @@ public class ArmSubsystem extends SubsystemBase {
         }
         //Removed play and resetting the backward encoder so it can be held in place
         backwardEncoder.setPosition(pivotPositions[START_POSITION]);
+        setPivotSmartMotionPIDs(forwardPID, backwardPID);
         forwardPID.setReference(pivotPositions[START_POSITION], CANSparkMax.ControlType.kSmartMotion);
         backwardPID.setReference(pivotPositions[START_POSITION], CANSparkMax.ControlType.kSmartMotion);
-
         lastPivotSetReference = pivotPositions[START_POSITION];
+        lastPivotDriveMode = CANSparkMax.ControlType.kSmartMotion;
         enableInit = true;
     }
 
     private void setPivotSmartMotionPIDs(SparkMaxPIDController support, SparkMaxPIDController tension) {
-        setPID(tension, tensionKP, 0.0, 0.0, tensionKff);
         setPID(support, supportSmKp, supportSmKi, supportSmKiZone, supportSmKff);
-
         support.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
-        support.setSmartMotionMaxVelocity(2000.0, 0);
-        support.setSmartMotionMaxAccel(2000.0, 0);
+        support.setSmartMotionMaxVelocity(supportMaxRPM, 0);
+        support.setSmartMotionMaxAccel(supportMaxRPMs, 0);
         support.setSmartMotionMinOutputVelocity(0.0, 0);
-        support.setSmartMotionAllowedClosedLoopError(0.1, 0);
+        support.setSmartMotionAllowedClosedLoopError(supportMaxErr, 0);
 
+        setPID(tension, tensionKP, 0.0, 0.0, tensionKff);
         tension.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
-        tension.setSmartMotionMaxVelocity(2000.0, 0);
-        tension.setSmartMotionMaxAccel(2000.0, 0);
+        tension.setSmartMotionMaxVelocity(supportMaxRPM, 0);
+        tension.setSmartMotionMaxAccel(supportMaxRPMs, 0);
         tension.setSmartMotionMinOutputVelocity(0.0, 0);
-        tension.setSmartMotionAllowedClosedLoopError(0.1, 0);
+        tension.setSmartMotionAllowedClosedLoopError(supportMaxErr, 0);
     }
 
     private void setPivotPosPIDs(SparkMaxPIDController support, SparkMaxPIDController tension) {
+        setPID(support, supportPosKp, supportPosKi, supportPosKiZone, 0.0);
         setPID(tension, tensionKP, 0.0, 0.0, tensionKff);
-        setPID(support, supportSmKp, supportSmKi, supportSmKiZone, supportSmKff);
-
-        support.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
-        support.setSmartMotionMaxVelocity(2000.0, 0);
-        support.setSmartMotionMaxAccel(2000.0, 0);
-        support.setSmartMotionMinOutputVelocity(0.0, 0);
-        support.setSmartMotionAllowedClosedLoopError(0.1, 0);
-
         tension.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
-        tension.setSmartMotionMaxVelocity(2000.0, 0);
-        tension.setSmartMotionMaxAccel(2000.0, 0);
+        tension.setSmartMotionMaxVelocity(supportMaxRPM, 0);
+        tension.setSmartMotionMaxAccel(supportMaxRPMs, 0);
         tension.setSmartMotionMinOutputVelocity(0.0, 0);
-        tension.setSmartMotionAllowedClosedLoopError(0.1, 0);
+        tension.setSmartMotionAllowedClosedLoopError(supportMaxErr, 0);
     }
 
     /**
@@ -272,20 +267,25 @@ public class ArmSubsystem extends SubsystemBase {
         if(A05Constants.getPrintDebug() && clippedPosition != position) {
             System.out.println("Pivot motor was requested to go to position: " + position + " but was outside limits");
         }
+        if (lastPivotDriveMode != CANSparkMax.ControlType.kSmartMotion) {
+            setPivotSmartMotionPIDs(forwardPID, backwardPID);
+        }
         forwardPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion);
         backwardPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion);
         lastPivotSetReference =  clippedPosition;
+        lastPivotDriveMode = CANSparkMax.ControlType.kSmartMotion;
 
     }
 
     public void setPivotPositionDelta(double delta) {
-        double currentPos = (forwardEncoder.getPosition() + backwardEncoder.getPosition())/2;
+        double currentPos = (forwardEncoder.getPosition() + backwardEncoder.getPosition()) / 2.0;
         double clippedPosition = Utl.clip(currentPos + delta,
                 pivotPositions[MIN_POSITION], pivotPositions[MAX_POSITION]);
         if(A05Constants.getPrintDebug() && clippedPosition != (currentPos + delta)) {
             System.out.println("Pivot motor was requested to go to position: " + (currentPos + delta) +
                     " but was outside limits");
         }
+        setPivotSmartMotionPIDs(forwardPID, backwardPID);
         forwardPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion);
         backwardPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion);
         lastPivotSetReference =  clippedPosition;
@@ -361,6 +361,28 @@ public class ArmSubsystem extends SubsystemBase {
         ArmPositions.bump = Constants.updateConstant("bump", ArmPositions.bump);
         SmartDashboard.putNumber("pivot", getPivotPosition());
         SmartDashboard.putNumber("ext.", getExtensionPosition());
+        if (lastPivotDriveMode == CANSparkMax.ControlType.kSmartMotion) {
+            // if the arm is in smart-motion it is being velocity controlled. Once
+            // we reach the position, we want to lock it with position mode
+            double currentPos = (forwardEncoder.getPosition() + backwardEncoder.getPosition()) / 2.0;
+            if ((currentPos < (lastPivotSetReference + (2.0 * supportMaxErr))) &&
+                    (currentPos > (lastPivotSetReference - (2.0 * supportMaxErr)))) {
+                // OK, we are at the target so we want to lock with the correct
+                // supporting motor locking the position.
+                if (currentPos < (-3.0 * supportMaxErr)) {
+                    // the arm is leaning backwards
+                    setPivotPosPIDs(backwardPID, forwardPID);
+                    backwardPID.setReference(lastPivotSetReference, CANSparkMax.ControlType.kPosition);
+                    forwardPID.setReference(pivotPositions[START_POSITION], CANSparkMax.ControlType.kSmartMotion);
+                } else {
+                    // the arm is leaning forward
+                    setPivotPosPIDs(forwardPID, backwardPID);
+                    forwardPID.setReference(lastPivotSetReference, CANSparkMax.ControlType.kPosition);
+                    backwardPID.setReference(pivotPositions[START_POSITION], CANSparkMax.ControlType.kSmartMotion);
+                }
+            }
+        }
+
     }
 }
 
