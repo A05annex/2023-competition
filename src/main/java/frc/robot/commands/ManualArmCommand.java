@@ -37,7 +37,7 @@ public class ManualArmCommand extends CommandBase {
             m_armSubsystem.setExtensionPosition(m_armSubsystem.getExtensionPosition());
             extWasSpinning = false;
         } else if (!(xboxRight > -DEADBAND && xboxRight < DEADBAND)){
-            m_armSubsystem.setExtensionPower(xboxRight);
+            m_armSubsystem.setExtensionPower(-xboxRight);
             extWasSpinning = true;
         }
 

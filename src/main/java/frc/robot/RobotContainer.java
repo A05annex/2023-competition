@@ -104,8 +104,8 @@ public class RobotContainer extends A05RobotContainer
         // Toggle between robot and field relative when drive Start is pressed
         m_xboxStart.onTrue(new InstantCommand(m_driveSubsystem::toggleDriveMode));
 
-        m_xboxLeftBumper.whileTrue(new FaceUpFieldCommand(m_driveXbox, m_driver));
-        m_xboxRightBumper.whileTrue(new FaceDownFieldCommand(m_driveXbox, m_driver));
+        m_xboxA.whileTrue(new FaceUpFieldCommand(m_driveXbox, m_driver));
+        m_xboxY.whileTrue(new FaceDownFieldCommand(m_driveXbox, m_driver));
 
         // Retract and go upright with the arm when either controller's B button is pressed
         m_xboxB.onTrue(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
@@ -125,21 +125,19 @@ public class RobotContainer extends A05RobotContainer
         m_altXboxA.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
 
 
-        // Open the claw when alt left bumper is pressed and close it when the right one is pressed.
+        // Open the claw when the left bumper is pressed and close it when the right one is pressed on either controller
         m_altXboxLeftBumper.onTrue(new InstantCommand(m_clawSubsystem::open));
         m_altXboxLeftBumper.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when released
         m_altXboxRightBumper.onTrue(new InstantCommand(m_clawSubsystem::close));
         m_altXboxRightBumper.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when released
 
-        // Open the claw when drive A is pressed
-        m_xboxA.onTrue(new InstantCommand(m_clawSubsystem::open));
-        m_xboxA.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when released
-        // Close the claw when drive X is pressed
-        m_xboxX.onTrue(new InstantCommand(m_clawSubsystem::close));
-        m_xboxX.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when released
+        m_xboxLeftBumper.onTrue(new InstantCommand(m_clawSubsystem::open));
+        m_xboxLeftBumper.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when released
+        m_xboxRightBumper.onTrue(new InstantCommand(m_clawSubsystem::close));
+        m_xboxRightBumper.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when released
 
-        // Run the balancer while drive Y is pressed
-        m_xboxY.whileTrue(new AutoBalanceCommand());
+        // Run the balancer while drive X is pressed
+        m_xboxX.whileTrue(new AutoBalanceCommand());
 
         // Toggle manual arm control when alt Back is pressed
         m_altXboxBack.toggleOnTrue(new ManualArmCommand(m_altXbox));
@@ -151,7 +149,5 @@ public class RobotContainer extends A05RobotContainer
         m_altXboxY.onFalse(new InstantCommand(photonSubsystem::canDriveTrue));
         m_altXboxX.onTrue(new InstantCommand(photonSubsystem::canDriveFalse));
         m_altXboxX.onFalse(new InstantCommand(photonSubsystem::canDriveTrue));
-
-        m_altXboxStart.whileTrue(new SubstationPositionCommand(m_altXbox, m_driver));
     }
 }
