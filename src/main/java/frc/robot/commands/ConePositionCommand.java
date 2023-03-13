@@ -23,10 +23,10 @@ public class ConePositionCommand extends A05DriveCommand {
     // Biggest speed change that can happen in one tick
     private final double maxSpeedDelta = 0.075;
     // Max speed regardless of what the calculation finds
-    private final double maxSpeed = 0.4;
+    private final double maxSpeed = 0.5;
 
     // puts movement to the power of this var
-    private final double speedSmoothingMultiplier = 1.9;
+    private final double speedSmoothingMultiplier = 1.4;
 
     private final double yawMin = -24.5, yawMax = 24.5;
     private final double areaMin = 0.0, areaMax = 5;
@@ -35,7 +35,7 @@ public class ConePositionCommand extends A05DriveCommand {
     private final double yawOffset = 9.47, areaOffset = 1.7;
 
     //
-    private final double yawThreshold = 0.05, areaThreshold = 0.1;
+    private final double yawThreshold = 0.04, areaThreshold = 0.1;
 
     private int ticksAligned = 0;
     private boolean alignedWithAprilTag = false;
