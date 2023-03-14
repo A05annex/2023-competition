@@ -12,7 +12,7 @@ public class ConePlaceCommandGroup extends SequentialCommandGroup {
 
     public ConePlaceCommandGroup(XboxController altXbox, A05Constants.DriverSettings driver) {
         super(new ConePositionCommand(altXbox, driver),
-                new ConditionalCommand(new AbsoluteSmartTranslateCommand(0.0, -0.45, 1.0, 6000.0, true).withTimeout(1.75), new AbsoluteSmartTranslateCommand(0.0, 0.57, 1.0, 6000.0, true).withTimeout(1.75), ConePlaceCommandGroup::getDirection),
+                new ConditionalCommand(new AbsoluteSmartTranslateCommand(0.0, -0.52, 1.0, 6000.0, true).withTimeout(1.75), new AbsoluteSmartTranslateCommand(0.0, 0.57, 1.0, 6000.0, true).withTimeout(1.75), ConePlaceCommandGroup::getDirection),
                 new AbsoluteSmartTranslateCommand(0.65, 0.0, 0.4, 10000.0, false).withTimeout(1.25),
                 new ConeArmMoveCommand(altXbox));
         ConePlaceCommandGroup.altXbox = altXbox;

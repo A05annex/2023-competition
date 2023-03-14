@@ -82,7 +82,7 @@ public class ArmSubsystem extends SubsystemBase {
         RETRACTED(0.0, 111.51),
         CONE_HIGH(17.5, 0),
         CONE_MEDIUM(17.3, 69.15),
-        CUBE_HIGH(20.21, 14.68),
+        CUBE_HIGH(20.21, 15.0),
         CUBE_MEDIUM(24.14,85.96),
         HYBRID(33.92, 111.51),
         SUBSTATION_CUBE(20.9, 43.01),
