@@ -18,9 +18,13 @@ public class AutoBalanceCommand extends CommandBase {
     private AngleConstantD m_pitch = navX.getNavInfo().roll;
 
     // how fast should the robot drive (0.0 - 1.0) when trying to balance
-    private double SPEED = 0.15;
+    private double SPEED = 0.175;
     // At what degree angle should the robot stop moving. (platform max tilt is 15°)
-    private double ANGLE = 10.0;
+    private double DECELERATION_ANGLE = 14.75;
+
+    private double BALANCED_ANGLE = 5;
+
+    private double POW = 6.0;
 
     private double upField;
 
@@ -50,19 +54,25 @@ public class AutoBalanceCommand extends CommandBase {
     public void execute() {
         upField = navX.getHeadingInfo().getClosestDownOrUpField().equals(navX.getHeadingInfo().getClosestDownField()) ? -1.0 : 1.0;
 
+
+
         m_pitch = NavX.getInstance().getNavInfo().roll; // set pitch again because getNavInfo does not auto update
-        if (m_pitch.getDegrees() < -ANGLE) {
+        if (m_pitch.getDegrees() < -DECELERATION_ANGLE) {
             // drive backward and reset ticks balanced when tipped forward
             speed = -SPEED;
-            ticksBalanced = 0;
-        } else if (m_pitch.getDegrees() > ANGLE) {
+        } else if (m_pitch.getDegrees() > DECELERATION_ANGLE) {
             // drive forward and reset ticks balanced when tipped backward
             speed = SPEED;
-            ticksBalanced = 0;
         } else {
             // Stop robot and increment ticks balanced while not at full tilt
-            speed = 0.0;
+            double angleMult = m_pitch.getDegrees() < 0 ? -1.0: 1.0;
+            speed = Math.pow(Math.abs(m_pitch.getDegrees())/DECELERATION_ANGLE, POW) * angleMult * SPEED;
+        }
+
+        if (Math.abs(m_pitch.getDegrees()) < BALANCED_ANGLE) {
             ticksBalanced++;
+        } else{
+            ticksBalanced = 0;
         }
 
         navX.setExpectedHeading(navX.getHeadingInfo().getClosestDownOrUpField());
@@ -70,7 +80,7 @@ public class AutoBalanceCommand extends CommandBase {
                 .getRadians() * A05Constants.getDriveOrientationkp();
         driveSubsystem.swerveDrive(AngleConstantD.ZERO, speed * upField, rotation);
 
-        Constants.updateConstant("angle", ANGLE);
+        Constants.updateConstant("angle", DECELERATION_ANGLE);
         Constants.updateConstant("speed", SPEED);
     }
 
