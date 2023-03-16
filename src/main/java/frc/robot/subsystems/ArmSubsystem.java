@@ -27,7 +27,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     //TODO: make this more readable
     //Array of positions. [starting position, min position, max position]
-    private final double[] pivotPositions = {0.0, -45, 45};
+    private final double[] pivotPositions = {0.0, -40, 45};
 
     private final double supportSmKp = 0.00005, supportSmKi = 0.000, supportSmKiZone = 0.0, supportSmKff = 0.000156;
     private final double supportPosKp = 0.00005, supportPosKi = 0.000, supportPosKiZone = 0.0, supportPosKff = 0.000156;
@@ -60,7 +60,7 @@ public class ArmSubsystem extends SubsystemBase {
         RETRACTED(0.0, 111.51),
         CONE_HIGH(17.5, 0),
         CONE_MEDIUM(17.3, 69.15),
-        CUBE_HIGH(20.21, 15.0),
+        CUBE_HIGH(20.21, 30.0),
         CUBE_MEDIUM(24.14,85.96),
         HYBRID(33.92, 111.51),
         SUBSTATION_CUBE(20.9, 43.01),
@@ -196,6 +196,10 @@ public class ArmSubsystem extends SubsystemBase {
 
         lastPivotSetReference = pivotPositions[START_POSITION];
         enableInit = true;
+    }
+
+    public boolean isInitialized() {
+        return enableInit;
     }
 
     private void setPivotSmartMotionPIDs(SparkMaxPIDController support, SparkMaxPIDController tension) {

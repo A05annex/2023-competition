@@ -18,13 +18,13 @@ public class AutoBalanceCommand extends CommandBase {
     private AngleConstantD m_pitch = navX.getNavInfo().roll;
 
     // how fast should the robot drive (0.0 - 1.0) when trying to balance
-    private double SPEED = 0.175;
+    private final double SPEED = 0.15;
     // At what degree angle should the robot stop moving. (platform max tilt is 15°)
-    private double DECELERATION_ANGLE = 14.75;
+    private final double DECELERATION_ANGLE = 14.75;
 
-    private double BALANCED_ANGLE = 5;
+    private final double BALANCED_ANGLE = 5;
 
-    private double POW = 6.0;
+    private final double POW = 4.0;
 
     private double upField;
 

@@ -9,8 +9,8 @@ public class AutoStartingPlaceCommand extends CommandBase {
     private final ArmSubsystem armSubsystem = ArmSubsystem.getInstance();
     private final ClawSubsystem clawSubsystem = ClawSubsystem.getInstance();
 
-    private final double PIVOT = -17.0;
-    private final double EXTENSION = 56.0;
+    private final double PIVOT = -21.178;
+    private final double EXTENSION = 25.437;
     private final double DEADBAND = 0.5;
     private boolean isFinished = false;
 
@@ -46,7 +46,7 @@ public class AutoStartingPlaceCommand extends CommandBase {
         } else if (ticks == 5) {
             clawSubsystem.off();
             ticks++;
-        } else if(ticks >= 25) {
+        } else if(ticks >= 15) {
             isFinished = true;
         } else if (ticks > 0) {
             ticks++;
@@ -61,5 +61,6 @@ public class AutoStartingPlaceCommand extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         ArmSubsystem.ArmPositions.RETRACTED.goTo();
+        //armSubsystem.setPivotPosition(-15.0);
     }
 }

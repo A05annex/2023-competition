@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ClawSubsystem;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.A05Robot;
 import org.a05annex.frc.NavX;
@@ -81,8 +82,12 @@ public class Robot extends A05Robot
     @Override
     public void autonomousInit()
     {
+        ClawSubsystem.getInstance().close();
+        ArmSubsystem.getInstance().enableInit();
         // Sets up autonomous command
         super.autonomousInit();
+
+
     }
     
     
