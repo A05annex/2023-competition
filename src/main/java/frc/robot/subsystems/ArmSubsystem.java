@@ -217,6 +217,26 @@ public class ArmSubsystem extends SubsystemBase {
         // a constant tension against the forward motor.
         backwardEncoder.setPosition(pivotPositions[START_POSITION]);
         backwardPID.setReference(0.0, CANSparkMax.ControlType.kVoltage);
+        // 0.5 volts, just enough to tension against the forward position.
+        backwardPID.setReference(0.5, CANSparkMax.ControlType.kVoltage);
+        // apply power until the motor stops moving.
+        double lastPos = backwardEncoder.getPosition();
+        while(true) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                continue;
+            }
+            double currentPos = backwardEncoder.getPosition();
+            if(currentPos == lastPos) {
+                break;
+            }
+            lastPos = currentPos;
+        }
+        // Removed play and resetting the backward motor encoder so that it can be held in place with
+        // a constant tension against the forward motor.
+        backwardEncoder.setPosition(pivotPositions[START_POSITION]);
+        backwardPID.setReference(0.0, CANSparkMax.ControlType.kVoltage);
 
         // now lock the backward motor to the start position
         backwardPID.setReference(pivotPositions[START_POSITION], lastPivotDriveMode);
@@ -397,13 +417,13 @@ public class ArmSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("pivot", getPivotPosition());
         SmartDashboard.putNumber("ext.", getExtensionPosition());
         if ((lastPivotDriveMode == CANSparkMax.ControlType.kSmartMotion) &&
-                (lockPivotAtPosition || (cyclesSinceLastPivotMove > 50))) {
+                (lockPivotAtPosition || (cyclesSinceLastPivotMove > 10))) {
             // if the arm is in smart-motion it is being controlled with a velocity profile. Once
             // we reach the requested position and we have requested a lock or there has been enough
             // time since the last pivot move, we want to lock it with position mode
             double currentPos = (forwardEncoder.getPosition() + backwardEncoder.getPosition()) / 2.0;
-            if ((currentPos < (lastPivotSetReference + (1.5 * pvtSmMaxErr))) &&
-                    (currentPos > (lastPivotSetReference - (1.5 * pvtSmMaxErr)))) {
+            if ((currentPos < (lastPivotSetReference + (2.0 * pvtSmMaxErr))) &&
+                    (currentPos > (lastPivotSetReference - (2.0 * pvtSmMaxErr)))) {
                 // OK, we are at the target so we want to lock with the correct
                 // supporting motor locking the position.
                 System.out.println("***********************************************************************");
@@ -411,15 +431,17 @@ public class ArmSubsystem extends SubsystemBase {
                 if (currentPos < (-3.0 * pvtSmMaxErr)) {
                     System.out.println("**** ARM AT POSITION - BACKWARD motor is supporting the arm        ****");
                     // the arm is leaning backwards - make the backwards motor the support motor that is running the
-                    setPivotPositionPIDs(backwardPID, forwardPID);
-                    backwardPID.setReference(lastPivotSetReference, lastPivotDriveMode);
-                    forwardPID.setReference(lastPivotSetReference, lastPivotDriveMode);
+//                    setPivotPositionPIDs(backwardPID, forwardPID);
+//                    backwardPID.setReference(lastPivotSetReference, lastPivotDriveMode);
+//                    forwardPID.setReference(pivotPositions[START_POSITION], lastPivotDriveMode);
+//                    lastPivotDriveMode = CANSparkMax.ControlType.kPosition;
                 } else {
                     System.out.println("**** ARM AT POSITION - FORWARD motor is supporting the arm         ****");
                     // the arm is leaning forward
-                    setPivotPositionPIDs(forwardPID, backwardPID);
-                    forwardPID.setReference(lastPivotSetReference, lastPivotDriveMode);
-                    backwardPID.setReference(lastPivotSetReference, lastPivotDriveMode);
+//                    setPivotPositionPIDs(forwardPID, backwardPID);
+//                    forwardPID.setReference(lastPivotSetReference, lastPivotDriveMode);
+//                    backwardPID.setReference(pivotPositions[START_POSITION], lastPivotDriveMode);
+//                    lastPivotDriveMode = CANSparkMax.ControlType.kPosition;
                 }
                 System.out.println("***********************************************************************");
                 System.out.println("***********************************************************************");
