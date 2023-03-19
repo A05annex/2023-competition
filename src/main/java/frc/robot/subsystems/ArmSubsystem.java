@@ -58,11 +58,11 @@ public class ArmSubsystem extends SubsystemBase {
      */
     public enum ArmPositions {
         RETRACTED(0.0, 111.51),
-        CONE_HIGH(17.5, 0),
-        CONE_MEDIUM(17.3, 69.15),
-        CUBE_HIGH(20.21, 30.0),
-        CUBE_MEDIUM(24.14,85.96),
-        HYBRID(33.92, 111.51),
+        CONE_HIGH(18.6, 20.94),
+        CONE_MEDIUM(19.5, 80.0),
+        CUBE_HIGH(19.65, 34.22),
+        CUBE_MEDIUM(23.10,85.02),
+        HYBRID(18.01, 111.51),
         SUBSTATION_CUBE(20.9, 43.01),
         SUBSTATION_CONE(20.7142, 46.13);
 
@@ -320,8 +320,8 @@ public class ArmSubsystem extends SubsystemBase {
             System.out.println("Extension motor was requested to go to position: " + position + " but was outside limits");
         }
         m_extensionPID.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
-        m_extensionPID.setSmartMotionMaxVelocity(6000.0, 0);
-        m_extensionPID.setSmartMotionMaxAccel(10000.0, 0);
+        m_extensionPID.setSmartMotionMaxVelocity(3000.0, 0);
+        m_extensionPID.setSmartMotionMaxAccel(7000.0, 0);
         m_extensionPID.setSmartMotionMinOutputVelocity(0.0, 0);
         m_extensionPID.setSmartMotionAllowedClosedLoopError(0.1, 0);
         m_extensionPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion);
