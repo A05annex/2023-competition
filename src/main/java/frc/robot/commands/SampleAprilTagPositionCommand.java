@@ -49,7 +49,7 @@ public class SampleAprilTagPositionCommand extends A05DriveCommand {
         alignedWithAprilTag = false;
         ticksAligned = 0;
         m_driveSubsystem.setHeading(AngleConstantD.ZERO);
-        lastFrame = Constants.DRIVE_CAMERA.getLatestResult();
+        lastFrame = Constants.DRIVE_CAMERA.getCamera().getLatestResult();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class SampleAprilTagPositionCommand extends A05DriveCommand {
         // checks to see if we have aligned with an AprilTag yet.
         if (!alignedWithAprilTag) {
             // grab last target. Prevents a new frame that could be missing a target from coming in until everything has run
-            lastFrame = m_photonSubsystem.updateLastTarget(Constants.DRIVE_CAMERA, lastFrame);
+            lastFrame = m_photonSubsystem.updateLastTarget(Constants.DRIVE_CAMERA.getCamera(), lastFrame);
 
             // was there was a target in the last frame
             if(lastFrame.hasTargets()) {

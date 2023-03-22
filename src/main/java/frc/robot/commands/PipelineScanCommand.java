@@ -12,7 +12,7 @@ public class PipelineScanCommand extends CommandBase {
     private final PhotonCamera camera;
 
     // Stores the current pipeline
-    private PhotonVisionSubsystem.PIPELINES currentPipeline = PhotonVisionSubsystem.PIPELINES.clawCurrent;
+    private PhotonVisionSubsystem.PIPELINE currentPipeline = PhotonVisionSubsystem.PIPELINE.clawCurrent;
 
     // Counter to keep track of how many ticks it's been since there has been no target
     private int ticksLost;
@@ -52,10 +52,10 @@ public class PipelineScanCommand extends CommandBase {
             }
             // No Target recently. try the other pipeline.
             else {
-                if (currentPipeline == PhotonVisionSubsystem.PIPELINES.CONE) {
-                    currentPipeline = PhotonVisionSubsystem.PIPELINES.CUBE;
+                if (currentPipeline == PhotonVisionSubsystem.PIPELINE.CONE) {
+                    currentPipeline = PhotonVisionSubsystem.PIPELINE.CUBE;
                 } else {
-                    currentPipeline = PhotonVisionSubsystem.PIPELINES.CONE;
+                    currentPipeline = PhotonVisionSubsystem.PIPELINE.CONE;
                 }
                 m_photonSubsystem.setPipeline(camera, currentPipeline);
 

@@ -75,6 +75,10 @@ public class Robot extends A05Robot
         SmartDashboard.putNumber("heading", NavX.getInstance().getHeading().getDegrees());
         SmartDashboard.putNumber("raw yaw", NavX.getInstance().getNavInfo().rawYaw.getDegrees());
         SmartDashboard.putNumber("yaw", NavX.getInstance().getNavInfo().yaw.getDegrees());
+
+        Constants.DRIVE_CAMERA.updateLastFrameAndTarget();
+        SmartDashboard.putNumber("cam Y", Constants.DRIVE_CAMERA.getYFromLastTarget());
+        SmartDashboard.putNumber("cam X", Constants.DRIVE_CAMERA.getXFromLastTarget());
     }
 
     
@@ -116,6 +120,10 @@ public class Robot extends A05Robot
         SmartDashboard.putNumber("heading", NavX.getInstance().getHeading().getDegrees());
         SmartDashboard.putNumber("raw yaw", NavX.getInstance().getNavInfo().rawYaw.getDegrees());
         SmartDashboard.putNumber("yaw", NavX.getInstance().getNavInfo().yaw.getDegrees());
+
+        Constants.DRIVE_CAMERA.updateLastFrameAndTarget();
+        SmartDashboard.putNumber("cam Y", Constants.DRIVE_CAMERA.getYFromLastTarget());
+        SmartDashboard.putNumber("cam X", Constants.DRIVE_CAMERA.getXFromLastTarget() - 1.0);
     }
     
     @Override

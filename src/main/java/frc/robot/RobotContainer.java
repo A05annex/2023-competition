@@ -72,8 +72,6 @@ public class RobotContainer extends A05RobotContainer
 
         m_driveCommand = new DriveCommand(m_driveXbox, m_driver);
 
-        m_pipelineScanCommand = new PipelineScanCommand(Constants.CLAW_CAMERA);
-
         m_sampleAprilTagPositionCommand = new SampleAprilTagPositionCommand(m_driveXbox, m_driver);
 
         m_driveSubsystem.setDefaultCommand(m_driveCommand);
@@ -137,7 +135,8 @@ public class RobotContainer extends A05RobotContainer
         m_xboxRightBumper.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when released
 
         // Run the balancer while drive X is pressed
-        m_xboxX.whileTrue(new AutoBalanceCommand());
+        //m_xboxX.whileTrue(new AutoBalanceCommand());
+        m_xboxX.whileTrue(new TranslateAprilTagCommand());
 
         // Toggle manual arm control when alt Back is pressed
         m_altXboxBack.toggleOnTrue(new ManualArmCommand(m_altXbox));

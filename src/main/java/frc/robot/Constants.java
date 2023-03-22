@@ -6,6 +6,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.a05annex.frc.A05Constants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.photonvision.PhotonCamera;
@@ -34,7 +35,8 @@ public final class Constants extends A05Constants
     //DRIVE_XBOX_PORT = 0 (Set in A05Constants) Leave commented
     public static final int ALT_XBOX_PORT = 1; // 2nd Controller for more controls
 
-    public static final PhotonCamera DRIVE_CAMERA = new PhotonCamera("Camera 1");
+    //public static final PhotonCamera DRIVE_CAMERA = new PhotonCamera("Camera 1");
+    public static final PhotonVisionSubsystem.Camera DRIVE_CAMERA = new PhotonVisionSubsystem.Camera(new PhotonCamera("Camera 1"), PhotonVisionSubsystem.PIPELINE.APRILTAGS);
     public static final PhotonCamera CLAW_CAMERA = new PhotonCamera("Camera 2");
 
     // kP for keeping drive at the same orientation
