@@ -44,7 +44,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final RelativeEncoder m_extensionEncoder = m_extension.getEncoder();
     private final SparkMaxPIDController m_extensionPID = m_extension.getPIDController();
     // Array of positions. [starting position, min position, max position]
-    private final double[] extensionPositions = {111.51, 0.0, 111.51};
+    private final double[] extensionPositions = {0.0, 0.0, 111.51};
     private final double extensionKP = 0.00005, extensionKI = 0.0, extensionKIZone = 0.0, extensionKff = 0.000156;
     private final double extensionTicksPerInch = 3.7989887133;
 
@@ -57,14 +57,14 @@ public class ArmSubsystem extends SubsystemBase {
      * Stores notable arm positions along with methods to update and go to them
      */
     public enum ArmPositions {
-        RETRACTED(0.0, 111.51),
-        CONE_HIGH(17.5, 0),
-        CONE_MEDIUM(17.3, 69.15),
-        CUBE_HIGH(20.21, 30.0),
-        CUBE_MEDIUM(24.14,85.96),
-        HYBRID(33.92, 111.51),
-        SUBSTATION_CUBE(20.9, 43.01),
-        SUBSTATION_CONE(20.7142, 46.13);
+        RETRACTED(0.0, 0.0),
+        CONE_HIGH(17.5, 111.51),
+        CONE_MEDIUM(17.3, 42.36),
+        CUBE_HIGH(20.21, 81.51),
+        CUBE_MEDIUM(24.14,25.82),
+        HYBRID(33.92, 0.0),
+        SUBSTATION_CUBE(20.9, 68.5),
+        SUBSTATION_CONE(20.7142, 65.38);
 
         private final ArmSubsystem armSubsystem = ArmSubsystem.getInstance();
 
@@ -161,6 +161,7 @@ public class ArmSubsystem extends SubsystemBase {
 
         // Initialize the extension motor
         m_extension.restoreFactoryDefaults();
+        m_extension.setInverted(true);
         m_extensionEncoder.setPosition(extensionPositions[START_POSITION]);
         m_extensionPID.setOutputRange(-1.0, 1.0);
         setPID(m_extensionPID, extensionKP, extensionKI, extensionKIZone, extensionKff);

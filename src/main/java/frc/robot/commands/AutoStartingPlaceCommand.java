@@ -10,9 +10,9 @@ public class AutoStartingPlaceCommand extends CommandBase {
     private final ClawSubsystem clawSubsystem = ClawSubsystem.getInstance();
 
     private final double PIVOT = -21.178;
-    private final double EXTENSION = 25.437;
+    private final double EXTENSION = 86.073;
     private final double DEADBAND = 0.5;
-    private boolean isFinished = false;
+    private boolean isFinished;
 
     private int ticks;
 
