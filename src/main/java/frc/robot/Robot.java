@@ -79,6 +79,7 @@ public class Robot extends A05Robot
         Constants.DRIVE_CAMERA.updateLastFrameAndTarget();
         SmartDashboard.putNumber("cam Y", Constants.DRIVE_CAMERA.getYFromLastTarget());
         SmartDashboard.putNumber("cam X", Constants.DRIVE_CAMERA.getXFromLastTarget());
+        SmartDashboard.putNumber("latency", Constants.DRIVE_CAMERA.getLastFrame().getLatencyMillis());
     }
 
     
@@ -124,6 +125,7 @@ public class Robot extends A05Robot
         Constants.DRIVE_CAMERA.updateLastFrameAndTarget();
         SmartDashboard.putNumber("cam Y", Constants.DRIVE_CAMERA.getYFromLastTarget());
         SmartDashboard.putNumber("cam X", Constants.DRIVE_CAMERA.getXFromLastTarget() - 1.0);
+        SmartDashboard.putNumber("latency", Constants.DRIVE_CAMERA.getLastFrame().getLatencyMillis());
     }
     
     @Override

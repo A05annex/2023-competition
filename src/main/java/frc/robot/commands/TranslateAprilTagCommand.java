@@ -1,21 +1,17 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.a05annex.frc.commands.AbsoluteSmartTranslateCommand;
 import org.a05annex.frc.subsystems.DriveSubsystem;
+import org.a05annex.util.AngleD;
 
 
 public class TranslateAprilTagCommand extends CommandBase {
 
     private final DriveSubsystem driveSubsystem = DriveSubsystem.getInstance();
-
-    // How many times you want the translate to run
-    private final int iterations = 3;
-
-    // Stores how many translates have run
-    private int translatesCompleted;
 
     // Stores the current translate command
     private AbsoluteSmartTranslateCommand translate = null;
@@ -25,12 +21,19 @@ public class TranslateAprilTagCommand extends CommandBase {
     // Pointer to camera
     private final PhotonVisionSubsystem.Camera camera = Constants.DRIVE_CAMERA;
 
+    private final double tolerance = 0.0254;
+
     private final double xPosition = 1.0;
-    private final double yPosition = 0.119;
+    private final double yPosition = 0.0;
 
     // Constants of the drive
-    private final double[] speed = {0.5, 0.2, 0.2};
-    private final double[] accel = {5000.0, 2000.0, 1000.0};
+    private final double speed = 0.75;
+    private final double accel = 7000.0;
+
+    private final int latencyCycles = 7;
+    private int latencyCycleCounter;
+
+    private long startTime;
 
     public TranslateAprilTagCommand() {
         // each subsystem used by the command must be passed into the
@@ -41,19 +44,28 @@ public class TranslateAprilTagCommand extends CommandBase {
     @Override
     public void initialize() {
         camera.updateLastFrameAndTarget();
-        translatesCompleted = 0;
+        latencyCycleCounter = 0;
+        startTime = System.currentTimeMillis();
         isFinished = false;
-        if(camera.doLastFrameAndTargetMatch()) {
-            translate = new AbsoluteSmartTranslateCommand(camera.getXFromLastTarget() - xPosition, camera.getYFromLastTarget() - yPosition, speed[translatesCompleted], accel[translatesCompleted], false);
-            translate.initialize();
-        }
+
+        driveSubsystem.swerveDrive(AngleD.ZERO, 0.0, 0.0);
     }
 
     @Override
     public void execute() {
+        if (latencyCycleCounter < latencyCycles) {
+            latencyCycleCounter++;
+            return;
+        }
+
         camera.updateLastFrameAndTarget();
         if(translate == null && camera.doLastFrameAndTargetMatch()) {
-            translate = new AbsoluteSmartTranslateCommand(camera.getXFromLastTarget() - xPosition, camera.getYFromLastTarget() - yPosition, speed[translatesCompleted], accel[translatesCompleted], false);
+            if(Math.abs(camera.getXFromLastTarget() - xPosition) < tolerance && Math.abs(camera.getYFromLastTarget() - yPosition) < tolerance) {
+                isFinished = true;
+                return;
+            }
+
+            translate = new AbsoluteSmartTranslateCommand(camera.getXFromLastTarget() - xPosition, camera.getYFromLastTarget() - yPosition, speed, accel, false);
             translate.initialize();
             return;
         }
@@ -62,8 +74,8 @@ public class TranslateAprilTagCommand extends CommandBase {
         }
 
         if(translate.isFinished()) {
-            translatesCompleted++;
-            if(translatesCompleted == iterations) {
+            latencyCycleCounter = 0;
+            if(Math.abs(camera.getXFromLastTarget() - xPosition) < tolerance && Math.abs(camera.getYFromLastTarget() - yPosition) < tolerance) {
                 isFinished = true;
             }
             translate = null;
@@ -77,6 +89,6 @@ public class TranslateAprilTagCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-
+        SmartDashboard.putNumber("total time", System.currentTimeMillis() - startTime);
     }
 }
