@@ -5,6 +5,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -25,6 +26,8 @@ import java.util.Collections;
  */
 public class Robot extends A05Robot
 {
+    private final int MEM_REPORT_CYCLES = 5;
+    private int cyclesSinceMemReport = 0;
     
     /**
      * This method is run when the robot is first started up and should be used for any
@@ -60,7 +63,21 @@ public class Robot extends A05Robot
         setRobotContainer(new RobotContainer());
     }
     
-
+    private void memReportPeriodic() {System.gc();
+        cyclesSinceMemReport++;
+        Runtime rt = Runtime.getRuntime();
+        double totalMB = rt.totalMemory() / 1048576.0;
+        double freeMB = rt.freeMemory() / 1048576.0;
+        double usedMb = totalMB - freeMB;
+        SmartDashboard.putNumber("RIO mem total (MB)", totalMB);
+        SmartDashboard.putNumber("RIO mem used (MB)", usedMb);
+        SmartDashboard.putNumber("RIO mem free (MB)", freeMB);
+        if (cyclesSinceMemReport >= MEM_REPORT_CYCLES) {
+            DriverStation.reportWarning(
+                    String.format("Memory(mb): total=%f7.3, used=%f7.3, free=%f7.3", totalMB, usedMb, freeMB), false);
+            cyclesSinceMemReport = 0;
+        }
+    }
     
     /** This method is called once each time the robot enters Disabled mode. */
     @Override
@@ -75,6 +92,7 @@ public class Robot extends A05Robot
         SmartDashboard.putNumber("heading", NavX.getInstance().getHeading().getDegrees());
         SmartDashboard.putNumber("raw yaw", NavX.getInstance().getNavInfo().rawYaw.getDegrees());
         SmartDashboard.putNumber("yaw", NavX.getInstance().getNavInfo().yaw.getDegrees());
+        memReportPeriodic();
     }
 
     
@@ -86,14 +104,14 @@ public class Robot extends A05Robot
         ArmSubsystem.getInstance().enableInit();
         // Sets up autonomous command
         super.autonomousInit();
-
-
     }
     
     
     /** This method is called periodically during autonomous. */
     @Override
-    public void autonomousPeriodic() {}
+    public void autonomousPeriodic() {
+        memReportPeriodic();
+    }
     
     
     @Override
@@ -116,6 +134,7 @@ public class Robot extends A05Robot
         SmartDashboard.putNumber("heading", NavX.getInstance().getHeading().getDegrees());
         SmartDashboard.putNumber("raw yaw", NavX.getInstance().getNavInfo().rawYaw.getDegrees());
         SmartDashboard.putNumber("yaw", NavX.getInstance().getNavInfo().yaw.getDegrees());
+        memReportPeriodic();
     }
     
     @Override
