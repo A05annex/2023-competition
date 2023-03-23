@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.ArmSubsystem;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.NavX;
 import org.a05annex.frc.subsystems.DriveSubsystem;
@@ -48,6 +49,7 @@ public class AutoBalanceCommand extends CommandBase {
         ticksBalanced = 0;
         m_pitch = NavX.getInstance().getNavInfo().roll;
         upField = navX.getHeadingInfo().getClosestDownOrUpField() == navX.getHeadingInfo().getClosestDownField() ? -1.0 : 1.0;
+        ArmSubsystem.ArmPositions.RETRACTED.goTo();
     }
 
     @Override
