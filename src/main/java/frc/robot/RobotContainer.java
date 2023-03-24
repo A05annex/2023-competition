@@ -81,7 +81,7 @@ public class RobotContainer extends A05RobotContainer
         m_driveSubsystem.setDefaultCommand(m_driveCommand);
 
         if (m_autoCommand != null) {
-            m_autoCommand.setMirror(Constants.readMirrorSwitch());
+            m_autoCommand.setMirror(!Constants.readMirrorSwitch()); // Something was backwards
         }
 
         // Configure the button bindings
