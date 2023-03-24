@@ -45,6 +45,8 @@ public class Robot extends A05Robot
         // Load the driver list
         Collections.addAll(A05Constants.DRIVER_SETTINGS_LIST,Constants.DRIVER_SETTINGS);
 
+        //Constants.CLAW_CAMERA.setDriverMode(false);
+
 
         SmartDashboard.putData("Cone High", new InstantCommand(ArmSubsystem.ArmPositions.CONE_HIGH::goTo));
         SmartDashboard.putData("Cone Middle", new InstantCommand(ArmSubsystem.ArmPositions.CONE_MEDIUM::goTo));

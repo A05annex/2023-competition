@@ -27,10 +27,10 @@ public class TranslateAprilTagCommand extends CommandBase {
     private final double yPosition = 0.0;
 
     // Constants of the drive
-    private final double speed = 0.75;
-    private final double accel = 7000.0;
+    private final double speed = 1.0;
+    private final double accel = 4000.0;
 
-    private final int latencyCycles = 7;
+    private final int latencyCycles = 5;
     private int latencyCycleCounter;
 
     private long startTime;

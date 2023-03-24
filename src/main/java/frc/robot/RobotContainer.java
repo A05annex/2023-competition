@@ -107,6 +107,8 @@ public class RobotContainer extends A05RobotContainer
 
         // Retract and go upright with the arm when either controller's B button is pressed
         m_xboxB.onTrue(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
+        //m_xboxB.whileTrue(new AbsoluteSmartTranslateCommand(2.0, 0.0, 1.0, 4000.0, false));
+        //m_xboxX.whileTrue(new AbsoluteSmartTranslateCommand(-2.0, 0.0, 1.0, 4000.0, false));
         m_altXboxB.onTrue(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
 
 

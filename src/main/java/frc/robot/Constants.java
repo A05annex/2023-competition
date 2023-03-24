@@ -37,7 +37,7 @@ public final class Constants extends A05Constants
 
     //public static final PhotonCamera DRIVE_CAMERA = new PhotonCamera("Camera 1");
     public static final PhotonVisionSubsystem.Camera DRIVE_CAMERA = new PhotonVisionSubsystem.Camera(new PhotonCamera("Camera 1"), PhotonVisionSubsystem.PIPELINE.APRILTAGS);
-    public static final PhotonCamera CLAW_CAMERA = new PhotonCamera("Camera 2");
+    //public static final PhotonCamera CLAW_CAMERA = new PhotonCamera("Camera 2");
 
     // kP for keeping drive at the same orientation
     public static double DRIVE_ORIENTATION_kP = 1.2;
