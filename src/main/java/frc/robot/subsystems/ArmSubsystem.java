@@ -149,6 +149,7 @@ public class ArmSubsystem extends SubsystemBase {
         forwardEncoder.setPosition(pivotPositions[START_POSITION]);
         forwardPID.setOutputRange(-1.0, 1.0);
         forwardSupportPivot.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        forwardSupportPivot.setSmartCurrentLimit(60,20, 2000);
 
         // Initialize the forward support pivot motor
         backwardSupportPivot.restoreFactoryDefaults();
@@ -156,6 +157,7 @@ public class ArmSubsystem extends SubsystemBase {
         backwardEncoder.setPosition(pivotPositions[START_POSITION]);
         backwardPID.setOutputRange(-1.0, 1.0);
         backwardSupportPivot.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        backwardSupportPivot.setSmartCurrentLimit(60,20, 2000);
 
         setPivotSmartMotionPIDs(forwardPID, backwardPID);
 
