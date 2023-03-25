@@ -32,7 +32,6 @@ public class RobotContainer extends A05RobotContainer
 
     // Commands
 
-    SampleAprilTagPositionCommand m_sampleAprilTagPositionCommand;
     PipelineScanCommand m_pipelineScanCommand;
 
     XboxController m_altXbox = new XboxController(Constants.ALT_XBOX_PORT);
@@ -71,8 +70,6 @@ public class RobotContainer extends A05RobotContainer
                 m_robotSettings.m_maxSpeedCalibration);
 
         m_driveCommand = new DriveCommand(m_driveXbox, m_driver);
-
-        m_sampleAprilTagPositionCommand = new SampleAprilTagPositionCommand(m_driveXbox, m_driver);
 
         m_driveSubsystem.setDefaultCommand(m_driveCommand);
 
@@ -138,7 +135,7 @@ public class RobotContainer extends A05RobotContainer
 
         // Run the balancer while drive X is pressed
         //m_xboxX.whileTrue(new AutoBalanceCommand());
-        m_xboxX.whileTrue(new TranslateAprilTagCommand());
+        m_xboxX.whileTrue(new SpeedAprilTagPositionCommand(m_driveXbox, m_driver, 1.0, 0.0, 0.6, 1.0, true));
 
         // Toggle manual arm control when alt Back is pressed
         m_altXboxBack.toggleOnTrue(new ManualArmCommand(m_altXbox));
