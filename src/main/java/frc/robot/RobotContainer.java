@@ -13,6 +13,7 @@ import frc.robot.commands.*;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.PhotonVisionSubsystem;
+import frc.robot.subsystems.SpeedCachedSwerve;
 import org.a05annex.frc.A05RobotContainer;
 
 /**
@@ -29,6 +30,7 @@ public class RobotContainer extends A05RobotContainer
     // Subsystems
     ClawSubsystem m_clawSubsystem = ClawSubsystem.getInstance();
     PhotonVisionSubsystem photonSubsystem = PhotonVisionSubsystem.getInstance();
+    SpeedCachedSwerve speedCachedSwerve = SpeedCachedSwerve.getInstance();
 
     // Commands
 
@@ -67,6 +69,8 @@ public class RobotContainer extends A05RobotContainer
         super();
         // finish swerve drive initialization for this specific robt.
         m_navx.setYawCalibrationFactor(m_robotSettings.m_navxYawCalibration);
+        speedCachedSwerve.setDriveSubsystem(m_driveSubsystem);
+        speedCachedSwerve.setCacheLength(50);
         m_driveSubsystem.setDriveGeometry(m_robotSettings.m_length, m_robotSettings.m_width,
                 m_robotSettings.m_rf, m_robotSettings.m_rr,
                 m_robotSettings.m_lf, m_robotSettings.m_lr,
@@ -104,7 +108,7 @@ public class RobotContainer extends A05RobotContainer
         m_xboxBack.onTrue(new InstantCommand(m_navx::initializeHeadingAndNav));
 
         // Toggle between robot and field relative when drive Start is pressed
-        m_xboxStart.onTrue(new InstantCommand(m_driveSubsystem::toggleDriveMode));
+        m_xboxStart.onTrue(new InstantCommand(speedCachedSwerve::toggleDriveMode));
 
         m_xboxA.whileTrue(new FaceUpFieldCommand(m_driveXbox, m_driver));
         m_xboxY.whileTrue(new FaceDownFieldCommand(m_driveXbox, m_driver));

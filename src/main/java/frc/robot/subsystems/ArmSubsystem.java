@@ -324,7 +324,7 @@ public class ArmSubsystem extends SubsystemBase {
             System.out.println("Extension motor was requested to go to position: " + position + " but was outside limits");
         }
         extensionPID.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
-        extensionPID.setSmartMotionMaxVelocity(6000.0, 0);
+        extensionPID.setSmartMotionMaxVelocity(10000.0, 0);
         extensionPID.setSmartMotionMaxAccel(10000.0, 0);
         extensionPID.setSmartMotionMinOutputVelocity(0.0, 0);
         extensionPID.setSmartMotionAllowedClosedLoopError(0.1, 0);
