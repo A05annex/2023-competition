@@ -6,6 +6,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.a05annex.frc.A05Constants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.photonvision.PhotonCamera;
@@ -28,14 +29,30 @@ public final class Constants extends A05Constants
                 ARM_EXTENSION_MOTOR = 13;
     }
 
+    public enum AprilTagSet {
+        SUBSTATION(new int[] {4}, new int[] {5}, false),
+        NODE(new int[] {6, 7, 8}, new int[] {1, 2, 3}, true);
+
+        public final int[] blue;
+        public final int[] red;
+        public final boolean upfield;
+
+        AprilTagSet(int[] blue, int[] red, boolean upfield) {
+            this.blue = blue;
+            this.red = red;
+            this.upfield = upfield;
+        }
+    }
+
     public static final int PNEUMATICS_FORWARD = 14, PNEUMATICS_REVERSE = 15;
 
     // Port 0 is whichever controller was plugged in first, not a specific port.
     //DRIVE_XBOX_PORT = 0 (Set in A05Constants) Leave commented
     public static final int ALT_XBOX_PORT = 1; // 2nd Controller for more controls
 
-    public static final PhotonCamera DRIVE_CAMERA = new PhotonCamera("Camera 1");
-    public static final PhotonCamera CLAW_CAMERA = new PhotonCamera("Camera 2");
+    //public static final PhotonCamera DRIVE_CAMERA = new PhotonCamera("Camera 1");
+    public static final PhotonVisionSubsystem.Camera DRIVE_CAMERA = new PhotonVisionSubsystem.Camera(new PhotonCamera("Camera 1"), PhotonVisionSubsystem.PIPELINE.APRILTAGS);
+    //public static final PhotonCamera CLAW_CAMERA = new PhotonCamera("Camera 2");
 
     // kP for keeping drive at the same orientation
     public static double DRIVE_ORIENTATION_kP = 1.2;

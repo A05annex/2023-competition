@@ -34,7 +34,6 @@ public class RobotContainer extends A05RobotContainer
 
     // Commands
 
-    SampleAprilTagPositionCommand m_sampleAprilTagPositionCommand;
     PipelineScanCommand m_pipelineScanCommand;
 
     XboxController m_altXbox = new XboxController(Constants.ALT_XBOX_PORT);
@@ -78,10 +77,6 @@ public class RobotContainer extends A05RobotContainer
 
         m_driveCommand = new DriveCommand(m_driveXbox, m_driver);
 
-        m_pipelineScanCommand = new PipelineScanCommand(Constants.CLAW_CAMERA);
-
-        m_sampleAprilTagPositionCommand = new SampleAprilTagPositionCommand(m_driveXbox, m_driver);
-
         m_driveSubsystem.setDefaultCommand(m_driveCommand);
 
         if (m_autoCommand != null) {
@@ -115,6 +110,8 @@ public class RobotContainer extends A05RobotContainer
 
         // Retract and go upright with the arm when either controller's B button is pressed
         m_xboxB.onTrue(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
+        //m_xboxB.whileTrue(new AbsoluteSmartTranslateCommand(2.0, 0.0, 1.0, 4000.0, false));
+        //m_xboxX.whileTrue(new AbsoluteSmartTranslateCommand(-2.0, 0.0, 1.0, 4000.0, false));
         m_altXboxB.onTrue(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
 
 
@@ -143,7 +140,8 @@ public class RobotContainer extends A05RobotContainer
         m_xboxRightBumper.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when released
 
         // Run the balancer while drive X is pressed
-        m_xboxX.whileTrue(new AutoBalanceCommand());
+        //m_xboxX.whileTrue(new AutoBalanceCommand());
+        m_xboxX.whileTrue(new SpeedAprilTagPositionCommand(m_driveXbox, m_driver, 1.0, 0.0, 1.0, 1.0, Constants.AprilTagSet.SUBSTATION));
 
         // Toggle manual arm control when alt Back is pressed
         m_altXboxBack.toggleOnTrue(new ManualArmCommand(m_altXbox));
