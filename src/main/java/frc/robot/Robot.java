@@ -107,7 +107,7 @@ public class Robot extends A05Robot
         SpeedCachedSwerve.getInstance().recalibrate();
         // Cancels autonomous command
         super.teleopInit();
-        //ArmSubsystem.getInstance().enableInit();
+        ArmSubsystem.getInstance().enableInit();
 
         ArmSubsystem.getInstance().setExtensionPosition(ArmSubsystem.getInstance().getExtensionPosition());
         ArmSubsystem.getInstance().setPivotPosition(ArmSubsystem.getInstance().getPivotPosition());

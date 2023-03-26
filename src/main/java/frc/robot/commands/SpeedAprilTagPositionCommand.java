@@ -31,7 +31,7 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
 
     private final PhotonVisionSubsystem.Camera camera = Constants.DRIVE_CAMERA;
 
-    private final int resumeDrivingTickThreshold = 40;
+    private final int resumeDrivingTickThreshold = 50;
 
     private int ticksWithoutTarget;
 
