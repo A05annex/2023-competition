@@ -29,6 +29,19 @@ public final class Constants extends A05Constants
                 ARM_EXTENSION_MOTOR = 13;
     }
 
+    public enum AprilTagSet {
+        SUBSTATION(new int[] {4}, new int[] {5}),
+        NODE(new int[] {6, 7, 8}, new int[] {1, 2, 3});
+
+        public final int[] blue;
+        public final int[] red;
+
+        AprilTagSet(int[] blue, int[] red) {
+            this.blue = blue;
+            this.red = red;
+        }
+    }
+
     public static final int PNEUMATICS_FORWARD = 14, PNEUMATICS_REVERSE = 15;
 
     // Port 0 is whichever controller was plugged in first, not a specific port.
