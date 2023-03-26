@@ -22,7 +22,7 @@ public class DriveCommand extends A05DriveCommand {
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
         addRequirements(this.driveSubsystem.getDriveSubsystem());
-
+        // This let' us insert a the speed cache before commands get to the drive.
         setISwerveDrive(driveSubsystem);
     }
 

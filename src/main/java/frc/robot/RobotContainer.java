@@ -71,7 +71,7 @@ public class RobotContainer extends A05RobotContainer
         m_navx.setYawCalibrationFactor(m_robotSettings.m_navxYawCalibration);
         speedCachedSwerve.setDriveSubsystem(m_driveSubsystem);
         speedCachedSwerve.setCacheLength(50);
-        m_driveSubsystem.setDriveGeometry(m_robotSettings.m_length, m_robotSettings.m_width,
+        speedCachedSwerve.setDriveGeometry(m_robotSettings.m_length, m_robotSettings.m_width,
                 m_robotSettings.m_rf, m_robotSettings.m_rr,
                 m_robotSettings.m_lf, m_robotSettings.m_lr,
                 m_robotSettings.m_maxSpeedCalibration);
