@@ -56,7 +56,9 @@ public class RobotContainer extends A05RobotContainer
             m_xboxStart = new JoystickButton(m_driveXbox, 8),
             m_altXboxStart = new JoystickButton(m_altXbox, 8),
             m_xboxLeftStickPress = new JoystickButton(m_driveXbox, 9),
-            m_xboxRightStickPress = new JoystickButton(m_driveXbox, 10);
+            m_altXboxLeftStickPress = new JoystickButton(m_altXbox, 9),
+            m_xboxRightStickPress = new JoystickButton(m_driveXbox, 10),
+            m_altXboxRightStickPress = new JoystickButton(m_altXbox, 10);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
@@ -74,7 +76,7 @@ public class RobotContainer extends A05RobotContainer
         m_driveSubsystem.setDefaultCommand(m_driveCommand);
 
         if (m_autoCommand != null) {
-            m_autoCommand.setMirror(Constants.readMirrorSwitch());
+            m_autoCommand.setMirror(!Constants.readMirrorSwitch()); // Something was backwards
         }
 
         // Configure the button bindings
@@ -122,7 +124,7 @@ public class RobotContainer extends A05RobotContainer
         m_altXboxA.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
 
 
-        // Open the claw when the left bumper is pressed and close it when the right one is pressed on either controller
+        // Open the claw when alt left bumper is pressed and close it when the right one is pressed.
         m_altXboxLeftBumper.onTrue(new InstantCommand(m_clawSubsystem::open));
         m_altXboxLeftBumper.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when released
         m_altXboxRightBumper.onTrue(new InstantCommand(m_clawSubsystem::close));
@@ -139,6 +141,10 @@ public class RobotContainer extends A05RobotContainer
 
         // Toggle manual arm control when alt Back is pressed
         m_altXboxBack.toggleOnTrue(new ManualArmCommand(m_altXbox));
+
+        // Go to the substaion positions
+        m_altXboxLeftStickPress.onTrue(new InstantCommand(ArmSubsystem.ArmPositions.SUBSTATION_CUBE::goTo));
+        m_altXboxRightStickPress.onTrue(new InstantCommand(ArmSubsystem.ArmPositions.SUBSTATION_CONE::goTo));
 
         // Toggle the Can Drive box on the dashboard when any of the position commands are run
         m_altXboxA.onTrue(new InstantCommand(photonSubsystem::canDriveFalse));

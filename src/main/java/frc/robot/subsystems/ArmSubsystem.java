@@ -39,10 +39,10 @@ public class ArmSubsystem extends SubsystemBase {
     private CANSparkMax.ControlType lastPivotDriveMode = CANSparkMax.ControlType.kPosition;
 
     // Declaring everything for the extension motor
-    private final CANSparkMax m_extension = new CANSparkMax(Constants.CAN_Devices.ARM_EXTENSION_MOTOR,
+    private final CANSparkMax extension = new CANSparkMax(Constants.CAN_Devices.ARM_EXTENSION_MOTOR,
             CANSparkMaxLowLevel.MotorType.kBrushless);
-    private final RelativeEncoder m_extensionEncoder = m_extension.getEncoder();
-    private final SparkMaxPIDController m_extensionPID = m_extension.getPIDController();
+    private final RelativeEncoder extensionEncoder = extension.getEncoder();
+    private final SparkMaxPIDController extensionPID = extension.getPIDController();
     // Array of positions. [starting position, min position, max position]
     private final double[] extensionPositions = {0.0, 0.0, 111.51};
     private final double extensionKP = 0.00005, extensionKI = 0.0, extensionKIZone = 0.0, extensionKff = 0.000156;
@@ -149,6 +149,7 @@ public class ArmSubsystem extends SubsystemBase {
         forwardEncoder.setPosition(pivotPositions[START_POSITION]);
         forwardPID.setOutputRange(-1.0, 1.0);
         forwardSupportPivot.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        forwardSupportPivot.setSmartCurrentLimit(60,20, 2000);
 
         // Initialize the forward support pivot motor
         backwardSupportPivot.restoreFactoryDefaults();
@@ -156,16 +157,18 @@ public class ArmSubsystem extends SubsystemBase {
         backwardEncoder.setPosition(pivotPositions[START_POSITION]);
         backwardPID.setOutputRange(-1.0, 1.0);
         backwardSupportPivot.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        backwardSupportPivot.setSmartCurrentLimit(60,20, 2000);
 
         setPivotSmartMotionPIDs(forwardPID, backwardPID);
 
         // Initialize the extension motor
-        m_extension.restoreFactoryDefaults();
-        m_extension.setInverted(true);
-        m_extensionEncoder.setPosition(extensionPositions[START_POSITION]);
-        m_extensionPID.setOutputRange(-1.0, 1.0);
-        setPID(m_extensionPID, extensionKP, extensionKI, extensionKIZone, extensionKff);
-        m_extension.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        extension.restoreFactoryDefaults();
+        extension.setInverted(true);
+        extensionEncoder.setPosition(extensionPositions[START_POSITION]);
+        extensionPID.setOutputRange(-1.0, 1.0);
+        setPID(extensionPID, extensionKP, extensionKI, extensionKIZone, extensionKff);
+        extension.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        extension.setSmartCurrentLimit(45, 20, 3000);
     }
 
     public void enableInit() {
@@ -265,7 +268,7 @@ public class ArmSubsystem extends SubsystemBase {
      * @return Double of the current location of the extension motor
      */
     public double getExtensionPosition() {
-        return m_extensionEncoder.getPosition();
+        return extensionEncoder.getPosition();
     }
 
     /**
@@ -307,7 +310,7 @@ public class ArmSubsystem extends SubsystemBase {
         else if(getExtensionPosition() < extensionPositions[MIN_POSITION] + STOP_DEADBAND && power < 0) {
             setExtensionPosition(extensionPositions[MIN_POSITION]);
         } else {
-            m_extension.set(power);
+            extension.set(power);
         }
     }
 
@@ -320,12 +323,12 @@ public class ArmSubsystem extends SubsystemBase {
         if(A05Constants.getPrintDebug() && clippedPosition != position) {
             System.out.println("Extension motor was requested to go to position: " + position + " but was outside limits");
         }
-        m_extensionPID.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
-        m_extensionPID.setSmartMotionMaxVelocity(6000.0, 0);
-        m_extensionPID.setSmartMotionMaxAccel(10000.0, 0);
-        m_extensionPID.setSmartMotionMinOutputVelocity(0.0, 0);
-        m_extensionPID.setSmartMotionAllowedClosedLoopError(0.1, 0);
-        m_extensionPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion);
+        extensionPID.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
+        extensionPID.setSmartMotionMaxVelocity(6000.0, 0);
+        extensionPID.setSmartMotionMaxAccel(10000.0, 0);
+        extensionPID.setSmartMotionMinOutputVelocity(0.0, 0);
+        extensionPID.setSmartMotionAllowedClosedLoopError(0.1, 0);
+        extensionPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion);
     }
 
     public void goToCalcPos() {
@@ -358,7 +361,7 @@ public class ArmSubsystem extends SubsystemBase {
      * Stops all motors. Does not persist so if something is periodically powering motors, this won't work.
      */
     public void stopAllMotors() {
-        m_extension.stopMotor();
+        extension.stopMotor();
         backwardSupportPivot.stopMotor();
     }
 
