@@ -54,9 +54,6 @@ public class Robot extends A05Robot
         SmartDashboard.putData("Cube Middle", new InstantCommand(ArmSubsystem.ArmPositions.CUBE_MEDIUM::goTo));
         SmartDashboard.putData("Hybrid", new InstantCommand(ArmSubsystem.ArmPositions.HYBRID::goTo));
         SmartDashboard.putData("Retracted", new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
-
-        Constants.updateConstant("angle", 0.0);
-        Constants.updateConstant("speed", 0.0);
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         setRobotContainer(new RobotContainer());
@@ -74,9 +71,6 @@ public class Robot extends A05Robot
     @Override
     public void disabledPeriodic() {
         A05Constants.printIDs();
-        SmartDashboard.putNumber("heading", NavX.getInstance().getHeading().getDegrees());
-        SmartDashboard.putNumber("raw yaw", NavX.getInstance().getNavInfo().rawYaw.getDegrees());
-        SmartDashboard.putNumber("yaw", NavX.getInstance().getNavInfo().yaw.getDegrees());
 
         Constants.DRIVE_CAMERA.updateLastFrameAndTarget();
         SmartDashboard.putNumber("cam Y", Constants.DRIVE_CAMERA.getYFromLastTarget());
@@ -108,7 +102,7 @@ public class Robot extends A05Robot
     {
         // Cancels autonomous command
         super.teleopInit();
-        ArmSubsystem.getInstance().enableInit();
+        //ArmSubsystem.getInstance().enableInit();
 
         ArmSubsystem.getInstance().setExtensionPosition(ArmSubsystem.getInstance().getExtensionPosition());
         ArmSubsystem.getInstance().setPivotPosition(ArmSubsystem.getInstance().getPivotPosition());

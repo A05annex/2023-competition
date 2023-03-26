@@ -135,7 +135,7 @@ public class RobotContainer extends A05RobotContainer
 
         // Run the balancer while drive X is pressed
         //m_xboxX.whileTrue(new AutoBalanceCommand());
-        m_xboxX.whileTrue(new SpeedAprilTagPositionCommand(m_driveXbox, m_driver, 1.0, 0.0, 1.0, 1.0, true, Constants.AprilTagSet.NODE));
+        m_xboxX.whileTrue(new SpeedAprilTagPositionCommand(m_driveXbox, m_driver, 1.0, 0.0, 1.0, 1.0, Constants.AprilTagSet.SUBSTATION));
 
         // Toggle manual arm control when alt Back is pressed
         m_altXboxBack.toggleOnTrue(new ManualArmCommand(m_altXbox));

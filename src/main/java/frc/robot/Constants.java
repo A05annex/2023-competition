@@ -30,15 +30,17 @@ public final class Constants extends A05Constants
     }
 
     public enum AprilTagSet {
-        SUBSTATION(new int[] {4}, new int[] {5}),
-        NODE(new int[] {6, 7, 8}, new int[] {1, 2, 3});
+        SUBSTATION(new int[] {4}, new int[] {5}, false),
+        NODE(new int[] {6, 7, 8}, new int[] {1, 2, 3}, true);
 
         public final int[] blue;
         public final int[] red;
+        public final boolean upfield;
 
-        AprilTagSet(int[] blue, int[] red) {
+        AprilTagSet(int[] blue, int[] red, boolean upfield) {
             this.blue = blue;
             this.red = red;
+            this.upfield = upfield;
         }
     }
 

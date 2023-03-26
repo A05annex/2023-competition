@@ -18,6 +18,8 @@ import java.util.Arrays;
 
 public class SpeedAprilTagPositionCommand extends A05DriveCommand {
 
+    private long startTime;
+
     private final DriveSubsystem driveSubsystem = DriveSubsystem.getInstance();
 
     private final double xPosition, yPosition, maxSpeed, speedSmoothingMultiplier;
@@ -40,16 +42,16 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
     private final double inZoneThreshold = Units.inchesToMeters(0.5);
 
     // Constants
-    private final double X_MAX = 4.0, X_MIN = 0.0, Y_MAX = 1.5, Y_MIN = -1.5, MAX_SPEED_DELTA = 0.075, ROTATION_KP = 0.9;
+    private final double X_MAX = 3.0, X_MIN = 0.0, Y_MAX = 1.5, Y_MIN = -1.5, MAX_SPEED_DELTA = 0.075, ROTATION_KP = 0.9;
 
-    public SpeedAprilTagPositionCommand(XboxController xbox, A05Constants.DriverSettings driver, double xPosition, double yPosition, double maxSpeed, double speedSmoothingMultiplier, boolean upfield, Constants.AprilTagSet aprilTagSet) {
+    public SpeedAprilTagPositionCommand(XboxController xbox, A05Constants.DriverSettings driver, double xPosition, double yPosition, double maxSpeed, double speedSmoothingMultiplier, Constants.AprilTagSet aprilTagSet) {
         super(xbox, driver);
 
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.maxSpeed = maxSpeed;
         this.speedSmoothingMultiplier = speedSmoothingMultiplier;
-        this.upfield = upfield;
+        this.upfield = aprilTagSet.upfield;
         this.aprilTagSet = aprilTagSet;
 
         addRequirements(this.driveSubsystem);
@@ -75,6 +77,8 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
 
         //SmartDashboard.putBoolean("isRed", NetworkTableInstance.getDefault().getTable("FMSInfo").getEntry("isRedAlliance").getBoolean(true));
         System.out.println("------- RED ALLIANCE " + NetworkTableInstance.getDefault().getTable("FMSInfo").getEntry("IsRedAlliance").getBoolean(true));
+
+        startTime = System.currentTimeMillis();
         //heading = upfield ? m_navx.getHeadingInfo().getClosestUpField() : m_navx.getHeadingInfo().getClosestDownField();
     }
 
@@ -148,14 +152,16 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
         m_lastConditionedSpeed = m_conditionedSpeed;
         m_lastConditionedRotate = m_conditionedRotate;
 
-        driveSubsystem.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);
-
         if(Math.abs(camera.getXFromLastTarget() - xPosition) < inZoneThreshold && Math.abs(camera.getYFromLastTarget() - yPosition) < inZoneThreshold) {
             ticksInZoneCounter++;
+            driveSubsystem.swerveDrive(AngleD.ZERO, 0.0, m_conditionedRotate*0.1);
             if(ticksInZoneCounter > ticksInZone) {
                 isFinished = true;
             }
+            return;
         }
+
+        driveSubsystem.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);
     }
 
     @Override
@@ -167,6 +173,7 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
     public void end(boolean interrupted) {
         // Stop the swerve
         driveSubsystem.swerveDrive(AngleConstantD.ZERO, 0.0, 0.0);
+        SmartDashboard.putNumber("elapsedTime", System.currentTimeMillis() - startTime);
     }
 
 
