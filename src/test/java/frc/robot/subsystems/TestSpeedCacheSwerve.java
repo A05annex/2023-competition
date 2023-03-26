@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.Timer;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.subsystems.Mk4NeoModule;
 import org.a05annex.util.Utl;
@@ -48,7 +49,7 @@ public class TestSpeedCacheSwerve {
         SpeedCachedSwerve SCS = getInitializedSCS();
         SCS.setCacheLength(10);
         for (int i = 0; i < 10; i++) {
-            long currentTime = System.currentTimeMillis();
+            double currentTime = Timer.getFPGATimestamp();
             SCS.swerveDriveComponents((i * 0.1) - 0.5, (i * 0.1) - 0.9, (i * 0.1) - 0.1);
             assertEquals(i, SCS.mostRecentControlRequest);
             assertEquals((i * 0.1) - 0.5, SCS.controlRequests[SCS.mostRecentControlRequest].forward);
@@ -64,5 +65,19 @@ public class TestSpeedCacheSwerve {
         }
 
         assertEquals(9, SCS.mostRecentControlRequest);
+    }
+
+    @Test
+    @DisplayName("test getPositionSinceTime")
+    void TestGetPositionSinceTime() {
+        SpeedCachedSwerve SCS = getInitializedSCS();
+        SCS.addControlRequest(0.2, 0.1, 0.3, 4.0);
+        SCS.addControlRequest(0.2, 0.1, -0.1, 4.02);
+        SCS.addControlRequest(0.2, 0.1, -0.1, 4.04);
+        SCS.addControlRequest(0.2, 0.1, -0.1, 4.06);
+        SCS.addControlRequest(0.2, 0.1, 0.3, 4.08);
+        SpeedCachedSwerve.RobotRelativePosition position =
+                SCS.getRobotRelativePositionSince(4.10, 4.03);
+        //assertEquals(.06 * 0.2 * SCS.getMaxMetersPerSec(), position.forward);
     }
 }

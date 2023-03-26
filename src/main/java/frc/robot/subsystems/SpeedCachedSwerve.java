@@ -1,12 +1,14 @@
 package frc.robot.subsystems;
 
 // import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Timer;
 import org.a05annex.frc.NavX;
 import org.a05annex.frc.subsystems.DriveSubsystem;
 import org.a05annex.frc.subsystems.ISwerveDrive;
 import org.a05annex.frc.subsystems.Mk4NeoModule;
 import org.a05annex.util.AngleConstantD;
 import org.a05annex.util.AngleD;
+import org.a05annex.util.AngleUnit;
 import org.a05annex.util.Utl;
 
 /**
@@ -47,9 +49,9 @@ public class SpeedCachedSwerve implements ISwerveDrive {
         double forward;
         double strafe;
         double rotation;
-        long timeStamp;
+        double timeStamp;
 
-        void set(double forward, double strafe, double rotation, long timeStamp) {
+        void set(double forward, double strafe, double rotation, double timeStamp) {
             this.forward = forward;
             this.strafe = strafe;
             this.rotation = rotation;
@@ -65,7 +67,7 @@ public class SpeedCachedSwerve implements ISwerveDrive {
         public double getRotation() {
             return forward;
         }
-        public long getTimeStamp() {
+        public double getTimeStamp() {
             return timeStamp;
         }
     }
@@ -74,9 +76,9 @@ public class SpeedCachedSwerve implements ISwerveDrive {
         public final double forward;
         public final double strafe;
         public final AngleD heading;
-        public final long timeStamp;
+        public final double timeStamp;
 
-        RobotRelativePosition(double forward, double strafe, AngleD heading, long timeStamp) {
+        RobotRelativePosition(double forward, double strafe, AngleD heading, double timeStamp) {
             this.forward = forward;
             this.strafe = strafe;
             this.heading = heading;
@@ -103,12 +105,28 @@ public class SpeedCachedSwerve implements ISwerveDrive {
         return controlRequests[mostRecentControlRequest];
     }
 
-    public RobotRelativePosition getRobotRelativePositionAt(long time) {
+    public RobotRelativePosition getRobotRelativePositionSince(double sinceTime) {
+        return getRobotRelativePositionSince(Timer.getFPGATimestamp(), sinceTime);
+    }
+
+    RobotRelativePosition getRobotRelativePositionSince(double currentTime, double sinceTime) {
+        int backIndex = mostRecentControlRequest;
         double forward = 0.0;
         double strafe = 0.0;
-        double rotation = 0.0;
-        // TODO - finish this .........
-        return null;
+        double headingRadians = 0.0;
+        while (controlRequests[backIndex].timeStamp > sinceTime) {
+            double deltaTime = currentTime - controlRequests[backIndex].timeStamp;
+            forward += deltaTime * controlRequests[backIndex].forward * maxMetersPerSec;
+            strafe += deltaTime * controlRequests[backIndex].strafe * maxMetersPerSec;
+            headingRadians += deltaTime * controlRequests[backIndex].rotation * maxRadiansPerSec;
+            currentTime = controlRequests[backIndex].timeStamp;
+            backIndex--;
+            if (backIndex < 0) {
+                backIndex = cacheLength - 1;
+            }
+        }
+        return new RobotRelativePosition(forward,strafe,
+                new AngleD(AngleUnit.RADIANS,headingRadians),sinceTime);
     }
 
     /**
@@ -118,7 +136,7 @@ public class SpeedCachedSwerve implements ISwerveDrive {
      * @param rotation
      * @param timestamp
      */
-    void addControlRequest(double forward, double strafe, double rotation, long timestamp) {
+    void addControlRequest(double forward, double strafe, double rotation, double timestamp) {
         // increment the index to the array of cached control requests
         mostRecentControlRequest++;
         if(mostRecentControlRequest >= cacheLength) {
@@ -227,7 +245,7 @@ public class SpeedCachedSwerve implements ISwerveDrive {
         if (driveSubsystem != null) {
             driveSubsystem.swerveDriveComponents(forward, strafe, rotation);
         }
-        addControlRequest(forward, strafe, rotation, System.currentTimeMillis());
+        addControlRequest(forward, strafe, rotation, Timer.getFPGATimestamp());
     }
 
     @Override
