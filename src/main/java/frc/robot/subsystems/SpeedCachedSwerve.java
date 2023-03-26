@@ -201,6 +201,13 @@ public class SpeedCachedSwerve implements ISwerveDrive {
     }
 
     @Override
+    public void recalibrate() {
+        if(driveSubsystem != null) {
+            driveSubsystem.recalibrate();
+        }
+    }
+
+    @Override
     public double getDriveLength() {
         if (driveSubsystem != null) {
             return driveSubsystem.getDriveLength();

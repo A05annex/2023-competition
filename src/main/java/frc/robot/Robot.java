@@ -10,9 +10,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
+import frc.robot.subsystems.SpeedCachedSwerve;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.A05Robot;
 import org.a05annex.frc.NavX;
+import org.a05annex.util.AngleD;
 
 import java.util.Collections;
 
@@ -65,6 +67,7 @@ public class Robot extends A05Robot
     @Override
     public void disabledInit() {
         ArmSubsystem.getInstance().stopAllMotors();
+        SpeedCachedSwerve.getInstance().swerveDrive(AngleD.ZERO, 0.0,0.0);
     }
 
     
@@ -83,6 +86,7 @@ public class Robot extends A05Robot
     @Override
     public void autonomousInit()
     {
+        SpeedCachedSwerve.getInstance().recalibrate();
         ClawSubsystem.getInstance().close();
         ArmSubsystem.getInstance().enableInit();
         // Sets up autonomous command
@@ -100,6 +104,7 @@ public class Robot extends A05Robot
     @Override
     public void teleopInit()
     {
+        SpeedCachedSwerve.getInstance().recalibrate();
         // Cancels autonomous command
         super.teleopInit();
         //ArmSubsystem.getInstance().enableInit();

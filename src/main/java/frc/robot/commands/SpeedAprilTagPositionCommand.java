@@ -6,22 +6,21 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.PhotonVisionSubsystem;
+import frc.robot.subsystems.SpeedCachedSwerve;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.commands.A05DriveCommand;
-import org.a05annex.frc.subsystems.DriveSubsystem;
 import org.a05annex.util.AngleConstantD;
 import org.a05annex.util.AngleD;
 import org.a05annex.util.Utl;
-
-import java.util.Arrays;
 
 
 public class SpeedAprilTagPositionCommand extends A05DriveCommand {
 
     private long startTime;
 
-    private final DriveSubsystem driveSubsystem = DriveSubsystem.getInstance();
+    private final SpeedCachedSwerve driveSubsystem = SpeedCachedSwerve.getInstance();
 
+    SpeedCachedSwerve.RobotRelativePosition postionAtFrame;
     private final double xPosition, yPosition, maxSpeed, speedSmoothingMultiplier;
     private final boolean upfield;
 
@@ -54,7 +53,7 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
         this.upfield = aprilTagSet.upfield;
         this.aprilTagSet = aprilTagSet;
 
-        addRequirements(this.driveSubsystem);
+        addRequirements(this.driveSubsystem.getDriveSubsystem());
     }
 
     @Override
@@ -73,10 +72,6 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
         isFinished = false;
 
         aprilTagIds = NetworkTableInstance.getDefault().getTable("FMSInfo").getEntry("IsRedAlliance").getBoolean(true) ? aprilTagSet.red : aprilTagSet.blue;
-        System.out.println("------- APRILTAG IDS " + Arrays.toString(aprilTagIds));
-
-        //SmartDashboard.putBoolean("isRed", NetworkTableInstance.getDefault().getTable("FMSInfo").getEntry("isRedAlliance").getBoolean(true));
-        System.out.println("------- RED ALLIANCE " + NetworkTableInstance.getDefault().getTable("FMSInfo").getEntry("IsRedAlliance").getBoolean(true));
 
         startTime = System.currentTimeMillis();
         //heading = upfield ? m_navx.getHeadingInfo().getClosestUpField() : m_navx.getHeadingInfo().getClosestDownField();
@@ -120,9 +115,15 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
             ticksWithoutTarget = 0;
         }
 
+        postionAtFrame = driveSubsystem.getRobotRelativePositionSince(camera.getLastFrame().getTimestampSeconds());
+        SmartDashboard.putNumber("forward", postionAtFrame.forward);
+        SmartDashboard.putNumber("strafe", postionAtFrame.strafe);
+        SmartDashboard.putNumber("heading", postionAtFrame.heading.getDegrees());
+        SmartDashboard.putNumber("timestamp", postionAtFrame.timeStamp);
 
         // --------- Calculate Speed ---------
-        double totalSpeed = Math.pow(Math.abs(calcX()), speedSmoothingMultiplier) + Math.pow(Math.abs(calcY()), speedSmoothingMultiplier);
+        //double totalSpeed = Math.pow(Math.abs(calcX()), speedSmoothingMultiplier) + Math.pow(Math.abs(calcY()), speedSmoothingMultiplier);
+        double totalSpeed = Math.pow(Math.sqrt(Math.pow(Math.abs(calcX()), 2) + Math.pow(Math.abs(calcY()), 2)), speedSmoothingMultiplier);
 
         // Limit the speed delta
         m_conditionedSpeed = Utl.clip(totalSpeed, m_lastConditionedSpeed - MAX_SPEED_DELTA, m_lastConditionedSpeed + MAX_SPEED_DELTA);
@@ -185,7 +186,7 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
     private double calcX() {
         double center = (X_MAX + X_MIN) / 2.0;
         double scale = (X_MAX - X_MIN) / 2.0;
-        return Utl.clip((camera.getXFromLastTarget() - center) / scale  -  (xPosition - center) / scale , -1.0, 1.0);
+        return Utl.clip((camera.getXFromLastTarget() - postionAtFrame.forward - center) / scale  -  (xPosition - center) / scale , -1.0, 1.0);
     }
 
     /**
@@ -195,6 +196,6 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
     private double calcY() {
         double center = (Y_MAX + Y_MIN) / 2.0;
         double scale = (Y_MAX - Y_MIN) / 2.0;
-        return Utl.clip((camera.getYFromLastTarget() - center) / scale  -  (yPosition - center) / scale, -1.0, 1.0);
+        return Utl.clip((camera.getYFromLastTarget() - postionAtFrame.strafe - center) / scale  -  (yPosition - center) / scale, -1.0, 1.0);
     }
 }

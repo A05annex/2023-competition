@@ -44,7 +44,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final RelativeEncoder extensionEncoder = extension.getEncoder();
     private final SparkMaxPIDController extensionPID = extension.getPIDController();
     // Array of positions. [starting position, min position, max position]
-    private final double[] extensionPositions = {0.0, 0.0, 111.51};
+    private final double[] extensionPositions = {0.0, 0.0, 119.14};
     private final double extensionKP = 0.00005, extensionKI = 0.0, extensionKIZone = 0.0, extensionKff = 0.000156;
     private final double extensionTicksPerInch = 3.7989887133;
 
