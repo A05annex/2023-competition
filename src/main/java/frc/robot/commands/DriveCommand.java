@@ -6,11 +6,10 @@ import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.commands.A05DriveCommand;
 
 /**
- * Drive command is here because you will likely need to override the serve (targeting, competition specific reason)
+ * This {@code DriveCommand} is here because you will likely need to override the default swerve for
+ * targeting or other competition specific reason.
  */
 public class DriveCommand extends A05DriveCommand {
-
-    private final SpeedCachedSwerve driveSubsystem = SpeedCachedSwerve.getInstance();
 
     /**
      * Default command for DriveSubsystem. Left stick moves the robot field-relatively, and right stick X rotates.
@@ -18,12 +17,8 @@ public class DriveCommand extends A05DriveCommand {
      * @param xbox (XboxController) The drive xbox controller.
      */
     public DriveCommand(XboxController xbox, A05Constants.DriverSettings driver) {
-        super(xbox, driver);
-        // each subsystem used by the command must be passed into the
-        // addRequirements() method (which takes a vararg of Subsystem)
-        addRequirements(this.driveSubsystem.getDriveSubsystem());
-        // This let' us insert a the speed cache before commands get to the drive.
-        setISwerveDrive(driveSubsystem);
+        // NOTE: the super adds the drive subsystem requirement
+        super(SpeedCachedSwerve.getInstance(), xbox, driver);
     }
 
     @Override

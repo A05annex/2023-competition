@@ -18,7 +18,7 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
 
     private long startTime;
 
-    private final SpeedCachedSwerve driveSubsystem = SpeedCachedSwerve.getInstance();
+    private final SpeedCachedSwerve swerveDrive = SpeedCachedSwerve.getInstance();
 
     SpeedCachedSwerve.RobotRelativePosition postionAtFrame;
     private final double xPosition, yPosition, maxSpeed, speedSmoothingMultiplier;
@@ -43,8 +43,11 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
     // Constants
     private final double X_MAX = 3.0, X_MIN = 0.0, Y_MAX = 1.5, Y_MIN = -1.5, MAX_SPEED_DELTA = 0.075, ROTATION_KP = 0.9;
 
-    public SpeedAprilTagPositionCommand(XboxController xbox, A05Constants.DriverSettings driver, double xPosition, double yPosition, double maxSpeed, double speedSmoothingMultiplier, Constants.AprilTagSet aprilTagSet) {
-        super(xbox, driver);
+    public SpeedAprilTagPositionCommand(XboxController xbox, A05Constants.DriverSettings driver,
+                                        double xPosition, double yPosition, double maxSpeed,
+                                        double speedSmoothingMultiplier, Constants.AprilTagSet aprilTagSet) {
+        // NOTE: the super adds the drive subsystem requirement
+        super(SpeedCachedSwerve.getInstance(), xbox, driver);
 
         this.xPosition = xPosition;
         this.yPosition = yPosition;
@@ -52,8 +55,6 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
         this.speedSmoothingMultiplier = speedSmoothingMultiplier;
         this.upfield = aprilTagSet.upfield;
         this.aprilTagSet = aprilTagSet;
-
-        addRequirements(this.driveSubsystem.getDriveSubsystem());
     }
 
     @Override
@@ -115,7 +116,7 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
             ticksWithoutTarget = 0;
         }
 
-        postionAtFrame = driveSubsystem.getRobotRelativePositionSince(camera.getLastFrame().getTimestampSeconds());
+        postionAtFrame = swerveDrive.getRobotRelativePositionSince(camera.getLastFrame().getTimestampSeconds());
         SmartDashboard.putNumber("forward", postionAtFrame.forward);
         SmartDashboard.putNumber("strafe", postionAtFrame.strafe);
         SmartDashboard.putNumber("heading", postionAtFrame.heading.getDegrees());
@@ -155,14 +156,14 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
 
         if(Math.abs(camera.getXFromLastTarget() - xPosition) < inZoneThreshold && Math.abs(camera.getYFromLastTarget() - yPosition) < inZoneThreshold) {
             ticksInZoneCounter++;
-            driveSubsystem.swerveDrive(AngleD.ZERO, 0.0, m_conditionedRotate*0.1);
+            swerveDrive.swerveDrive(AngleD.ZERO, 0.0, m_conditionedRotate*0.1);
             if(ticksInZoneCounter > ticksInZone) {
                 isFinished = true;
             }
             return;
         }
 
-        driveSubsystem.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);
+        swerveDrive.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);
     }
 
     @Override
@@ -173,7 +174,7 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
     @Override
     public void end(boolean interrupted) {
         // Stop the swerve
-        driveSubsystem.swerveDrive(AngleConstantD.ZERO, 0.0, 0.0);
+        swerveDrive.swerveDrive(AngleConstantD.ZERO, 0.0, 0.0);
         SmartDashboard.putNumber("elapsedTime", System.currentTimeMillis() - startTime);
     }
 

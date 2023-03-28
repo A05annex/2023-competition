@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants;
 import frc.robot.subsystems.PhotonVisionSubsystem;
+import frc.robot.subsystems.SpeedCachedSwerve;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.commands.A05DriveCommand;
 import org.a05annex.frc.subsystems.DriveSubsystem;
@@ -16,7 +17,6 @@ import org.photonvision.targeting.PhotonPipelineResult;
 public class ConePositionCommand extends A05DriveCommand {
 
     private final PhotonVisionSubsystem m_photonSubsystem = PhotonVisionSubsystem.getInstance();
-    private final DriveSubsystem m_driveSubsystem = DriveSubsystem.getInstance();
 
     private PhotonPipelineResult lastFrame;
 
@@ -43,10 +43,8 @@ public class ConePositionCommand extends A05DriveCommand {
     private boolean isFinished = false;
 
     public ConePositionCommand(XboxController xbox, A05Constants.DriverSettings driver) {
-        super(xbox, driver);
-        // each subsystem used by the command must be passed into the
-        // addRequirements() method (which takes a vararg of Subsystem)
-        addRequirements(m_driveSubsystem);
+        // NOTE: the super adds the drive subsystem requirement
+        super(SpeedCachedSwerve.getInstance(), xbox, driver);
     }
 
     @Override
@@ -109,7 +107,7 @@ public class ConePositionCommand extends A05DriveCommand {
                     .getRadians() * A05Constants.getDriveOrientationkp();
 
             // Passes direction, speed, and rotation from above into the swerveDrive method which actually spins the wheels
-            m_driveSubsystem.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);
+            iSwerveDrive.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);
 
             // Is the robot close enough to where it should be?
             if (Math.abs(m_photonSubsystem.getYawOffsetAverage(-30.0, 30.0, yawOffset)) < yawThreshold && Math.abs(m_photonSubsystem.getAreaOffsetAverage(0.0, 7.0, areaOffset)) < areaThreshold) {
@@ -126,7 +124,7 @@ public class ConePositionCommand extends A05DriveCommand {
         }
         else {
             // You were in the threshold for long enough, stop the swerve and end the command
-            m_driveSubsystem.swerveDrive(AngleConstantD.ZERO, 0.0, 0.0);
+            iSwerveDrive.swerveDrive(AngleConstantD.ZERO, 0.0, 0.0);
             isFinished = true;
         }
     }

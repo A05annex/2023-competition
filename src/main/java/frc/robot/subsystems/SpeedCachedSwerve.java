@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
-// import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.a05annex.frc.NavX;
 import org.a05annex.frc.subsystems.DriveSubsystem;
 import org.a05annex.frc.subsystems.ISwerveDrive;
@@ -10,6 +10,7 @@ import org.a05annex.util.AngleConstantD;
 import org.a05annex.util.AngleD;
 import org.a05annex.util.AngleUnit;
 import org.a05annex.util.Utl;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This is a layer that goes on top of the swerve drive to provide caching of past drive commands for some
@@ -25,16 +26,16 @@ import org.a05annex.util.Utl;
 public class SpeedCachedSwerve implements ISwerveDrive {
 
     /**
-     *
+     * The single instance of this class
      */
     private final static SpeedCachedSwerve INSTANCE = new SpeedCachedSwerve();
 
     /**
+     * Get the single instance of this class.
      *
-     * @return
+     * @return the single instance of this class.
      */
     public static SpeedCachedSwerve getInstance() {
-//        Timer.getFPGATimestamp()
         return INSTANCE;
     }
 
@@ -42,6 +43,7 @@ public class SpeedCachedSwerve implements ISwerveDrive {
     // This is the cache of the last requests to the swerve drive and the processing. Here we cache a collection
     // of timestamped robot move commands
     // -----------------------------------------------------------------------------------------------------------------
+
     /**
      *
      */
@@ -61,12 +63,15 @@ public class SpeedCachedSwerve implements ISwerveDrive {
         public double getForward() {
             return forward;
         }
+
         public double getStrafe() {
             return forward;
         }
+
         public double getRotation() {
             return forward;
         }
+
         public double getTimeStamp() {
             return timeStamp;
         }
@@ -77,12 +82,15 @@ public class SpeedCachedSwerve implements ISwerveDrive {
         public final double strafe;
         public final AngleD heading;
         public final double timeStamp;
+        public final boolean cacheOverrun;
 
-        RobotRelativePosition(double forward, double strafe, AngleD heading, double timeStamp) {
+        RobotRelativePosition(double forward, double strafe, AngleD heading,
+                              double timeStamp, boolean cacheOverrun) {
             this.forward = forward;
             this.strafe = strafe;
             this.heading = heading;
             this.timeStamp = timeStamp;
+            this.cacheOverrun = cacheOverrun;
         }
     }
 
@@ -97,7 +105,7 @@ public class SpeedCachedSwerve implements ISwerveDrive {
     private double maxMetersPerSec = 3.136;
     private double maxRadiansPerSec = 3.136;
 
-    public SpeedCachedSwerve() {
+    private SpeedCachedSwerve() {
         // the constructor does nothing ...
     }
 
@@ -105,15 +113,45 @@ public class SpeedCachedSwerve implements ISwerveDrive {
         return controlRequests[mostRecentControlRequest];
     }
 
+    /**
+     * Get the robot position now, relative to where the robot was at the specified time. For example if the robot
+     * were approaching a target, and the targeting software reported that the robot was 2.0m from the target and
+     * 0.5m left of the target. Assume we want the robot to stay on its current heading and
+     * the robot has been moving 1.0m/s forward, and 0.5m/s to its right with a rotation of 0.0rad/s. If the
+     * camera latency is 100ms or 0.1 sec, the returned position will report the robot has moved forward 0.1m
+     * with a strafe of 0.05m, so the actual robot position is currently 1.9m from the target and 0.45m to the
+     * left of the target.
+     * <p>
+     * NOTE: If the cache does not store enough data to accumulate the motion back tom {@code sinceTime}, then the
+     * motion is the furthest back that can be estimated, and {@link RobotRelativePosition#cacheOverrun} will
+     * be set to {@code true} in the returned position.
+     *
+     * @param sinceTime The time from which you want to know the robot's new position. In the context of the
+     *                  example, this is the FPGA timestamp (in seconds) reported by the targeting software at
+     *                  which the targeting data was valid.
+     * @return The estimated robot position at {@code sinceTime}
+     */
+    @NotNull
     public RobotRelativePosition getRobotRelativePositionSince(double sinceTime) {
         return getRobotRelativePositionSince(Timer.getFPGATimestamp(), sinceTime);
     }
 
+    /**
+     * See {@link #getRobotRelativePositionSince(double)} for documentation. This method exists for
+     * testing scenarios where the start time is not <i>now</i>, but is well known for the purpose of testing.
+     *
+     * @param currentTime The <i>current time</i>, which is the FPGA timestamp (in seconds) during match play,
+     *                    but will be assigned as required for testing.
+     * @param sinceTime   The time (FPGA timestamp in seconds) from which you want to know the robot's new position.
+     * @return The estimated robot position at {@code sinceTime}
+     */
+    @NotNull
     RobotRelativePosition getRobotRelativePositionSince(double currentTime, double sinceTime) {
         int backIndex = mostRecentControlRequest;
         double forward = 0.0;
         double strafe = 0.0;
         double headingRadians = 0.0;
+        boolean cacheOverrun = false;
         while (controlRequests[backIndex].timeStamp > sinceTime) {
             double deltaTime = currentTime - controlRequests[backIndex].timeStamp;
             forward += deltaTime * controlRequests[backIndex].forward * maxMetersPerSec;
@@ -124,22 +162,30 @@ public class SpeedCachedSwerve implements ISwerveDrive {
             if (backIndex < 0) {
                 backIndex = cacheLength - 1;
             }
+            if (backIndex == mostRecentControlRequest) {
+                // There are not enough entries in the cache
+                cacheOverrun = true;
+                break;
+            }
         }
-        return new RobotRelativePosition(forward,strafe,
-                new AngleD(AngleUnit.RADIANS,headingRadians),sinceTime);
+        return new RobotRelativePosition(forward, strafe,
+                new AngleD(AngleUnit.RADIANS, headingRadians), sinceTime, cacheOverrun);
     }
 
     /**
+     * Adds a control request to the cache. This is a package function where the timestamp is specified, so the
+     * cache can be loaded for test scenarios.
      *
-     * @param forward
-     * @param strafe
-     * @param rotation
-     * @param timestamp
+     * @param forward   Forward speed (-1.0 to 1.0)
+     * @param strafe    Strafe speed (-1.0 to 1.0)
+     * @param rotation  Rotation speed (-1.0 to 1.0)
+     * @param timestamp The <i>current time</i>, which is the FPGA timestamp (in seconds) during match play,
+     *                  but will be assigned as required for testing.
      */
     void addControlRequest(double forward, double strafe, double rotation, double timestamp) {
         // increment the index to the array of cached control requests
         mostRecentControlRequest++;
-        if(mostRecentControlRequest >= cacheLength) {
+        if (mostRecentControlRequest >= cacheLength) {
             mostRecentControlRequest = 0;
         }
         // save this request with a timestamp
@@ -170,10 +216,6 @@ public class SpeedCachedSwerve implements ISwerveDrive {
         }
     }
 
-    public DriveSubsystem getDriveSubsystem() {
-        return driveSubsystem;
-    }
-
     // -----------------------------------------------------------------------------------------------------------------
     // ISwerveDrive implementation. Most of this is pass-through to the wrapped swerve drive
     // -----------------------------------------------------------------------------------------------------------------
@@ -202,9 +244,14 @@ public class SpeedCachedSwerve implements ISwerveDrive {
 
     @Override
     public void recalibrate() {
-        if(driveSubsystem != null) {
+        if (driveSubsystem != null) {
             driveSubsystem.recalibrate();
         }
+    }
+
+    @Override
+    public Subsystem getDriveSubsystem() {
+        return driveSubsystem;
     }
 
     @Override
@@ -240,9 +287,9 @@ public class SpeedCachedSwerve implements ISwerveDrive {
     }
 
     @Override
-    public void setFieldPosition(double v, double v1, AngleD angleD) {
+    public void setFieldPosition(double fieldX, double fieldY, AngleD heading) {
         if (driveSubsystem != null) {
-            driveSubsystem.setFieldPosition(v, v1, angleD);
+            driveSubsystem.setFieldPosition(fieldX, fieldY, heading);
         }
     }
 
@@ -276,11 +323,10 @@ public class SpeedCachedSwerve implements ISwerveDrive {
 
     @Override
     public void toggleDriveMode() {
-        if(driveSubsystem != null) {
+        if (driveSubsystem != null) {
             driveSubsystem.toggleDriveMode();
             driveMode = driveSubsystem.getDriveMode();
-        }
-        else {
+        } else {
             driveMode = (driveMode == DriveMode.FIELD_RELATIVE) ?
                     DriveMode.ROBOT_RELATIVE : DriveMode.FIELD_RELATIVE;
         }
@@ -288,7 +334,7 @@ public class SpeedCachedSwerve implements ISwerveDrive {
 
     @Override
     public DriveMode getDriveMode() {
-        if(driveSubsystem != null) {
+        if (driveSubsystem != null) {
             return driveSubsystem.getDriveMode();
         }
 
@@ -297,37 +343,38 @@ public class SpeedCachedSwerve implements ISwerveDrive {
 
     @Override
     public void setDriveMode(DriveMode driveMode) {
-        if(driveSubsystem != null) {
+        if (driveSubsystem != null) {
             driveSubsystem.setDriveMode(driveMode);
         }
         this.driveMode = driveMode;
     }
 
     @Override
-    public void setHeading(AngleConstantD angleConstantD) {
+    public void setHeading(AngleConstantD targetHeading) {
         if (driveSubsystem != null) {
-            driveSubsystem.setHeading(angleConstantD);
+            driveSubsystem.setHeading(targetHeading);
         }
     }
 
     @Override
-    public void translate(double v, double v1) {
+    public void translate(double distanceForward, double distanceStrafe) {
         if (driveSubsystem != null) {
-            driveSubsystem.translate(v, v1);
+            driveSubsystem.translate(distanceForward, distanceStrafe);
         }
     }
 
     @Override
-    public void startAbsoluteTranslate(double v, double v1, double v2) {
+    public void startAbsoluteTranslate(double distanceForward, double distanceStrafe, double maxSpeed) {
         if (driveSubsystem != null) {
-            driveSubsystem.startAbsoluteTranslate(v, v1, v2);
+            driveSubsystem.startAbsoluteTranslate(distanceForward, distanceStrafe, maxSpeed);
         }
     }
 
     @Override
-    public void startAbsoluteSmartTranslate(double v, double v1, double v2, double v3) {
+    public void startAbsoluteSmartTranslate(double distanceForward, double distanceStrafe,
+                                            double maxSpeed, double maxAcceleration) {
         if (driveSubsystem != null) {
-            driveSubsystem.startAbsoluteSmartTranslate(v, v1, v2, v3);
+            driveSubsystem.startAbsoluteSmartTranslate(distanceForward, distanceStrafe, maxSpeed, maxAcceleration);
         }
     }
 

@@ -13,12 +13,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestSpeedCacheSwerve {
 
+    private final int TEST_CACHE_LENGTH = 10;
+
     SpeedCachedSwerve getInitializedSCS() {
         SpeedCachedSwerve SCS = SpeedCachedSwerve.getInstance();
         A05Constants.RobotSettings cc = ROBOT_SETTINGS[0];
-        SCS.setDriveGeometry(cc.m_length,cc.m_width,
+        SCS.setDriveGeometry(cc.m_length, cc.m_width,
                 cc.m_rf, cc.m_rr, cc.m_lf, cc.m_lr,
                 cc.m_maxSpeedCalibration);
+        SCS.setCacheLength(TEST_CACHE_LENGTH);
         return SCS;
     }
 
@@ -38,8 +41,7 @@ public class TestSpeedCacheSwerve {
     @DisplayName("test setCacheLength")
     void TestSetCacheLength() {
         SpeedCachedSwerve SCS = getInitializedSCS();
-        SCS.setCacheLength(10);
-         assertEquals(10, SCS.getCacheLength());
+        assertEquals(10, SCS.getCacheLength());
 
     }
 
@@ -47,7 +49,6 @@ public class TestSpeedCacheSwerve {
     @DisplayName("test recordControlRequests")
     void TestRecordControlRequests() {
         SpeedCachedSwerve SCS = getInitializedSCS();
-        SCS.setCacheLength(10);
         for (int i = 0; i < 10; i++) {
             double currentTime = Timer.getFPGATimestamp();
             SCS.swerveDriveComponents((i * 0.1) - 0.5, (i * 0.1) - 0.9, (i * 0.1) - 0.1);
@@ -78,6 +79,45 @@ public class TestSpeedCacheSwerve {
         SCS.addControlRequest(0.2, 0.1, 0.3, 4.08);
         SpeedCachedSwerve.RobotRelativePosition position =
                 SCS.getRobotRelativePositionSince(4.10, 4.03);
-        //assertEquals(.06 * 0.2 * SCS.getMaxMetersPerSec(), position.forward);
+        assertEquals(.06 * 0.2 * SCS.getMaxMetersPerSec(), position.forward, 0.0000001);
+        assertEquals(.06 * 0.1 * SCS.getMaxMetersPerSec(), position.strafe, 0.0000001);
+        assertEquals(.02 * 0.1 * SCS.getMaxRadiansPerSec(),
+                position.heading.getRadians(), 0.0000001);
+        assertEquals(false, position.cacheOverrun);
+    }
+
+    @Test
+    @DisplayName("test cache overflow")
+    void TestCacheOverflow() {
+        SpeedCachedSwerve SCS = getInitializedSCS();
+        double nextRequestTime = 2.0;
+        // populate the cache a wrap around the end (more entries than the length of the cache.
+        for (int i = 0; i < 1.5 * TEST_CACHE_LENGTH; i++) {
+            SCS.addControlRequest(0.2, 0.1, 0.01, nextRequestTime);
+            nextRequestTime += 0.02;
+        }
+        // OK, do something in the cache range, (0.02 * (TEST_CACHE_LENGTH - 1)) - .001, the .001 is to get just past
+        // the time of the last point to be included.
+        SpeedCachedSwerve.RobotRelativePosition position =
+                SCS.getRobotRelativePositionSince(nextRequestTime,
+                        nextRequestTime - (0.02 * (TEST_CACHE_LENGTH - 1)) - .001);
+        assertEquals((TEST_CACHE_LENGTH - 1) * 0.02 * 0.2 * SCS.getMaxMetersPerSec(),
+                position.forward, 0.0000001);
+        assertEquals((TEST_CACHE_LENGTH - 1) * 0.02 * 0.1 * SCS.getMaxMetersPerSec(),
+                position.strafe, 0.0000001);
+        assertEquals((TEST_CACHE_LENGTH - 1) * 0.02 * 0.01 * SCS.getMaxRadiansPerSec(),
+                position.heading.getRadians(), 0.0000001);
+        assertEquals(false, position.cacheOverrun);
+        // OK, now do something outside the cache range, and we should only get the cached number of values added, and
+        // the cacheOverrun flag should be set.
+        position = SCS.getRobotRelativePositionSince(nextRequestTime,
+                nextRequestTime - (0.02 * (TEST_CACHE_LENGTH + 2)));
+        assertEquals(TEST_CACHE_LENGTH * 0.02 * 0.2 * SCS.getMaxMetersPerSec(),
+                position.forward, 0.0000001);
+        assertEquals(TEST_CACHE_LENGTH * 0.02 * 0.1 * SCS.getMaxMetersPerSec(),
+                position.strafe, 0.0000001);
+        assertEquals(TEST_CACHE_LENGTH * 0.02 * 0.01 * SCS.getMaxRadiansPerSec(),
+                position.heading.getRadians(), 0.0000001);
+        assertEquals(true, position.cacheOverrun);
     }
 }
