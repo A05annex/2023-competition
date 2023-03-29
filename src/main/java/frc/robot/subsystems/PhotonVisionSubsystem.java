@@ -35,6 +35,8 @@ public class PhotonVisionSubsystem extends SubsystemBase {
 
         private PhotonPipelineResult lastFrame = new PhotonPipelineResult();
         private PhotonTrackedTarget lastTarget = new PhotonTrackedTarget();
+        private double lastTargetId = -1;
+        private double lastTargetTime = 0.0;
 
         private boolean doLastFrameAndTargetMatch;
 
@@ -63,8 +65,16 @@ public class PhotonVisionSubsystem extends SubsystemBase {
             lastFrame = camera.getLatestResult();
             if(lastFrame.hasTargets()) {
                 lastTarget = lastFrame.getBestTarget();
-                doLastFrameAndTargetMatch = true;
-                return;
+                lastTargetTime = lastFrame.getTimestampSeconds();
+                if (lastTargetId == lastTarget.getFiducialId()) {
+                    // Yup, same target, update time, and we are good to go - we now have seen the same target
+                    // as the best target atr least twice in a row.
+                    doLastFrameAndTargetMatch = true;
+                    return;
+                } else {
+                    // A different target is now our new best target
+                    lastTargetId = lastTarget.getFiducialId();
+                }
             }
             doLastFrameAndTargetMatch = false;
         }
@@ -85,8 +95,31 @@ public class PhotonVisionSubsystem extends SubsystemBase {
             return lastTarget;
         }
 
+        /**
+         * Get the FPGA timestamp (in seconds) for the last tracked target.
+         * @return The FPGA timestamp (in seconds) for the last tracked target
+         */
+        public double getLastTargetTime() {
+            return lastTargetTime;
+        }
+
+        /**
+         * Does the best target for the last retrieved frame match the previously saved best target in Id.
+         *
+         * @return {@code true} if it matches, {@link false} otherwise.
+         */
         public boolean doLastFrameAndTargetMatch() {
             return doLastFrameAndTargetMatch;
+        }
+
+        /**
+         * Does the best target for the last retrieved frame match the specified target Id.
+         *
+         * @param targetId The Id of the target we are looking for.
+         * @return {@code true} if it matches, {@link false} otherwise.
+         */
+        public boolean doLastFrameAndTargetMatch(int targetId) {
+            return lastFrame.hasTargets() && (lastTargetId == targetId);
         }
 
         /**
