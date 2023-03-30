@@ -31,7 +31,7 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
 
     private final PhotonVisionSubsystem.Camera camera = Constants.DRIVE_CAMERA;
 
-    private final int resumeDrivingTickThreshold = 50;
+    private final int resumeDrivingTickThreshold = 500;
 
     private int ticksWithoutTarget;
 
@@ -94,8 +94,6 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
             }
         }
 
-        SmartDashboard.putBoolean("good ID", goodID);
-
         if(!goodID) {
             super.execute();
             return;
@@ -118,7 +116,7 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
             ticksWithoutTarget = 0;
         }
 
-        postionAtFrame = swerveDrive.getRobotRelativePositionSince(camera.getLastFrame().getTimestampSeconds());
+        postionAtFrame = swerveDrive.getRobotRelativePositionSince(camera.getLastTargetTime());
         SmartDashboard.putNumber("forward", postionAtFrame.forward);
         SmartDashboard.putNumber("strafe", postionAtFrame.strafe);
         SmartDashboard.putNumber("heading", postionAtFrame.heading.getDegrees());

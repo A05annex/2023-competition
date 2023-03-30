@@ -34,8 +34,6 @@ public class RobotContainer extends A05RobotContainer
 
     // Commands
 
-    PipelineScanCommand m_pipelineScanCommand;
-
     XboxController m_altXbox = new XboxController(Constants.ALT_XBOX_PORT);
 
     // controller button declarations
@@ -110,17 +108,15 @@ public class RobotContainer extends A05RobotContainer
 
         // Retract and go upright with the arm when either controller's B button is pressed
         m_xboxB.onTrue(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
-        //m_xboxB.whileTrue(new AbsoluteSmartTranslateCommand(2.0, 0.0, 1.0, 4000.0, false));
-        //m_xboxX.whileTrue(new AbsoluteSmartTranslateCommand(-2.0, 0.0, 1.0, 4000.0, false));
         m_altXboxB.onTrue(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
 
 
         // Do the Cone Place Sequence while alt Y is pressed, go to retracted when it's released
-        m_altXboxY.whileTrue(new ConePlaceCommandGroup(m_altXbox, m_driver));
+        m_altXboxY.whileTrue(new ConePlaceCommandGroup(m_altXbox, m_driveXbox, m_driver));
         m_altXboxY.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
 
         // Do the Cube Place Sequence while alt X is pressed, go to retracted when it's released
-        m_altXboxX.whileTrue(new CubePlaceCommandGroup(m_altXbox, m_driver));
+        m_altXboxX.whileTrue(new CubePlaceCommandGroup(m_altXbox, m_driveXbox, m_driver));
         m_altXboxX.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
 
         // Do the Substation Pickup Sequence while alt X is pressed, go to retracted when it's released
@@ -139,10 +135,22 @@ public class RobotContainer extends A05RobotContainer
         m_xboxRightBumper.onTrue(new InstantCommand(m_clawSubsystem::close));
         m_xboxRightBumper.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when released
 
+
+        /*
+        Cube
+        X = 0.806
+        Y = -0.114
+
+        Cone
+        X = 1.114
+        Y = -0.16
+         */
+
         // Run the balancer while drive X is pressed
-        //m_xboxX.whileTrue(new AutoBalanceCommand());
-        m_xboxX.whileTrue(new SpeedAprilTagPositionCommand(m_driveXbox, m_driver,
-                1.0, 0.0, 1.0, 0.8, Constants.AprilTagSet.SUBSTATION));
+        m_xboxX.whileTrue(new AutoBalanceCommand());
+
+//        m_xboxX.whileTrue(new SpeedAprilTagPositionCommand(m_driveXbox, m_driver,
+//                1.114, -0.16, 1.0, 0.8, Constants.AprilTagSet.SUBSTATION));
 
         // Toggle manual arm control when alt Back is pressed
         m_altXboxBack.toggleOnTrue(new ManualArmCommand(m_altXbox));

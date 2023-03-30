@@ -106,7 +106,7 @@ public class PhotonVisionSubsystem extends SubsystemBase {
         /**
          * Does the best target for the last retrieved frame match the previously saved best target in Id.
          *
-         * @return {@code true} if it matches, {@link false} otherwise.
+         * @return true if it matches, false otherwise.
          */
         public boolean doLastFrameAndTargetMatch() {
             return doLastFrameAndTargetMatch;
