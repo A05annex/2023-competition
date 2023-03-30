@@ -38,7 +38,7 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
     private final int ticksInZone = 10;
     private int ticksInZoneCounter;
 
-    private final double inZoneThreshold = Units.inchesToMeters(0.5);
+    private final double inZoneThreshold;
 
     // Constants
     private final double X_MAX = 3.0, X_MIN = 0.0, Y_MAX = 1.5, Y_MIN = -1.5, MAX_SPEED_DELTA = 0.075, ROTATION_KP = 0.9;
@@ -50,11 +50,13 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
         super(SpeedCachedSwerve.getInstance(), xbox, driver);
 
         this.xPosition = xPosition;
-        this.yPosition = yPosition;
+        this.yPosition = -yPosition;
         this.maxSpeed = maxSpeed;
         this.speedSmoothingMultiplier = speedSmoothingMultiplier;
         this.upfield = aprilTagSet.upfield;
         this.aprilTagSet = aprilTagSet;
+
+        inZoneThreshold = Units.inchesToMeters(0.5*xPosition);
     }
 
     @Override
