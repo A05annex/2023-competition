@@ -19,7 +19,7 @@ public class CollectorSubsystem extends SubsystemBase {
     private final SparkMaxPIDController conePID = cone.getPIDController();
     private final SparkMaxPIDController cubePID = cube.getPIDController();
 
-    private final double maxSpeed = 3000.0;
+    private final double maxSpeed = 5000.0;
 
     private final static CollectorSubsystem INSTANCE = new CollectorSubsystem();
 
