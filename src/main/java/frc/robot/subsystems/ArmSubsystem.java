@@ -44,7 +44,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final RelativeEncoder extensionEncoder = extension.getEncoder();
     private final SparkMaxPIDController extensionPID = extension.getPIDController();
     // Array of positions. [starting position, min position, max position]
-    private final double[] extensionPositions = {0.0, 0.0, 119.14};
+    private final double[] extensionPositions = {0.0, 0.125, 170.375};
     private final double extensionKP = 0.00005, extensionKI = 0.0, extensionKIZone = 0.0, extensionKff = 0.000156;
     private final double extensionTicksPerInch = 3.7989887133;
 
@@ -58,9 +58,9 @@ public class ArmSubsystem extends SubsystemBase {
      */
     public enum ArmPositions {
         RETRACTED(0.0, 0.0),
-        CONE_HIGH(17.5, 111.51),
+        CONE_HIGH(17.5, 170.375),
         CONE_MEDIUM(17.3, 42.36),
-        CUBE_HIGH(20.21, 81.51),
+        CUBE_HIGH(20.21, 124.54),
         CUBE_MEDIUM(24.14,25.82),
         HYBRID(33.92, 0.0),
         SUBSTATION_CUBE(20.9, 68.5),
@@ -168,7 +168,7 @@ public class ArmSubsystem extends SubsystemBase {
         extensionPID.setOutputRange(-1.0, 1.0);
         setPID(extensionPID, extensionKP, extensionKI, extensionKIZone, extensionKff);
         extension.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        extension.setSmartCurrentLimit(45, 20, 3000);
+        backwardSupportPivot.setSmartCurrentLimit(60,20, 2000);
     }
 
     public void enableInit() {
@@ -212,13 +212,13 @@ public class ArmSubsystem extends SubsystemBase {
 
         support.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
         support.setSmartMotionMaxVelocity(2000.0, 0);
-        support.setSmartMotionMaxAccel(2000.0, 0);
+        support.setSmartMotionMaxAccel(1000.0, 0);
         support.setSmartMotionMinOutputVelocity(0.0, 0);
         support.setSmartMotionAllowedClosedLoopError(0.1, 0);
 
         tension.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
         tension.setSmartMotionMaxVelocity(2000.0, 0);
-        tension.setSmartMotionMaxAccel(2000.0, 0);
+        tension.setSmartMotionMaxAccel(1000.0, 0);
         tension.setSmartMotionMinOutputVelocity(0.0, 0);
         tension.setSmartMotionAllowedClosedLoopError(0.1, 0);
     }
@@ -229,13 +229,13 @@ public class ArmSubsystem extends SubsystemBase {
 
         support.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
         support.setSmartMotionMaxVelocity(2000.0, 0);
-        support.setSmartMotionMaxAccel(2000.0, 0);
+        support.setSmartMotionMaxAccel(1000.0, 0);
         support.setSmartMotionMinOutputVelocity(0.0, 0);
         support.setSmartMotionAllowedClosedLoopError(0.1, 0);
 
         tension.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
         tension.setSmartMotionMaxVelocity(2000.0, 0);
-        tension.setSmartMotionMaxAccel(2000.0, 0);
+        tension.setSmartMotionMaxAccel(1000.0, 0);
         tension.setSmartMotionMinOutputVelocity(0.0, 0);
         tension.setSmartMotionAllowedClosedLoopError(0.1, 0);
     }
@@ -324,8 +324,8 @@ public class ArmSubsystem extends SubsystemBase {
             System.out.println("Extension motor was requested to go to position: " + position + " but was outside limits");
         }
         extensionPID.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
-        extensionPID.setSmartMotionMaxVelocity(10000.0, 0);
-        extensionPID.setSmartMotionMaxAccel(10000.0, 0);
+        extensionPID.setSmartMotionMaxVelocity(12000, 0);
+        extensionPID.setSmartMotionMaxAccel(20000.0, 0);
         extensionPID.setSmartMotionMinOutputVelocity(0.0, 0);
         extensionPID.setSmartMotionAllowedClosedLoopError(0.1, 0);
         extensionPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion);

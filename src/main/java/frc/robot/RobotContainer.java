@@ -10,10 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.*;
-import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.ClawSubsystem;
-import frc.robot.subsystems.PhotonVisionSubsystem;
-import frc.robot.subsystems.SpeedCachedSwerve;
+import frc.robot.subsystems.*;
 import org.a05annex.frc.A05RobotContainer;
 
 /**
@@ -112,12 +109,16 @@ public class RobotContainer extends A05RobotContainer
 
 
         // Do the Cone Place Sequence while alt Y is pressed, go to retracted when it's released
-        m_altXboxY.whileTrue(new ConePlaceCommandGroup(m_altXbox, m_driveXbox, m_driver));
-        m_altXboxY.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
+        //m_altXboxY.whileTrue(new ConePlaceCommandGroup(m_altXbox, m_driveXbox, m_driver));
+        //m_altXboxY.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
+        m_altXboxY.whileTrue(new InstantCommand(CollectorSubsystem.getInstance()::spinConeMotor)).
+                whileFalse(new InstantCommand(CollectorSubsystem.getInstance()::stopConeMotor));
 
         // Do the Cube Place Sequence while alt X is pressed, go to retracted when it's released
-        m_altXboxX.whileTrue(new CubePlaceCommandGroup(m_altXbox, m_driveXbox, m_driver));
-        m_altXboxX.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
+        //m_altXboxX.whileTrue(new CubePlaceCommandGroup(m_altXbox, m_driveXbox, m_driver));
+        //m_altXboxX.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
+        m_altXboxX.whileTrue(new InstantCommand(CollectorSubsystem.getInstance()::spinCubeMotor)).
+                whileFalse(new InstantCommand(CollectorSubsystem.getInstance()::stopCubeMotor));
 
         // Do the Substation Pickup Sequence while alt X is pressed, go to retracted when it's released
         m_altXboxA.whileTrue(new SubstationPickUpCommandGroup(m_altXbox, m_driver));

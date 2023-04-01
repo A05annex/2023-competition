@@ -243,9 +243,9 @@ public class SpeedCachedSwerve implements ISwerveDrive {
     }
 
     @Override
-    public void recalibrate() {
+    public void calibrate() {
         if (driveSubsystem != null) {
-            driveSubsystem.recalibrate();
+            driveSubsystem.calibrate();
         }
     }
 

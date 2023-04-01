@@ -26,7 +26,10 @@ public final class Constants extends A05Constants
                 // Non-Drive Motors
                 PIVOT_FORWARD_SUPPORT_MOTOR = 12,
                 PIVOT_BACKWARD_SUPPORT_MOTOR = 11,
-                ARM_EXTENSION_MOTOR = 13;
+                ARM_EXTENSION_MOTOR = 13,
+
+                CONE_MOTOR = 9,
+                CUBE_MOTOR = 14;
     }
 
     public enum AprilTagSet {
@@ -51,7 +54,7 @@ public final class Constants extends A05Constants
     public static final int ALT_XBOX_PORT = 1; // 2nd Controller for more controls
 
     //public static final PhotonCamera DRIVE_CAMERA = new PhotonCamera("Camera 1");
-    public static final PhotonVisionSubsystem.Camera DRIVE_CAMERA = new PhotonVisionSubsystem.Camera(new PhotonCamera("Camera 1"), PhotonVisionSubsystem.PIPELINE.APRILTAGS);
+    public static final PhotonVisionSubsystem.Camera DRIVE_CAMERA = new PhotonVisionSubsystem.Camera(new PhotonCamera("IMX219"), PhotonVisionSubsystem.PIPELINE.APRILTAGS);
     //public static final PhotonCamera CLAW_CAMERA = new PhotonCamera("Camera 2");
 
     // kP for keeping drive at the same orientation

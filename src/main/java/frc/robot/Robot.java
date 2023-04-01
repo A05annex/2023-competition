@@ -35,6 +35,7 @@ public class Robot extends A05Robot
     @Override
     public void robotInit()
     {
+        Constants.setSparkConfig(false,false);
         // Set the drive constants that are specific to this swerve geometry.
         // Some drive geometry is passed in RobotContainer's constructor
         Constants.setDriveOrientationkp(Constants.DRIVE_ORIENTATION_kP);
@@ -86,7 +87,6 @@ public class Robot extends A05Robot
     @Override
     public void autonomousInit()
     {
-        SpeedCachedSwerve.getInstance().recalibrate();
         ClawSubsystem.getInstance().close();
         ArmSubsystem.getInstance().enableInit();
         // Sets up autonomous command
@@ -104,7 +104,6 @@ public class Robot extends A05Robot
     @Override
     public void teleopInit()
     {
-        SpeedCachedSwerve.getInstance().recalibrate();
         // Cancels autonomous command
         super.teleopInit();
         ArmSubsystem.getInstance().enableInit();
