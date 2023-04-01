@@ -25,11 +25,14 @@ public class ManualArmCommand extends CommandBase {
     public void initialize() {
         pivotWasSpinning = false;
         extWasSpinning = false;
-        m_armSubsystem.setManualControl(true);
     }
 
     @Override
     public void execute() {
+        if(!m_armSubsystem.isManualControl()) {
+            return;
+        }
+
         double xboxRight = -xbox.getRightY();
         double xboxLeft = -xbox.getLeftY();
 
@@ -61,6 +64,5 @@ public class ManualArmCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        m_armSubsystem.setManualControl(false);
     }
 }

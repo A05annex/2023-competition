@@ -75,6 +75,7 @@ public class RobotContainer extends A05RobotContainer
         m_driveCommand = new DriveCommand(m_driveXbox, m_driver);
 
         m_driveSubsystem.setDefaultCommand(m_driveCommand);
+        ArmSubsystem.getInstance().setDefaultCommand(new ManualArmCommand(m_altXbox));
 
         if (m_autoCommand != null) {
             m_autoCommand.setMirror(!Constants.readMirrorSwitch()); // Something was backwards
@@ -125,7 +126,7 @@ public class RobotContainer extends A05RobotContainer
         m_xboxLeftBumper.onTrue(new CollectorEjectCommand());
         m_xboxRightBumper.whileTrue(new InstantCommand(collectorSubsystem::spin)).whileFalse(new InstantCommand(collectorSubsystem::stop));
         m_altXboxLeftBumper.onTrue(new CollectorEjectCommand());
-        m_altXboxRightBumper.whileTrue(new ConditionalCommand(new InstantCommand(ArmSubsystem.ArmPositions.GROUND::goTo).andThen(new InstantCommand(collectorSubsystem::spin)), new InstantCommand(collectorSubsystem::spin), ArmSubsystem.getInstance()::isManualControl))
+        m_altXboxRightBumper.whileTrue(new ConditionalCommand(new InstantCommand(collectorSubsystem::spin), new GroundPickupCommand(), ArmSubsystem.getInstance()::isManualControl))
                 .whileFalse(new InstantCommand(collectorSubsystem::stop));
 
 
@@ -146,7 +147,7 @@ public class RobotContainer extends A05RobotContainer
         m_xboxX.whileTrue(new AutoBalanceCommand());
 
         // Toggle manual arm control when alt Back is pressed
-        m_altXboxBack.toggleOnTrue(new ManualArmCommand(m_altXbox));
+        m_altXboxBack.onTrue(new InstantCommand(ArmSubsystem.getInstance()::toggleManualControl));
 
         // Go to the substaion positions
         m_altXboxLeftStickPress.onTrue(new InstantCommand(ArmSubsystem.ArmPositions.SUBSTATION_CUBE::goTo));

@@ -372,12 +372,12 @@ public class ArmSubsystem extends SubsystemBase {
         return manualControl;
     }
 
-    public void setManualControl(boolean isManual) {
-        manualControl = isManual;
+    public void toggleManualControl() {
+        manualControl = !manualControl;
     }
 
     public void periodic() {
-        ArmPositions.bump = Constants.updateConstant("bump", ArmPositions.bump);
+        SmartDashboard.putBoolean("manual arm", manualControl);
         SmartDashboard.putNumber("pivot", getPivotPosition());
         SmartDashboard.putNumber("ext.", getExtensionPosition());
     }
