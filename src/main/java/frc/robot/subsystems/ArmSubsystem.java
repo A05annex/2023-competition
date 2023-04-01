@@ -61,13 +61,13 @@ public class ArmSubsystem extends SubsystemBase {
     public enum ArmPositions {
         RETRACTED(0.0, 0.0),
         CONE_HIGH(17.5, 170.375),
-        CONE_MEDIUM(17.3, 42.36),
-        CUBE_HIGH(20.21, 124.54),
-        CUBE_MEDIUM(24.14,25.82),
+        CONE_MEDIUM(15.893, 79.336),
+        CUBE_HIGH(18.440, 89.909),
+        CUBE_MEDIUM(20.488,25.262),
         HYBRID(33.92, 0.0),
-        SUBSTATION_CUBE(20.9, 68.5),
+        SUBSTATION_CUBE(14.024, 88.766),
         SUBSTATION_CONE(20.7142, 65.38),
-        GROUND(0.0, 0.0);
+        GROUND(36.333, 0.5);
 
         private final ArmSubsystem armSubsystem = ArmSubsystem.getInstance();
 
