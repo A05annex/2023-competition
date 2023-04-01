@@ -65,7 +65,7 @@ public class ArmSubsystem extends SubsystemBase {
         CUBE_HIGH(18.440, 89.909),
         CUBE_MEDIUM(20.488,25.262),
         HYBRID(33.92, 0.0),
-        SUBSTATION_CUBE(14.024, 88.766),
+        SUBSTATION_CUBE(15.964, 38.309),
         SUBSTATION_CONE(20.7142, 65.38),
         GROUND(36.333, 0.5);
 
@@ -214,14 +214,14 @@ public class ArmSubsystem extends SubsystemBase {
         setPID(support, supportSmKp, supportSmKi, supportSmKiZone, supportSmKff);
 
         support.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
-        support.setSmartMotionMaxVelocity(2000.0, 0);
-        support.setSmartMotionMaxAccel(1000.0, 0);
+        support.setSmartMotionMaxVelocity(3000.0, 0);
+        support.setSmartMotionMaxAccel(3000.0, 0);
         support.setSmartMotionMinOutputVelocity(0.0, 0);
         support.setSmartMotionAllowedClosedLoopError(0.1, 0);
 
         tension.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
-        tension.setSmartMotionMaxVelocity(2000.0, 0);
-        tension.setSmartMotionMaxAccel(1000.0, 0);
+        tension.setSmartMotionMaxVelocity(3000.0, 0);
+        tension.setSmartMotionMaxAccel(3000.0, 0);
         tension.setSmartMotionMinOutputVelocity(0.0, 0);
         tension.setSmartMotionAllowedClosedLoopError(0.1, 0);
     }
@@ -231,14 +231,14 @@ public class ArmSubsystem extends SubsystemBase {
         setPID(support, supportSmKp, supportSmKi, supportSmKiZone, supportSmKff);
 
         support.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
-        support.setSmartMotionMaxVelocity(2000.0, 0);
-        support.setSmartMotionMaxAccel(1000.0, 0);
+        support.setSmartMotionMaxVelocity(3000.0, 0);
+        support.setSmartMotionMaxAccel(3000.0, 0);
         support.setSmartMotionMinOutputVelocity(0.0, 0);
         support.setSmartMotionAllowedClosedLoopError(0.1, 0);
 
         tension.setSmartMotionAccelStrategy(SparkMaxPIDController.AccelStrategy.kTrapezoidal, 0);
-        tension.setSmartMotionMaxVelocity(2000.0, 0);
-        tension.setSmartMotionMaxAccel(1000.0, 0);
+        tension.setSmartMotionMaxVelocity(3000.0, 0);
+        tension.setSmartMotionMaxAccel(3000.0, 0);
         tension.setSmartMotionMinOutputVelocity(0.0, 0);
         tension.setSmartMotionAllowedClosedLoopError(0.1, 0);
     }

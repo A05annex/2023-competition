@@ -120,7 +120,7 @@ public class RobotContainer extends A05RobotContainer
         m_altXboxX.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
 
         // Do the Substation Pickup Sequence while alt X is pressed, go to retracted when it's released
-        m_altXboxA.whileTrue(new SubstationPickUpCommandGroup(m_altXbox, m_driver));
+        m_altXboxA.whileTrue(new SubstationPickUpCommandGroup(m_driveXbox, m_altXbox, m_driver));
         m_altXboxA.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
 
         m_xboxLeftBumper.onTrue(new CollectorEjectCommand());
