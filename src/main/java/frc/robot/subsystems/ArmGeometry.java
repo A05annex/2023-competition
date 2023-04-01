@@ -105,11 +105,11 @@ public class ArmGeometry {
     /**
      * The extension position encoder when the arm is against the minimum extension limit.
      */
-    public static final double EXTENSION_POSITION_MIN_EXTENSION = 0.125;
+    public static final double EXTENSION_POSITION_MIN_EXTENSION = 0.0;
     /**
      * The arm length (in inches) physically measured when the arm is against the minimum extension limit.
      */
-    public static final double ARM_LENGTH_MIN_EXTENSION = 32.25;
+    public static final double ARM_LENGTH_MIN_EXTENSION = 33.375;
     /**
      * The extension position encoder when the arm is against the maximum extension limit.
      */
