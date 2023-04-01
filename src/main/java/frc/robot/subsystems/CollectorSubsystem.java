@@ -14,7 +14,7 @@ public class CollectorSubsystem extends SubsystemBase {
     private final double coneKp = 0.0001, coneKi = 0.0, coneKiZone = 0.0;
 
     private final CANSparkMax cube = new CANSparkMax(Constants.CAN_Devices.CUBE_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
-    private final double cubeKp = 0.0001, cubeKi = 0.0, cubeKiZone = 0.0, cubeKff = 0.00007;
+    private final double cubeKp = 0.0001, cubeKi = 0.0, cubeKiZone = 0.0, cubeKff = 0.000091;
 
     private final SparkMaxPIDController conePID = cone.getPIDController();
     private final SparkMaxPIDController cubePID = cube.getPIDController();
@@ -29,10 +29,10 @@ public class CollectorSubsystem extends SubsystemBase {
 
     private CollectorSubsystem() {
         cone.restoreFactoryDefaults();
-        cone.setSmartCurrentLimit(30, 15,9000);
+        cone.setSmartCurrentLimit(20, 15,9000);
         cone.setInverted(true);
         cube.restoreFactoryDefaults();
-        cube.setSmartCurrentLimit(30, 15,9000);
+        cube.setSmartCurrentLimit(20, 15,9000);
         //cube.setIdleMode(CANSparkMax.IdleMode.kBrake);
         setPID(conePID, coneKp, coneKi, coneKiZone, cubeKff, 0);
         setPID(conePID, 0.1, 0.0, 0.0, 0.0, 1);

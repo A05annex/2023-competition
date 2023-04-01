@@ -7,6 +7,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.*;
@@ -28,6 +29,7 @@ public class RobotContainer extends A05RobotContainer
     ClawSubsystem m_clawSubsystem = ClawSubsystem.getInstance();
     PhotonVisionSubsystem photonSubsystem = PhotonVisionSubsystem.getInstance();
     SpeedCachedSwerve speedCachedSwerve = SpeedCachedSwerve.getInstance();
+    CollectorSubsystem collectorSubsystem = CollectorSubsystem.getInstance();
 
     // Commands
 
@@ -111,20 +113,27 @@ public class RobotContainer extends A05RobotContainer
         // Do the Cone Place Sequence while alt Y is pressed, go to retracted when it's released
         //m_altXboxY.whileTrue(new ConePlaceCommandGroup(m_altXbox, m_driveXbox, m_driver));
         //m_altXboxY.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
-        m_altXboxY.whileTrue(new InstantCommand(CollectorSubsystem.getInstance()::spinConeMotor)).
-                whileFalse(new InstantCommand(CollectorSubsystem.getInstance()::stopConeMotor));
+        m_altXboxY.whileTrue(new InstantCommand(collectorSubsystem::spinConeMotor)).
+                whileFalse(new InstantCommand(collectorSubsystem::stopConeMotor));
 
         // Do the Cube Place Sequence while alt X is pressed, go to retracted when it's released
         //m_altXboxX.whileTrue(new CubePlaceCommandGroup(m_altXbox, m_driveXbox, m_driver));
         //m_altXboxX.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
-        m_altXboxX.whileTrue(new InstantCommand(CollectorSubsystem.getInstance()::spinCubeMotor)).
-                whileFalse(new InstantCommand(CollectorSubsystem.getInstance()::stopCubeMotor));
+        m_altXboxX.whileTrue(new InstantCommand(collectorSubsystem::spinCubeMotor)).
+                whileFalse(new InstantCommand(collectorSubsystem::stopCubeMotor));
 
         // Do the Substation Pickup Sequence while alt X is pressed, go to retracted when it's released
         m_altXboxA.whileTrue(new SubstationPickUpCommandGroup(m_altXbox, m_driver));
         m_altXboxA.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
 
+        m_xboxLeftBumper.whileTrue(new CollectorEjectCommand()).whileFalse(new InstantCommand(collectorSubsystem::stop));
+        m_xboxRightBumper.whileTrue(new InstantCommand(collectorSubsystem::spin)).whileFalse(new InstantCommand(collectorSubsystem::stop));
+        m_altXboxLeftBumper.whileTrue(new CollectorEjectCommand()).whileFalse(new InstantCommand(collectorSubsystem::stop));
+        m_altXboxRightBumper.whileTrue(new ConditionalCommand(new InstantCommand(collectorSubsystem::spin), new GroundPickupCommand(), ArmSubsystem.getInstance()::isManualControl))
+                .whileFalse(new InstantCommand(collectorSubsystem::stop));
 
+
+        /*
         // Open the claw when alt left bumper is pressed and close it when the right one is pressed.
         m_altXboxLeftBumper.onTrue(new InstantCommand(m_clawSubsystem::open));
         m_altXboxLeftBumper.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when released
@@ -135,23 +144,10 @@ public class RobotContainer extends A05RobotContainer
         m_xboxLeftBumper.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when released
         m_xboxRightBumper.onTrue(new InstantCommand(m_clawSubsystem::close));
         m_xboxRightBumper.onFalse(new InstantCommand(m_clawSubsystem::off)); // Turn off the solenoid when released
-
-
-        /*
-        Cube
-        X = 0.806
-        Y = -0.114
-
-        Cone
-        X = 1.114
-        Y = -0.16
-         */
+        */
 
         // Run the balancer while drive X is pressed
         m_xboxX.whileTrue(new AutoBalanceCommand());
-
-//        m_xboxX.whileTrue(new SpeedAprilTagPositionCommand(m_driveXbox, m_driver,
-//                1.114, -0.16, 1.0, 0.8, Constants.AprilTagSet.SUBSTATION));
 
         // Toggle manual arm control when alt Back is pressed
         m_altXboxBack.toggleOnTrue(new ManualArmCommand(m_altXbox));
@@ -159,13 +155,5 @@ public class RobotContainer extends A05RobotContainer
         // Go to the substaion positions
         m_altXboxLeftStickPress.onTrue(new InstantCommand(ArmSubsystem.ArmPositions.SUBSTATION_CUBE::goTo));
         m_altXboxRightStickPress.onTrue(new InstantCommand(ArmSubsystem.ArmPositions.SUBSTATION_CONE::goTo));
-
-        // Toggle the Can Drive box on the dashboard when any of the position commands are run
-        m_altXboxA.onTrue(new InstantCommand(photonSubsystem::canDriveFalse));
-        m_altXboxA.onFalse(new InstantCommand(photonSubsystem::canDriveTrue));
-        m_altXboxY.onTrue(new InstantCommand(photonSubsystem::canDriveFalse));
-        m_altXboxY.onFalse(new InstantCommand(photonSubsystem::canDriveTrue));
-        m_altXboxX.onTrue(new InstantCommand(photonSubsystem::canDriveFalse));
-        m_altXboxX.onFalse(new InstantCommand(photonSubsystem::canDriveTrue));
     }
 }

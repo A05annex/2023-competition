@@ -13,6 +13,8 @@ import org.a05annex.util.Utl;
 public class ArmSubsystem extends SubsystemBase {
     private boolean enableInit = false;
 
+    private boolean manualControl = false;
+
     // Declaring everything for the forward support pivot motor
     private final CANSparkMax forwardSupportPivot = new CANSparkMax(Constants.CAN_Devices.PIVOT_FORWARD_SUPPORT_MOTOR,
             CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -64,7 +66,8 @@ public class ArmSubsystem extends SubsystemBase {
         CUBE_MEDIUM(24.14,25.82),
         HYBRID(33.92, 0.0),
         SUBSTATION_CUBE(20.9, 68.5),
-        SUBSTATION_CONE(20.7142, 65.38);
+        SUBSTATION_CONE(20.7142, 65.38),
+        GROUND(0.0, 0.0);
 
         private final ArmSubsystem armSubsystem = ArmSubsystem.getInstance();
 
@@ -363,6 +366,14 @@ public class ArmSubsystem extends SubsystemBase {
     public void stopAllMotors() {
         extension.stopMotor();
         backwardSupportPivot.stopMotor();
+    }
+
+    public boolean isManualControl() {
+        return manualControl;
+    }
+
+    public void setManualControl(boolean isManual) {
+        manualControl = isManual;
     }
 
     public void periodic() {

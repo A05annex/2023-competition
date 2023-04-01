@@ -25,6 +25,7 @@ public class ManualArmCommand extends CommandBase {
     public void initialize() {
         pivotWasSpinning = false;
         extWasSpinning = false;
+        m_armSubsystem.setManualControl(true);
     }
 
     @Override
@@ -59,5 +60,7 @@ public class ManualArmCommand extends CommandBase {
     }
 
     @Override
-    public void end(boolean interrupted) {}
+    public void end(boolean interrupted) {
+        m_armSubsystem.setManualControl(false);
+    }
 }
