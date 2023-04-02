@@ -154,7 +154,7 @@ public class ArmSubsystem extends SubsystemBase {
      * the {@link #getInstance()} method to get the singleton instance.
      */
     private ArmSubsystem() {
-        if (/*Constants.getSparkConfigFromFactoryDefaults()*/true) {
+        if (Constants.getSparkConfigFromFactoryDefaults()) {
             // Initialize the forward support pivot motor
             forwardSupportPivot.restoreFactoryDefaults();
             forwardEncoder.setPosition(pivotPositions[START_POSITION]);
@@ -178,7 +178,7 @@ public class ArmSubsystem extends SubsystemBase {
             setSmartMotion(extensionPID, extensionKP, extensionKI, extensionKIZone, extensionKff,
                     extensionSmMaxRPM, extensionSmMaxRPMs, extensionSmMinRPM, extensionSmError, PidSlot.SMART_MOTION.value);
             extension.setIdleMode(CANSparkMax.IdleMode.kBrake);
-            backwardSupportPivot.setSmartCurrentLimit(40, 20, 2000);
+            extension.setSmartCurrentLimit(40, 20, 2000);
 
             if (Constants.getSparkBurnConfig()) {
                 forwardSupportPivot.burnFlash();
@@ -379,12 +379,12 @@ public class ArmSubsystem extends SubsystemBase {
                 getPivotPosition(),getExtensionPosition());
         SmartDashboard.putNumber("pivot", position.getPivotPosition());
         SmartDashboard.putNumber("ext.", position.getExtensionPosition());
-        Point2D.Double pt = ArmGeometry.getArmLocationFromPositions(
-                position.getPivotPosition(),position.getExtensionPosition());
-        SmartDashboard.putNumber("arm X", pt.x);
-        SmartDashboard.putNumber("arm Y", pt.y);
-        boolean valid = position.clipToValidInPlay();
-        SmartDashboard.putBoolean("arm valid", valid);
+//        Point2D.Double pt = ArmGeometry.getArmLocationFromPositions(
+//                position.getPivotPosition(),position.getExtensionPosition());
+//        SmartDashboard.putNumber("arm X", pt.x);
+//        SmartDashboard.putNumber("arm Y", pt.y);
+//        boolean valid = position.clipToValidInPlay();
+//        SmartDashboard.putBoolean("arm valid", valid);
 
     }
 }
