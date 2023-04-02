@@ -76,6 +76,7 @@ public class RobotContainer extends A05RobotContainer
 
         m_driveSubsystem.setDefaultCommand(m_driveCommand);
         ArmSubsystem.getInstance().setDefaultCommand(new ManualArmCommand(m_altXbox));
+        //ArmSubsystem.getInstance().setDefaultCommand(new ManualArmXYCommand(m_altXbox));
 
         if (m_autoCommand != null) {
             m_autoCommand.setMirror(!Constants.readMirrorSwitch()); // Something was backwards

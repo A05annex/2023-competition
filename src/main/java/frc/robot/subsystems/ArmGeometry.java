@@ -20,7 +20,7 @@ public class ArmGeometry {
         private double pivotPosition;
         private double extensionPosition;
 
-        ArmPosition(double pivotPosition, double extensionPosition) {
+        public ArmPosition(double pivotPosition, double extensionPosition) {
             this.pivotPosition = pivotPosition;
             this.extensionPosition = extensionPosition;
         }
@@ -126,20 +126,22 @@ public class ArmGeometry {
     public static final double EXTENSION_POSITION_CUSHION = 0.0;
 
     @SuppressWarnings("ConstantValue")
-    public static final double EXTENSION_POSITION_MIN_ALLOWABLE = EXTENSION_POSITION_MIN_EXTENSION +
-            (EXTENSION_POSITION_MIN_EXTENSION > EXTENSION_POSITION_MAX_EXTENSION ?
-                    -EXTENSION_POSITION_CUSHION : EXTENSION_POSITION_CUSHION);
+    public static final double EXTENSION_POSITION_MIN_ALLOWABLE =
+            EXTENSION_POSITION_MIN_EXTENSION + EXTENSION_POSITION_CUSHION;
     @SuppressWarnings("ConstantValue")
-    public static final double EXTENSION_POSITION_MAX_ALLOWABLE = EXTENSION_POSITION_MAX_EXTENSION +
-            (EXTENSION_POSITION_MIN_EXTENSION > EXTENSION_POSITION_MAX_EXTENSION ?
-                    EXTENSION_POSITION_CUSHION : -EXTENSION_POSITION_CUSHION);
+    public static final double EXTENSION_POSITION_MAX_ALLOWABLE =
+            EXTENSION_POSITION_MAX_EXTENSION - EXTENSION_POSITION_CUSHION;
     /**
      * The extension encoder tics per inch, calculated from the tics between
      */
-    public static final double EXTENSION_TICS_PER_INCH =
+    public static final double EXTENSION_AVE_TICS_PER_INCH =
             (EXTENSION_POSITION_MAX_EXTENSION - EXTENSION_POSITION_MIN_EXTENSION) /
                     (ARM_LENGTH_MAX_EXTENSION - ARM_LENGTH_MIN_EXTENSION);
-
+    /**
+     * From first stage end to arm end at min extension (position=0, length=9.375"),
+     * with slight extension (position=33.071, length=18.0625)
+     */
+    public static final double EXTENSION_TICS_PER_INCH_AT_MIN = 3.8067;
     /**
      * The horizontal distance (in inches) from the arm pivot to the edge of the frame.
      */

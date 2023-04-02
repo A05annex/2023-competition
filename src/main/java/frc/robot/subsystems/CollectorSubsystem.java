@@ -28,16 +28,32 @@ public class CollectorSubsystem extends SubsystemBase {
     }
 
     private CollectorSubsystem() {
-        cone.restoreFactoryDefaults();
-        cone.setSmartCurrentLimit(20, 15,9000);
-        cone.setInverted(true);
-        cube.restoreFactoryDefaults();
-        cube.setSmartCurrentLimit(20, 15,9000);
-        //cube.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        setPID(conePID, coneKp, coneKi, coneKiZone, cubeKff, 0);
-        setPID(conePID, 0.1, 0.0, 0.0, 0.0, 1);
-        setPID(cubePID, cubeKp, cubeKi, cubeKiZone, cubeKff, 0);
-        setPID(cubePID, 0.1, 0.0, 0.0, 0.0, 1);
+        if (/*Constants.getSparkConfigFromFactoryDefaults()*/true) {
+            cone.restoreFactoryDefaults();
+            cone.setSmartCurrentLimit(20, 15, 9000);
+            cone.setInverted(true);
+            cube.restoreFactoryDefaults();
+            cube.setSmartCurrentLimit(20, 15, 9000);
+            //cube.setIdleMode(CANSparkMax.IdleMode.kBrake);
+            setPID(conePID, coneKp, coneKi, coneKiZone, cubeKff, 0);
+            setPID(conePID, 0.1, 0.0, 0.0, 0.0, 1);
+            setPID(cubePID, cubeKp, cubeKi, cubeKiZone, cubeKff, 0);
+            setPID(cubePID, 0.1, 0.0, 0.0, 0.0, 1);
+
+            if (Constants.getSparkBurnConfig()) {
+                cone.burnFlash();
+                cube.burnFlash();
+            }
+        }
+        disableUnusedFrames(cone);
+        disableUnusedFrames(cube);
+    }
+
+    private void disableUnusedFrames(CANSparkMax motor) {
+        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus3,60000);
+        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus4,60000);
+        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus5,60000);
+        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus6,60000);
     }
 
     private void setPID(SparkMaxPIDController pid, double kp, double ki, double kiZone, double kff, int slot) {
@@ -45,6 +61,7 @@ public class CollectorSubsystem extends SubsystemBase {
         pid.setI(ki, slot);
         pid.setIZone(kiZone, slot);
         pid.setFF(0.0, slot);
+        pid.setOutputRange(-1.0, 1.0, slot);
     }
 
 

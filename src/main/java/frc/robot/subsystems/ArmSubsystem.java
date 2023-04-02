@@ -6,8 +6,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import org.a05annex.frc.A05Constants;
-import org.a05annex.util.AngleConstantD;
-import org.a05annex.util.AngleD;
 import org.a05annex.util.Utl;
 
 import java.awt.geom.Point2D;
@@ -299,16 +297,8 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void setPivotPositionDelta(double delta) {
-        double currentPos = (forwardEncoder.getPosition() + backwardEncoder.getPosition())/2;
-        double clippedPosition = Utl.clip(currentPos + delta,
-                pivotPositions[MIN_POSITION], pivotPositions[MAX_POSITION]);
-        if(A05Constants.getPrintDebug() && clippedPosition != (currentPos + delta)) {
-            System.out.println("Pivot motor was requested to go to position: " + (currentPos + delta) +
-                    " but was outside limits");
-        }
-        forwardPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion, PidSlot.SMART_MOTION.value);
-        backwardPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion, PidSlot.SMART_MOTION.value);
-        lastPivotSetReference =  clippedPosition;
+        double currentPos = (forwardEncoder.getPosition() + backwardEncoder.getPosition())/2.0;
+        setPivotPosition(currentPos + delta);
     }
 
     /**
@@ -338,31 +328,34 @@ public class ArmSubsystem extends SubsystemBase {
         extensionPID.setReference(clippedPosition, CANSparkMax.ControlType.kSmartMotion, PidSlot.SMART_MOTION.value);
     }
 
-    public void goToCalcPos() {
-        setExtensionPosition(pivotToExtension());
+    public void setExtensionPositionDelta(double delta) {
+        setExtensionPosition(extensionEncoder.getPosition() + delta);
     }
-
-    /**
-     * Reads the encoder position of the pivot motor and does trig to find the max extension point of the arm that stays
-     * in the 48-inch extension limit
-     * @return position in encoder ticks that the extension motor should limit itself to
-     */
-    public double pivotToExtension() {
-        AngleD angle = new AngleD().setDegrees((getPivotPosition() / pivotTicksPerRotation) * 360);
-        double distInches = 39.5/angle.sin();
-        return 200 - (distInches * extensionTicksPerInch * 0.9);
-    }
-
-    /**
-     * Reads the encoder position of the extension motor and does trig to find the max angle of the arm that stays in
-     * the 48-inch extension limit
-     * @return position in encoder ticks that the pivot motor should limit itself to
-     */
-    public double extensionToPivot() {
-        double distMeters = getExtensionPosition() / extensionTicksPerInch;
-        AngleD angle = new AngleD().asin(39.5/distMeters);
-        return 200.0 - (angle.getRadians() / AngleConstantD.TWO_PI.getRadians()) * pivotTicksPerRotation;
-    }
+//    public void goToCalcPos() {
+//        setExtensionPosition(pivotToExtension());
+//    }
+//
+//    /**
+//     * Reads the encoder position of the pivot motor and does trig to find the max extension point of the arm that stays
+//     * in the 48-inch extension limit
+//     * @return position in encoder ticks that the extension motor should limit itself to
+//     */
+//    public double pivotToExtension() {
+//        AngleD angle = new AngleD().setDegrees((getPivotPosition() / pivotTicksPerRotation) * 360);
+//        double distInches = 39.5/angle.sin();
+//        return 200 - (distInches * extensionTicksPerInch * 0.9);
+//    }
+//
+//    /**
+//     * Reads the encoder position of the extension motor and does trig to find the max angle of the arm that stays in
+//     * the 48-inch extension limit
+//     * @return position in encoder ticks that the pivot motor should limit itself to
+//     */
+//    public double extensionToPivot() {
+//        double distMeters = getExtensionPosition() / extensionTicksPerInch;
+//        AngleD angle = new AngleD().asin(39.5/distMeters);
+//        return 200.0 - (angle.getRadians() / AngleConstantD.TWO_PI.getRadians()) * pivotTicksPerRotation;
+//    }
 
     /**
      * Stops all motors. Does not persist so if something is periodically powering motors, this won't work.
