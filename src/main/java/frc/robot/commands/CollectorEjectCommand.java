@@ -7,7 +7,7 @@ import frc.robot.subsystems.CollectorSubsystem;
 public class CollectorEjectCommand extends CommandBase {
     private final CollectorSubsystem collectorSubsystem = CollectorSubsystem.getInstance();
 
-    private final int runTicks = 30;
+    private final int runTicks = 35;
     private int ticksElapsed;
 
     public CollectorEjectCommand() {

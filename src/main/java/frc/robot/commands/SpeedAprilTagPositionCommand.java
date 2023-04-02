@@ -31,7 +31,7 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
 
     private final PhotonVisionSubsystem.Camera camera = Constants.DRIVE_CAMERA;
 
-    private final int resumeDrivingTickThreshold = 500;
+    private final int resumeDrivingTickThreshold = 10000;
 
     private int ticksWithoutTarget;
 
@@ -57,6 +57,8 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
         this.aprilTagSet = aprilTagSet;
 
         inZoneThreshold = Units.inchesToMeters(0.5*xPosition);
+        //inZoneThreshold = Utl.clip(Units.inchesToMeters(0.5*xPosition), 0.05, 10.0);
+        SmartDashboard.putNumber("inZone", inZoneThreshold);
     }
 
     @Override
@@ -117,10 +119,10 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
         }
 
         postionAtFrame = swerveDrive.getRobotRelativePositionSince(camera.getLastTargetTime());
-        SmartDashboard.putNumber("forward", postionAtFrame.forward);
-        SmartDashboard.putNumber("strafe", postionAtFrame.strafe);
-        SmartDashboard.putNumber("heading", postionAtFrame.heading.getDegrees());
-        SmartDashboard.putNumber("timestamp", postionAtFrame.timeStamp);
+        if (postionAtFrame.cacheOverrun) {
+            isFinished = true;
+            return;
+        }
 
         // --------- Calculate Speed ---------
         //double totalSpeed = Math.pow(Math.abs(calcX()), speedSmoothingMultiplier) + Math.pow(Math.abs(calcY()), speedSmoothingMultiplier);
@@ -154,7 +156,7 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
         m_lastConditionedSpeed = m_conditionedSpeed;
         m_lastConditionedRotate = m_conditionedRotate;
 
-        if(Math.abs(camera.getXFromLastTarget() - xPosition) < inZoneThreshold && Math.abs(camera.getYFromLastTarget() - yPosition) < inZoneThreshold) {
+        if(Math.abs(camera.getXFromLastTarget() - postionAtFrame.forward - xPosition) < inZoneThreshold && Math.abs(camera.getYFromLastTarget() - postionAtFrame.strafe - yPosition) < inZoneThreshold) {
             ticksInZoneCounter++;
             swerveDrive.swerveDrive(AngleD.ZERO, 0.0, m_conditionedRotate*0.1);
             if(ticksInZoneCounter > ticksInZone) {
@@ -175,7 +177,6 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
     public void end(boolean interrupted) {
         // Stop the swerve
         swerveDrive.swerveDrive(AngleConstantD.ZERO, 0.0, 0.0);
-        SmartDashboard.putNumber("elapsedTime", System.currentTimeMillis() - startTime);
     }
 
 

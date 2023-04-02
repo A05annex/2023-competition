@@ -69,13 +69,13 @@ public class ArmSubsystem extends SubsystemBase {
      */
     public enum ArmPositions {
         RETRACTED(0.0, 0.0),
-        CONE_HIGH(17.5, 170.375),
         CONE_MEDIUM(15.893, 79.336),
         CUBE_HIGH(18.440, 89.909),
         CUBE_MEDIUM(20.488,25.262),
         HYBRID(33.92, 0.0),
-        SUBSTATION_CUBE(15.964, 38.309),
-        SUBSTATION_CONE(20.7142, 65.38),
+        SUBSTATION_CUBE(16.238, 49.772),
+        SUBSTATION_CONE_START(10.0, 88.766),
+        SUBSTATION_CONE_END(14.024, 61.263),
         GROUND(36.333, 0.5);
 
         private final ArmSubsystem armSubsystem = ArmSubsystem.getInstance();
@@ -127,8 +127,8 @@ public class ArmSubsystem extends SubsystemBase {
         }
 
         public boolean isInPosition() {
-            return Math.abs(armSubsystem.getPivotPosition() - currentPosition.pivot) < DEADBAND &&
-                    Math.abs(armSubsystem.getExtensionPosition() - currentPosition.extension) < DEADBAND;
+            return Math.abs(armSubsystem.getPivotPosition() - pivot) < DEADBAND &&
+                    Math.abs(armSubsystem.getExtensionPosition() - extension) < DEADBAND;
         }
     }
 
@@ -383,7 +383,7 @@ public class ArmSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putBoolean("manual arm", manualControl);
         ArmGeometry.ArmPosition position = new ArmGeometry.ArmPosition(
-                getPivotReferencePosition(),getExtensionPosition());
+                getPivotPosition(),getExtensionPosition());
         SmartDashboard.putNumber("pivot", position.getPivotPosition());
         SmartDashboard.putNumber("ext.", position.getExtensionPosition());
         Point2D.Double pt = ArmGeometry.getArmLocationFromPositions(

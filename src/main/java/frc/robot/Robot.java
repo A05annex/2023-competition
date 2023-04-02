@@ -51,7 +51,7 @@ public class Robot extends A05Robot
         //Constants.CLAW_CAMERA.setDriverMode(false);
 
 
-        SmartDashboard.putData("Cone High", new InstantCommand(ArmSubsystem.ArmPositions.CONE_HIGH::goTo));
+        SmartDashboard.putData("Cone High", new InstantCommand(ArmSubsystem.ArmPositions.CONE_MEDIUM::goTo));
         SmartDashboard.putData("Cone Middle", new InstantCommand(ArmSubsystem.ArmPositions.CONE_MEDIUM::goTo));
         SmartDashboard.putData("Cube High", new InstantCommand(ArmSubsystem.ArmPositions.CUBE_HIGH::goTo));
         SmartDashboard.putData("Cube Middle", new InstantCommand(ArmSubsystem.ArmPositions.CUBE_MEDIUM::goTo));
@@ -79,7 +79,6 @@ public class Robot extends A05Robot
         Constants.DRIVE_CAMERA.updateLastFrameAndTarget();
         SmartDashboard.putNumber("cam Y", Constants.DRIVE_CAMERA.getYFromLastTarget());
         SmartDashboard.putNumber("cam X", Constants.DRIVE_CAMERA.getXFromLastTarget());
-        SmartDashboard.putNumber("latency", Constants.DRIVE_CAMERA.getLastFrame().getLatencyMillis());
     }
 
     
