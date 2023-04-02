@@ -2,60 +2,40 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.ClawSubsystem;
 
 
 public class AutoStartingPlaceCommand extends CommandBase {
     private final ArmSubsystem armSubsystem = ArmSubsystem.getInstance();
-    private final ClawSubsystem clawSubsystem = ClawSubsystem.getInstance();
 
-    private final double PIVOT = -20.64;
-    private final double EXTENSION = 28.47;
-    private final double DEADBAND = 0.5;
-    private boolean isFinished;
+    private final ArmSubsystem.ArmPositions position = ArmSubsystem.ArmPositions.CUBE_HIGH;
 
     private int ticks;
 
     public AutoStartingPlaceCommand() {
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
-        addRequirements(this.armSubsystem, this.clawSubsystem);
-        ticks = -1;
-        isFinished = false;
+        addRequirements(this.armSubsystem);
     }
 
     @Override
     public void initialize() {
-        clawSubsystem.close();
-        armSubsystem.setPivotPosition(PIVOT);
-        armSubsystem.setExtensionPosition(EXTENSION);
+        position.goTo();
         ticks = -1;
-        isFinished = false;
     }
 
     @Override
     public void execute() {
-        if(Math.abs(armSubsystem.getPivotPosition() - PIVOT) < DEADBAND &&
-                Math.abs(armSubsystem.getExtensionPosition() - EXTENSION) < DEADBAND && ticks == -1)
-        {
-            ticks = 0;
-        }
-        if (ticks == 0) {
-           clawSubsystem.open();
-           ticks++;
-        } else if (ticks == 5) {
-            clawSubsystem.off();
+        if(position.isInPosition()) {
             ticks++;
-        } else if(ticks >= 15) {
-            isFinished = true;
-        } else if (ticks > 0) {
-            ticks++;
+            if(ticks == 0) {
+                new CollectorEjectCommand().schedule();
+            }
         }
     }
 
     @Override
     public boolean isFinished() {
-        return isFinished;
+        return position.isInPosition() && ticks >=5;
     }
 
     @Override

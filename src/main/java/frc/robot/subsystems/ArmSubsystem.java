@@ -1,14 +1,15 @@
 package frc.robot.subsystems;
 
 
-import com.revrobotics.*;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.util.Utl;
-
-import java.awt.geom.Point2D;
 
 public class ArmSubsystem extends SubsystemBase {
     enum PidSlot {
@@ -36,9 +37,8 @@ public class ArmSubsystem extends SubsystemBase {
     private final RelativeEncoder backwardEncoder = backwardSupportPivot.getEncoder();
     private final SparkMaxPIDController backwardPID = backwardSupportPivot.getPIDController();
 
-    //TODO: make this more readable
     //Array of positions. [starting position, min position, max position]
-    private final double[] pivotPositions = {0.0, -40, 45};
+    private final double[] pivotPositions = {0, -40, 45};
 
     private final double pivotSmKp = 0.00005, pivotSmKi = 0.000, pivotSmKiZone = 0.0, pivotSmKff = 0.000156,
             pivotSmMaxRPM = 3000.0, pivotSmMaxRPMs = 3000.0, pivotSmMinRPM = 0.0, pivotSmError = 0.1;
@@ -74,7 +74,7 @@ public class ArmSubsystem extends SubsystemBase {
         SUBSTATION_CUBE(16.238, 49.772),
         SUBSTATION_CONE_START(10.0, 88.766),
         SUBSTATION_CONE_END(14.024, 61.263),
-        GROUND(36.333, 0.5);
+        GROUND(36.75, 0.5);
 
         private final ArmSubsystem armSubsystem = ArmSubsystem.getInstance();
 
@@ -186,6 +186,10 @@ public class ArmSubsystem extends SubsystemBase {
                 extension.burnFlash();
             }
         }
+
+        extensionEncoder.setPosition(extensionPositions[START_POSITION]);
+        backwardEncoder.setPosition(pivotPositions[START_POSITION]);
+        forwardEncoder.setPosition(pivotPositions[START_POSITION]);
 
         disableUnusedFrames(forwardSupportPivot);
         disableUnusedFrames(backwardSupportPivot);
