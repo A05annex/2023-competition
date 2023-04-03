@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.CollectorSubsystem;
 import org.a05annex.frc.A05Constants;
 
 public class SubstationPickUpCommandGroup extends SequentialCommandGroup {
@@ -14,12 +15,13 @@ public class SubstationPickUpCommandGroup extends SequentialCommandGroup {
 
     public SubstationPickUpCommandGroup(XboxController driveXbox, XboxController altXbox, A05Constants.DriverSettings driver) {
         super(new ConditionalCommand(
-                new SequentialCommandGroup(new SpeedAprilTagPositionCommand(driveXbox, driver, 0.84, 0.6484, 1.0, 0.8, Constants.AprilTagSet.SUBSTATION),
+                new SequentialCommandGroup(new SpeedAprilTagPositionCommand(driveXbox, driver, 1.16, 0.61, 1.0, 0.8, Constants.AprilTagSet.SUBSTATION),
                         new SubstationCubeCommand()),
-                new SequentialCommandGroup(new SpeedAprilTagPositionCommand(driveXbox, driver, 0.69, 0.6484, 1.0, 0.8, Constants.AprilTagSet.SUBSTATION),
+                new SequentialCommandGroup(new SpeedAprilTagPositionCommand(driveXbox, driver, 0.73, 0.6084, 1.0, 0.8, Constants.AprilTagSet.SUBSTATION),
                         new SubstationConeCommand()),
                 SubstationPickUpCommandGroup::isCube),
-                new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
+                new InstantCommand(CollectorSubsystem.getInstance()::stop),
+                new InstantCommand(ArmSubsystem.ArmPositions.SUBSTATION_CONE_START::goTo));
 
         SubstationPickUpCommandGroup.altXbox = altXbox;
     }
@@ -27,6 +29,6 @@ public class SubstationPickUpCommandGroup extends SequentialCommandGroup {
     //Y=0.6484
 
     private static boolean isCube() {
-        return altXbox.getPOV() == 0 || altXbox.getPOV() == 45 || altXbox.getPOV() == 315;
+        return altXbox.getPOV() == 225 || altXbox.getPOV() == 180 || altXbox.getPOV() == 135;
     }
 }

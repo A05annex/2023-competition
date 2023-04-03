@@ -31,7 +31,7 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
 
     private final PhotonVisionSubsystem.Camera camera = Constants.DRIVE_CAMERA;
 
-    private final int resumeDrivingTickThreshold = 10000;
+    private final int resumeDrivingTickThreshold = 500;
 
     private int ticksWithoutTarget;
 
@@ -56,7 +56,11 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
         this.upfield = aprilTagSet.upfield;
         this.aprilTagSet = aprilTagSet;
 
-        inZoneThreshold = Units.inchesToMeters(0.5*xPosition);
+        if(xPosition >= 1) {
+            inZoneThreshold = Units.inchesToMeters(0.5 * xPosition);
+        } else {
+            inZoneThreshold = Units.inchesToMeters(0.5 * Math.pow(xPosition, 2.5));
+        }
         //inZoneThreshold = Utl.clip(Units.inchesToMeters(0.5*xPosition), 0.05, 10.0);
         SmartDashboard.putNumber("inZone", inZoneThreshold);
     }
