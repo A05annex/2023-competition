@@ -34,7 +34,11 @@ public class CubeArmMoveCommand extends CommandBase {
     }
 
     @Override
-    public void execute() {}
+    public void execute() {
+        if(Math.abs(position.getPivot() - armSubsystem.getPivotPosition()) < 2.0 && position == ArmSubsystem.ArmPositions.CUBE_MEDIUM) {
+            new CollectorEjectCommand().schedule();
+        }
+    }
 
     @Override
     public boolean isFinished() {
