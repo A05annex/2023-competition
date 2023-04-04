@@ -50,10 +50,10 @@ public class CollectorSubsystem extends SubsystemBase {
     }
 
     private void disableUnusedFrames(CANSparkMax motor) {
-        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus3,60000);
-        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus4,60000);
-        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus5,60000);
-        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus6,60000);
+        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus3,500);
+        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus4,500);
+        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus5,500);
+        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus6,500);
     }
 
     private void setPID(SparkMaxPIDController pid, double kp, double ki, double kiZone, double kff, int slot) {

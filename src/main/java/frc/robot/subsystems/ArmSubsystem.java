@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -38,10 +39,11 @@ public class ArmSubsystem extends SubsystemBase {
     private final SparkMaxPIDController backwardPID = backwardSupportPivot.getPIDController();
 
     //Array of positions. [starting position, min position, max position]
-    private final double[] pivotPositions = {0, -40, 45};
+    private final double[] pivotPositions = {0, -40, 37.3};
 
     private final double pivotSmKp = 0.00005, pivotSmKi = 0.000, pivotSmKiZone = 0.0, pivotSmKff = 0.000156,
             pivotSmMaxRPM = 3000.0, pivotSmMaxRPMs = 3000.0, pivotSmMinRPM = 0.0, pivotSmError = 0.1;
+    private final double pivotPosKp = 0.22, pivotPosKi = 0.0, pivotPosKiZone = 0.0, pivotPosKff = 0.0;
     private final double pivotTicksPerRotation = 30.309 * 4; //Reading from 0 to 90 degrees * 4 = full rotation
     private double lastPivotSetReference = 0.0;
 
@@ -189,6 +191,8 @@ public class ArmSubsystem extends SubsystemBase {
             }
         }
 
+        setPID(forwardPID, pivotPosKp, pivotPosKi, pivotPosKiZone, pivotPosKff, PidSlot.POSITION.value);
+
         extensionEncoder.setPosition(extensionPositions[START_POSITION]);
         backwardEncoder.setPosition(pivotPositions[START_POSITION]);
         forwardEncoder.setPosition(pivotPositions[START_POSITION]);
@@ -200,29 +204,51 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void enableInit() {
         if (enableInit) {
-            return;
+            //return;
         }
-        // Lock the forward (supporting) motor to start pos.
-        forwardPID.setReference(pivotPositions[START_POSITION], CANSparkMax.ControlType.kSmartMotion,
-                PidSlot.SMART_MOTION.value);
-        // 0.5 amps, just enough to tension
-        backwardPID.setReference(0.5, CANSparkMax.ControlType.kVoltage, PidSlot.SMART_MOTION.value);
 
-        double lastPos = backwardEncoder.getPosition();
+        double startTime = Timer.getFPGATimestamp();
+
+        System.out.println("***************************************");
+        System.out.println("ENABLE INIT STARTED: " + startTime);
+        System.out.println("***************************************");
+
+        extensionEncoder.setPosition(extensionPositions[START_POSITION]);
+        backwardEncoder.setPosition(pivotPositions[START_POSITION]);
+        forwardEncoder.setPosition(pivotPositions[START_POSITION]);
+
+        // Lock the forward (supporting) motor to start pos.
+        forwardPID.setReference(pivotPositions[START_POSITION], CANSparkMax.ControlType.kPosition,
+                PidSlot.POSITION.value);
+        System.out.println("***************************************");
+        System.out.println(String.format("TIME: %f; support = %f; tension = %f", Timer.getFPGATimestamp()-startTime, forwardEncoder.getPosition(), backwardEncoder.getPosition()));
+        // 0.5 amps, just enough to tension
+        backwardPID.setReference(1.2, CANSparkMax.ControlType.kVoltage, PidSlot.SMART_MOTION.value);
+
         while(true) {
             try {
-                Thread.sleep(50);
+                Thread.sleep(20);
             } catch (InterruptedException e) {
                 continue;
             }
-            double currentPos = backwardEncoder.getPosition();
-            if (currentPos <= lastPos) {
+            double currentPos = forwardEncoder.getPosition();
+
+            System.out.println(String.format("TIME: %f; support = %f; tension = %f;", Timer.getFPGATimestamp()-startTime, forwardEncoder.getPosition(), currentPos));
+
+            if (currentPos != 0.0) {
                 break;
             }
-            lastPos = currentPos;
         }
-        //Removed play and resetting the backward encoder so it can be held in place
-        backwardEncoder.setPosition(pivotPositions[START_POSITION]);
+
+        backwardEncoder.setPosition(forwardEncoder.getPosition());
+
+        System.out.println(String.format("END TIME: %f; support = %f; tension = %f", Timer.getFPGATimestamp()-startTime, forwardEncoder.getPosition(), backwardEncoder.getPosition()));
+        System.out.println("***************************************");
+        System.out.println("***************************************");
+        System.out.println("***************************************");
+
+        //Removed play and resetting the backward encoder, so it can be held in place
+        //backwardEncoder.setPosition(forwardEncoder.getPosition());
         forwardPID.setReference(pivotPositions[START_POSITION], CANSparkMax.ControlType.kSmartMotion, PidSlot.SMART_MOTION.value);
         backwardPID.setReference(pivotPositions[START_POSITION], CANSparkMax.ControlType.kSmartMotion, PidSlot.SMART_MOTION.value);
 
@@ -235,10 +261,10 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     private void disableUnusedFrames(CANSparkMax motor) {
-        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus3,60000);
-        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus4,60000);
-        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus5,60000);
-        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus6,60000);
+        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus3,500);
+        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus4,500);
+        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus5,500);
+        motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus6,500);
     }
 
     private void setSmartMotion(SparkMaxPIDController motor, double kP, double kI, double kIZone, double kFF,
@@ -380,7 +406,6 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void periodic() {
-        SmartDashboard.putBoolean("manual arm", manualControl);
         ArmGeometry.ArmPosition position = new ArmGeometry.ArmPosition(
                 getPivotPosition(),getExtensionPosition());
         SmartDashboard.putNumber("pivot", position.getPivotPosition());

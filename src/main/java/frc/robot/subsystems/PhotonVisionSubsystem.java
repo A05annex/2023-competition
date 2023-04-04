@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.util.Utl;
@@ -389,14 +388,6 @@ public class PhotonVisionSubsystem extends SubsystemBase {
         } else {
             return PIPELINE.CUBE;
         }
-    }
-
-    public void canDriveTrue() {
-        SmartDashboard.putBoolean("Can Drive", true);
-    }
-
-    public void canDriveFalse() {
-        SmartDashboard.putBoolean("Can Drive", false);
     }
 }
 

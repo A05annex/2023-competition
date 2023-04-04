@@ -5,6 +5,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -13,7 +14,6 @@ import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.SpeedCachedSwerve;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.A05Robot;
-import org.a05annex.frc.NavX;
 import org.a05annex.util.AngleD;
 
 import java.util.Collections;
@@ -35,6 +35,10 @@ public class Robot extends A05Robot
     @Override
     public void robotInit()
     {
+        System.out.println("***************************************");
+        System.out.println("ROBOT INIT STARTED: " + Timer.getFPGATimestamp());
+        System.out.println("***************************************");
+
         Constants.setSparkConfig(false,false);
         // Set the drive constants that are specific to this swerve geometry.
         // Some drive geometry is passed in RobotContainer's constructor
@@ -104,11 +108,12 @@ public class Robot extends A05Robot
     public void teleopInit()
     {
         // Cancels autonomous command
+        System.out.println("TELEOP INIT CALLED AT: " + Timer.getFPGATimestamp());
         super.teleopInit();
         ArmSubsystem.getInstance().enableInit();
 
-        ArmSubsystem.getInstance().setExtensionPosition(ArmSubsystem.getInstance().getExtensionPosition());
-        ArmSubsystem.getInstance().setPivotPosition(ArmSubsystem.getInstance().getPivotPosition());
+        //ArmSubsystem.getInstance().setExtensionPosition(ArmSubsystem.getInstance().getExtensionPosition());
+        //ArmSubsystem.getInstance().setPivotPosition(ArmSubsystem.getInstance().getPivotPosition());
     }
     
     
@@ -117,14 +122,10 @@ public class Robot extends A05Robot
     public void teleopPeriodic() {
         super.teleopPeriodic();
         A05Constants.printIDs();
-        SmartDashboard.putNumber("heading", NavX.getInstance().getHeading().getDegrees());
-        SmartDashboard.putNumber("raw yaw", NavX.getInstance().getNavInfo().rawYaw.getDegrees());
-        SmartDashboard.putNumber("yaw", NavX.getInstance().getNavInfo().yaw.getDegrees());
 
         Constants.DRIVE_CAMERA.updateLastFrameAndTarget();
         SmartDashboard.putNumber("cam Y", Constants.DRIVE_CAMERA.getYFromLastTarget());
         SmartDashboard.putNumber("cam X", Constants.DRIVE_CAMERA.getXFromLastTarget() - 1.0);
-        SmartDashboard.putNumber("latency", Constants.DRIVE_CAMERA.getLastFrame().getLatencyMillis());
     }
     
     @Override

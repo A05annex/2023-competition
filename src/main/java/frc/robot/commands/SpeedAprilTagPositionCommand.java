@@ -3,7 +3,6 @@ package frc.robot.commands;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.PhotonVisionSubsystem;
 import frc.robot.subsystems.SpeedCachedSwerve;
@@ -61,8 +60,6 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
         } else {
             inZoneThreshold = Units.inchesToMeters(0.5 * Math.pow(xPosition, 2.5));
         }
-        //inZoneThreshold = Utl.clip(Units.inchesToMeters(0.5*xPosition), 0.05, 10.0);
-        SmartDashboard.putNumber("inZone", inZoneThreshold);
     }
 
     @Override
