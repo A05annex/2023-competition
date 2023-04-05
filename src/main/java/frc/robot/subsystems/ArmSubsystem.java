@@ -71,12 +71,13 @@ public class ArmSubsystem extends SubsystemBase {
         RETRACTED(0.0, 0.0),
         CONE_MEDIUM(15.893, 79.336),
         CUBE_HIGH(18.440, 89.909),
-        CUBE_MEDIUM(20.488,25.262),
-        HYBRID(33.92, 0.0),
-        SUBSTATION_CUBE(18.464, 87.575),
+        CUBE_MEDIUM(19.524,14.643),
+        CUBE_HYBRID(33.92, 0.0),
+        CONE_HYBRID(20.333, 17.405),
+        SUBSTATION_CUBE(19.8, 87.575),
         SUBSTATION_CONE_START(10.31, 89.718),
         SUBSTATION_CONE_END(14.619, 69.430),
-        GROUND(36.75, 0.5);
+        GROUND(37.25, 0.5);
 
         //50.333
 

@@ -12,9 +12,9 @@ public class CubePlaceCommandGroup extends SequentialCommandGroup {
 
     public CubePlaceCommandGroup(XboxController altXbox, XboxController driveXbox, A05Constants.DriverSettings driver) {
         super(new ConditionalCommand(new SpeedAprilTagPositionCommand(driveXbox, driver,
-                0.806, -0.114, 1.0, 0.8, Constants.AprilTagSet.NODE),
+                0.85, -0.114, 1.0, 0.8, Constants.AprilTagSet.NODE),
                 new SpeedAprilTagPositionCommand(driveXbox, driver,
-                        1.114, -0.16, 1.0, 0.8, Constants.AprilTagSet.NODE), CubePlaceCommandGroup::hybrid),
+                        1.0, -0.11, 1.0, 0.8, Constants.AprilTagSet.NODE), CubePlaceCommandGroup::hybrid),
                 new CubeArmMoveCommand(altXbox));
 
         CubePlaceCommandGroup.altXbox = altXbox;

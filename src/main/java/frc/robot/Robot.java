@@ -55,11 +55,11 @@ public class Robot extends A05Robot
         //Constants.CLAW_CAMERA.setDriverMode(false);
 
 
-        SmartDashboard.putData("Cone High", new InstantCommand(ArmSubsystem.ArmPositions.CONE_MEDIUM::goTo));
+        SmartDashboard.putData("Cone High", new InstantCommand(ArmSubsystem.ArmPositions.CONE_HYBRID::goTo));
         SmartDashboard.putData("Cone Middle", new InstantCommand(ArmSubsystem.ArmPositions.CONE_MEDIUM::goTo));
         SmartDashboard.putData("Cube High", new InstantCommand(ArmSubsystem.ArmPositions.CUBE_HIGH::goTo));
         SmartDashboard.putData("Cube Middle", new InstantCommand(ArmSubsystem.ArmPositions.CUBE_MEDIUM::goTo));
-        SmartDashboard.putData("Hybrid", new InstantCommand(ArmSubsystem.ArmPositions.HYBRID::goTo));
+        SmartDashboard.putData("Cube Hybrid", new InstantCommand(ArmSubsystem.ArmPositions.CUBE_HYBRID::goTo));
         SmartDashboard.putData("Retracted", new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.

@@ -27,7 +27,7 @@ public class CubeArmMoveCommand extends CommandBase {
         } else if (altXbox.getPOV() == -1) {
             position = ArmSubsystem.ArmPositions.CUBE_MEDIUM;
         } else if (altXbox.getPOV() == 180) {
-            position = ArmSubsystem.ArmPositions.HYBRID;
+            position = ArmSubsystem.ArmPositions.CUBE_HYBRID;
         }
 
         position.goTo();
