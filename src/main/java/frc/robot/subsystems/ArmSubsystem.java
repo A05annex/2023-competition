@@ -210,7 +210,7 @@ public class ArmSubsystem extends SubsystemBase {
         System.out.println("ENABLE INIT STARTED: " + startTime);
         System.out.println("****************************************************************");
 
-        extensionEncoder.setPosition(extensionPositions[START_POSITION]);
+        forwardEncoder.setPosition(pivotPositions[START_POSITION]);
         backwardEncoder.setPosition(pivotPositions[START_POSITION]);
 
         // Lock the forward (supporting) motor to start pos.
