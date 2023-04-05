@@ -161,7 +161,7 @@ public class ArmSubsystem extends SubsystemBase {
         if (Constants.getSparkConfigFromFactoryDefaults()) {
             // Initialize the forward support pivot motor
             forwardSupportPivot.restoreFactoryDefaults();
-            forwardEncoder.setPosition(pivotPositions[START_POSITION]);
+            setPID(forwardPID, pivotPosKp, pivotPosKi, pivotPosKiZone, pivotPosKff, PidSlot.POSITION.value);
             setSmartMotion(forwardPID, pivotSmKp, pivotSmKi, pivotSmKiZone, pivotSmKff,
                     pivotSmMaxRPM, pivotSmMaxRPMs, pivotSmMinRPM, pivotSmError, PidSlot.SMART_MOTION.value);
             forwardSupportPivot.setSmartCurrentLimit(40, 20, 2000);
@@ -169,7 +169,6 @@ public class ArmSubsystem extends SubsystemBase {
             // Initialize the forward support pivot motor
             backwardSupportPivot.restoreFactoryDefaults();
             backwardSupportPivot.setInverted(true);
-            backwardEncoder.setPosition(pivotPositions[START_POSITION]);
             setSmartMotion(backwardPID, pivotSmKp, pivotSmKi, pivotSmKiZone, pivotSmKff,
                     pivotSmMaxRPM, pivotSmMaxRPMs, pivotSmMinRPM, pivotSmError, PidSlot.SMART_MOTION.value);
             backwardSupportPivot.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -178,9 +177,9 @@ public class ArmSubsystem extends SubsystemBase {
             // Initialize the extension motor
             extension.restoreFactoryDefaults();
             extension.setInverted(true);
-            extensionEncoder.setPosition(extensionPositions[START_POSITION]);
             setSmartMotion(extensionPID, extensionKP, extensionKI, extensionKIZone, extensionKff,
-                    extensionSmMaxRPM, extensionSmMaxRPMs, extensionSmMinRPM, extensionSmError, PidSlot.SMART_MOTION.value);
+                    extensionSmMaxRPM, extensionSmMaxRPMs, extensionSmMinRPM, extensionSmError,
+                    PidSlot.SMART_MOTION.value);
             extension.setIdleMode(CANSparkMax.IdleMode.kBrake);
             extension.setSmartCurrentLimit(40, 20, 2000);
 
@@ -191,11 +190,9 @@ public class ArmSubsystem extends SubsystemBase {
             }
         }
 
-        setPID(forwardPID, pivotPosKp, pivotPosKi, pivotPosKiZone, pivotPosKff, PidSlot.POSITION.value);
-
-        extensionEncoder.setPosition(extensionPositions[START_POSITION]);
-        backwardEncoder.setPosition(pivotPositions[START_POSITION]);
         forwardEncoder.setPosition(pivotPositions[START_POSITION]);
+        backwardEncoder.setPosition(pivotPositions[START_POSITION]);
+        extensionEncoder.setPosition(extensionPositions[START_POSITION]);
 
         disableUnusedFrames(forwardSupportPivot);
         disableUnusedFrames(backwardSupportPivot);
@@ -204,24 +201,23 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void enableInit() {
         if (enableInit) {
-            //return;
+            return;
         }
 
         double startTime = Timer.getFPGATimestamp();
-
-        System.out.println("***************************************");
+        System.out.println("****************************************************************");
         System.out.println("ENABLE INIT STARTED: " + startTime);
-        System.out.println("***************************************");
+        System.out.println("****************************************************************");
 
         extensionEncoder.setPosition(extensionPositions[START_POSITION]);
         backwardEncoder.setPosition(pivotPositions[START_POSITION]);
-        forwardEncoder.setPosition(pivotPositions[START_POSITION]);
 
         // Lock the forward (supporting) motor to start pos.
         forwardPID.setReference(pivotPositions[START_POSITION], CANSparkMax.ControlType.kPosition,
                 PidSlot.POSITION.value);
-        System.out.println("***************************************");
-        System.out.println(String.format("TIME: %f; support = %f; tension = %f", Timer.getFPGATimestamp()-startTime, forwardEncoder.getPosition(), backwardEncoder.getPosition()));
+        System.out.println("****************************************************************");
+        System.out.println(String.format("TIME: %f; support = %f; tension = %f",
+                Timer.getFPGATimestamp()-startTime, forwardEncoder.getPosition(), backwardEncoder.getPosition()));
         // 0.5 amps, just enough to tension
         backwardPID.setReference(1.2, CANSparkMax.ControlType.kVoltage, PidSlot.SMART_MOTION.value);
 
@@ -233,19 +229,21 @@ public class ArmSubsystem extends SubsystemBase {
             }
             double currentPos = forwardEncoder.getPosition();
 
-            System.out.println(String.format("TIME: %f; support = %f; tension = %f;", Timer.getFPGATimestamp()-startTime, forwardEncoder.getPosition(), currentPos));
+            System.out.println(String.format("TIME: %f; support = %f; tension = %f;",
+                    Timer.getFPGATimestamp()-startTime, forwardEncoder.getPosition(), currentPos));
 
-            if (currentPos != 0.0) {
+            if (currentPos > 0.0) {
                 break;
             }
         }
 
         backwardEncoder.setPosition(forwardEncoder.getPosition());
 
-        System.out.println(String.format("END TIME: %f; support = %f; tension = %f", Timer.getFPGATimestamp()-startTime, forwardEncoder.getPosition(), backwardEncoder.getPosition()));
-        System.out.println("***************************************");
-        System.out.println("***************************************");
-        System.out.println("***************************************");
+        System.out.println(String.format("END TIME: %f; support = %f; tension = %f",
+                Timer.getFPGATimestamp()-startTime, forwardEncoder.getPosition(), backwardEncoder.getPosition()));
+        System.out.println("****************************************************************");
+        System.out.println("****************************************************************");
+        System.out.println("****************************************************************");
 
         //Removed play and resetting the backward encoder, so it can be held in place
         //backwardEncoder.setPosition(forwardEncoder.getPosition());
