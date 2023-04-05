@@ -89,7 +89,7 @@ public final class Constants extends A05Constants
 
     public static final A05Constants.AutonomousPath[] AUTONOMOUS_PATHS = {
             new A05Constants.AutonomousPath("Balancer", 0, "middleBalance.json"),
-            new A05Constants.AutonomousPath("45 balance", 0, "45Balance.json"),
+            new A05Constants.AutonomousPath("45 offset balance", 1, "45BalanceOffset.json"),
             new A05Constants.AutonomousPath("Side Auto", 2, "side.json"),
             new A05Constants.AutonomousPath("sub side 1", 3, "subScoreAndPickup.json"),
             new A05Constants.AutonomousPath("sub side 2", 4, "subDoubleScore.json")
