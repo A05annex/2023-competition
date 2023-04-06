@@ -11,7 +11,7 @@ public class CubeArmMoveCommand extends CommandBase {
     private final CollectorSubsystem collectorSubsystem = CollectorSubsystem.getInstance();
 
     private final XboxController altXbox;
-    private ArmSubsystem.ArmPositions position;
+    private ArmSubsystem.ArmPositions position = ArmSubsystem.ArmPositions.CUBE_MEDIUM;
 
 
     public CubeArmMoveCommand(XboxController altXbox) {

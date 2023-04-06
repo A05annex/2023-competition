@@ -74,7 +74,7 @@ public class ArmSubsystem extends SubsystemBase {
         CUBE_MEDIUM(19.524,14.643),
         CUBE_HYBRID(33.92, 0.0),
         CONE_HYBRID(20.333, 17.405),
-        SUBSTATION_CUBE(19.8, 87.575),
+        SUBSTATION_CUBE(18.750, 87.313),
         SUBSTATION_CONE_START(10.31, 89.718),
         SUBSTATION_CONE_END(14.619, 69.430),
         GROUND(37.25, 0.5);
@@ -159,16 +159,16 @@ public class ArmSubsystem extends SubsystemBase {
      * the {@link #getInstance()} method to get the singleton instance.
      */
     private ArmSubsystem() {
-        if (Constants.getSparkConfigFromFactoryDefaults()) {
+        if (Constants.getSparkConfigFromFactoryDefaults() || true) {
             // Initialize the forward support pivot motor
-            forwardSupportPivot.restoreFactoryDefaults();
+            //forwardSupportPivot.restoreFactoryDefaults();
             setPID(forwardPID, pivotPosKp, pivotPosKi, pivotPosKiZone, pivotPosKff, PidSlot.POSITION.value);
             setSmartMotion(forwardPID, pivotSmKp, pivotSmKi, pivotSmKiZone, pivotSmKff,
                     pivotSmMaxRPM, pivotSmMaxRPMs, pivotSmMinRPM, pivotSmError, PidSlot.SMART_MOTION.value);
             forwardSupportPivot.setSmartCurrentLimit(40, 20, 2000);
 
             // Initialize the forward support pivot motor
-            backwardSupportPivot.restoreFactoryDefaults();
+            //backwardSupportPivot.restoreFactoryDefaults();
             backwardSupportPivot.setInverted(true);
             setSmartMotion(backwardPID, pivotSmKp, pivotSmKi, pivotSmKiZone, pivotSmKff,
                     pivotSmMaxRPM, pivotSmMaxRPMs, pivotSmMinRPM, pivotSmError, PidSlot.SMART_MOTION.value);
@@ -176,7 +176,7 @@ public class ArmSubsystem extends SubsystemBase {
             backwardSupportPivot.setSmartCurrentLimit(40, 20, 2000);
 
             // Initialize the extension motor
-            extension.restoreFactoryDefaults();
+            //extension.restoreFactoryDefaults();
             extension.setInverted(true);
             setSmartMotion(extensionPID, extensionKP, extensionKI, extensionKIZone, extensionKff,
                     extensionSmMaxRPM, extensionSmMaxRPMs, extensionSmMinRPM, extensionSmError,

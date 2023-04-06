@@ -15,9 +15,9 @@ public class SubstationPickUpCommandGroup extends SequentialCommandGroup {
 
     public SubstationPickUpCommandGroup(XboxController driveXbox, XboxController altXbox, A05Constants.DriverSettings driver) {
         super(new ConditionalCommand(
-                new SequentialCommandGroup(new SpeedAprilTagPositionCommand(driveXbox, driver, 1.16, 0.61, 1.0, 0.8, Constants.AprilTagSet.SUBSTATION),
+                new SequentialCommandGroup(new SpeedAprilTagPositionCommand(driveXbox, driver, 1.17, 0.61, 1.0, 0.8, Constants.AprilTagSet.SUBSTATION),
                         new SubstationCubeCommand()),
-                new SequentialCommandGroup(new SpeedAprilTagPositionCommand(driveXbox, driver, 0.80, 0.6084, 1.0, 0.8, Constants.AprilTagSet.SUBSTATION),
+                new SequentialCommandGroup(new SpeedAprilTagPositionCommand(driveXbox, driver, 0.70, 0.6084, 1.0, 0.8, Constants.AprilTagSet.SUBSTATION),
                         new SubstationConeCommand()),
                 SubstationPickUpCommandGroup::isCube),
                 new InstantCommand(CollectorSubsystem.getInstance()::stop),
