@@ -25,6 +25,8 @@ public class ConeArmMoveCommand extends CommandBase {
             position = ArmSubsystem.ArmPositions.CONE_MEDIUM;
         } else if (altXbox.getPOV() == 135 || altXbox.getPOV() == 225) {
             position = ArmSubsystem.ArmPositions.CONE_HYBRID;
+        } else if(altXbox.getPOV() == 180) {
+            position = ArmSubsystem.ArmPositions.CONE_HYBRID;
         }
 
         position.goTo();
