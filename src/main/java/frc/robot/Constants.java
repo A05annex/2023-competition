@@ -88,9 +88,14 @@ public final class Constants extends A05Constants
     };
 
     public static final A05Constants.AutonomousPath[] AUTONOMOUS_PATHS = {
-            new A05Constants.AutonomousPath("Balancer", 0, "middleBalance.json"),
-            new A05Constants.AutonomousPath("45 balance", 0, "45Balance.json"),
-            new A05Constants.AutonomousPath("Side Auto", 2, "side.json")
+            new A05Constants.AutonomousPath("0deg1ms", 0, "0deg1ms.json"),
+            new A05Constants.AutonomousPath("0deg15ms", 0, "0deg15ms.json"),
+            new A05Constants.AutonomousPath("0deg2ms", 0, "0deg2ms.json"),
+            new A05Constants.AutonomousPath("0deg25ms", 0, "0deg25ms.json"),
+            new A05Constants.AutonomousPath("15deg15ms", 0, "15deg15ms.json"),
+            new A05Constants.AutonomousPath("30deg15ms", 0, "30deg15ms.json"),
+            new A05Constants.AutonomousPath("45deg15ms", 0, "45deg15ms.json")
+
     };
 
     public static final A05Constants.DriverSettings[] DRIVER_SETTINGS = {
