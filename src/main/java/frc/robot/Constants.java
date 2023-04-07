@@ -93,7 +93,9 @@ public final class Constants extends A05Constants
             new A05Constants.AutonomousPath("Side Auto", 2, "side.json"),
             new A05Constants.AutonomousPath("sub side 1", 3, "subScoreAndPickup.json"),
             new A05Constants.AutonomousPath("sub side 2", 4, "subDoubleScore.json"),
-            new A05Constants.AutonomousPath("bump side", 5, "bumpSide.json")
+            new A05Constants.AutonomousPath("bump side", 5, "bumpSide.json"),
+            new A05Constants.AutonomousPath("arm test", 6, "armTest.json")
+
     };
 
     public static final A05Constants.DriverSettings[] DRIVER_SETTINGS = {

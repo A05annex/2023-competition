@@ -8,7 +8,7 @@ import org.a05annex.frc.A05Constants;
 
 public class AutoAprilCommandGroup extends SequentialCommandGroup {
     public AutoAprilCommandGroup() {
-        super(new SpeedAprilTagPositionCommand(new XboxController(5), new A05Constants.DriverSettings("", 10), 0.806, -0.114, 1.0, 0.8, Constants.AprilTagSet.NODE),
+        super(new SpeedAprilTagPositionCommand(null, new A05Constants.DriverSettings("", 10), 0.806, -0.114, 1.0, 0.8, Constants.AprilTagSet.NODE),
                 new CubeArmMoveCommand(new XboxController(4)));
     }
 }

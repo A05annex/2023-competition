@@ -98,6 +98,10 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
         }
 
         if(!goodID) {
+            if(m_driveXbox == null) {
+                isFinished = true;
+                return;
+            }
             super.execute();
             return;
         }
@@ -111,6 +115,10 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
             ticksWithoutTarget++;
             if(ticksWithoutTarget > resumeDrivingTickThreshold) {
                 // We haven't had a target for a while. we are going to resume driver control
+                if(m_driveXbox == null) {
+                    isFinished = true;
+                    return;
+                }
                 super.execute();
                 return;
             }

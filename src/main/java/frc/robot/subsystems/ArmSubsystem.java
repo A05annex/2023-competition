@@ -231,7 +231,7 @@ public class ArmSubsystem extends SubsystemBase {
             double currentPos = forwardEncoder.getPosition();
 
             System.out.println(String.format("TIME: %f; support = %f; tension = %f;",
-                    Timer.getFPGATimestamp()-startTime, forwardEncoder.getPosition(), currentPos));
+                    Timer.getFPGATimestamp()-startTime, currentPos, backwardEncoder.getPosition()));
 
             if (currentPos > 0.0) {
                 break;

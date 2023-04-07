@@ -17,7 +17,7 @@ public class AutoRetractCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        ArmSubsystem.ArmPositions.RETRACTED.goTo();
+        ArmSubsystem.ArmPositions.CONE_HYBRID.goTo();
         collectorSubsystem.stop();
     }
 
@@ -28,7 +28,7 @@ public class AutoRetractCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return ArmSubsystem.ArmPositions.RETRACTED.isInPosition();
+        return ArmSubsystem.ArmPositions.CONE_HYBRID.isInPosition();
     }
 
     @Override
