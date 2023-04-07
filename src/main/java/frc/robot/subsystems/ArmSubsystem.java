@@ -77,7 +77,7 @@ public class ArmSubsystem extends SubsystemBase {
         SUBSTATION_CUBE(18.750, 87.313),
         SUBSTATION_CONE_START(10.31, 89.718),
         SUBSTATION_CONE_END(14.619, 69.430),
-        GROUND(37.25, 0.5);
+        GROUND(36.75, 0.5);
 
         //50.333
 
