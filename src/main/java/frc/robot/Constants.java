@@ -94,7 +94,7 @@ public final class Constants extends A05Constants
             new A05Constants.AutonomousPath("sub side 1", 3, "subScoreAndPickup.json"),
             new A05Constants.AutonomousPath("sub side 2", 4, "subDoubleScore.json"),
             new A05Constants.AutonomousPath("bump side", 5, "bumpSide.json"),
-            new A05Constants.AutonomousPath("arm test", 6, "armTest.json")
+            new A05Constants.AutonomousPath("place only", 6, "justPlace.json")
 
     };
 
