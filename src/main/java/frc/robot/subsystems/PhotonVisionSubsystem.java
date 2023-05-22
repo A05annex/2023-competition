@@ -1,14 +1,13 @@
 package frc.robot.subsystems;
 
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.util.Utl;
 import org.jetbrains.annotations.NotNull;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class PhotonVisionSubsystem extends SubsystemBase {
 
@@ -27,7 +26,155 @@ public class PhotonVisionSubsystem extends SubsystemBase {
 
     private double pitchOffsetAverage = 0.0;
     private final double pitchOffsetAverageAlpha = 0.8;
-    
+
+    public static class Camera {
+        private final PhotonCamera camera;
+        //private final double horizontalFOVSize;
+        //private final double verticalFOVSize;
+
+        private PhotonPipelineResult lastFrame = new PhotonPipelineResult();
+        private PhotonTrackedTarget lastTarget = new PhotonTrackedTarget();
+        private double lastTargetId = -1;
+        private double lastTargetTime = 0.0;
+
+        private boolean doLastFrameAndTargetMatch;
+
+        private PIPELINE currentPipeline;
+
+        /**
+         * Class to store a photon camera with relevant methods
+         * @param camera PhotonCamera object you want to work with
+         * @param currentPipeline stores the current pipeline of the camera and sets to this pipeline if not already set
+         * //@param horizontalFOVSize horizontal FOV of the camera at whatever resolution you use (found in calibration)
+         * //@param verticalFOVSize vertical FOV of the camera at whatever resolution you use (found in calibration)
+         */
+        public Camera(PhotonCamera camera, PIPELINE currentPipeline) {
+            this.camera = camera;
+            this.currentPipeline = currentPipeline;
+            camera.setPipelineIndex(this.currentPipeline.index);
+            //this.horizontalFOVSize = horizontalFOVSize;
+            //this.verticalFOVSize = verticalFOVSize;
+        }
+
+        /**
+         * Updates {@link #lastFrame} with the newest frame and if the frame has a valid target, sets {@link #lastTarget} too. Stores if
+         * lastFrame and lastTarget have the same data in {@link #doLastFrameAndTargetMatch}.
+         */
+        public void updateLastFrameAndTarget() {
+            lastFrame = camera.getLatestResult();
+            if(lastFrame.hasTargets()) {
+                lastTarget = lastFrame.getBestTarget();
+                lastTargetTime = lastFrame.getTimestampSeconds();
+                if (lastTargetId == lastTarget.getFiducialId()) {
+                    // Yup, same target, update time, and we are good to go - we now have seen the same target
+                    // as the best target atr least twice in a row.
+                    doLastFrameAndTargetMatch = true;
+                    return;
+                } else {
+                    // A different target is now our new best target
+                    lastTargetId = lastTarget.getFiducialId();
+                }
+            }
+            doLastFrameAndTargetMatch = false;
+        }
+
+        /**
+         * Getter of {@link #lastFrame}. lastFrame is only updated by {@link #updateLastFrameAndTarget()}
+         * @return PhotonPipelineResult of the last stored frame
+         */
+        public PhotonPipelineResult getLastFrame() {
+            return lastFrame;
+        }
+
+        /**
+         * Getter of {@link #lastTarget}. lastTarget is only updated by {@link #updateLastFrameAndTarget()}
+         * @return PhotonTrackedTarget from the last stored frame to have a valid target
+         */
+        public PhotonTrackedTarget getLastTarget() {
+            return lastTarget;
+        }
+
+        /**
+         * Get the FPGA timestamp (in seconds) for the last tracked target.
+         * @return The FPGA timestamp (in seconds) for the last tracked target
+         */
+        public double getLastTargetTime() {
+            return lastTargetTime;
+        }
+
+        /**
+         * Does the best target for the last retrieved frame match the previously saved best target in Id.
+         *
+         * @return true if it matches, false otherwise.
+         */
+        public boolean doLastFrameAndTargetMatch() {
+            return doLastFrameAndTargetMatch;
+        }
+
+        /**
+         * Does the best target for the last retrieved frame match the specified target Id.
+         *
+         * @param targetId The Id of the target we are looking for.
+         * @return {@code true} if it matches, {@link false} otherwise.
+         */
+        public boolean doLastFrameAndTargetMatch(int targetId) {
+            return lastFrame.hasTargets() && (lastTargetId == targetId);
+        }
+
+        /**
+         * Getter of the current pipeline of the camera
+         * @return PIPELINE of the current camera pipeline
+         */
+        public PIPELINE getCurrentPipeline() {
+            return currentPipeline;
+        }
+
+        /**
+         * Sets the pipeline of the camera
+         * @param pipeline pipeline you want to set
+         */
+        public void setPipeline(PIPELINE pipeline) {
+            if(pipeline == currentPipeline) {
+                return;
+            }
+
+            currentPipeline = pipeline;
+            camera.setPipelineIndex(currentPipeline.index);
+        }
+
+        public PhotonCamera getCamera() {
+            return camera;
+        }
+
+
+        /**
+         * Getter of the X distance to the target stored in {@link #lastTarget}.
+         * May not be updated data if there has not been a target in frame recently
+         * @return the X distance in meters (forward) from the camera to the target stored in {@link #lastTarget}
+         */
+        public double getXFromLastTarget() {
+            return lastTarget.getBestCameraToTarget().getX();
+        }
+
+        /**
+         * Getter of the Y distance to the target stored in {@link #lastTarget}.
+         * May not be updated data if there has not been a target in frame recently
+         * @return the Y distance in meters (forward) from the camera to the target stored in {@link #lastTarget}
+         */
+        public double getYFromLastTarget() {
+            return -lastTarget.getBestCameraToTarget().getY();
+        }
+
+        /**
+         * Getter of the Z distance to the target stored in {@link #lastTarget}.
+         * May not be updated data if there has not been a target in frame recently
+         * @return the Z distance in meters (forward) from the camera to the target stored in {@link #lastTarget}
+         */
+        public double getZFromLastTarget() {
+            return lastTarget.getBestCameraToTarget().getZ();
+        }
+    }
+
     /**
      * Returns the Singleton instance of this PhotonVisionSubsystem. This static method
      * should be used, rather than the constructor, to get the single instance
@@ -44,7 +191,6 @@ public class PhotonVisionSubsystem extends SubsystemBase {
      * the {@link #getInstance()} method to get the singleton instance.
      */
     private PhotonVisionSubsystem() {
-        setPipeline(Constants.CLAW_CAMERA, PIPELINES.CONE);
     }
 
     /**
@@ -61,27 +207,22 @@ public class PhotonVisionSubsystem extends SubsystemBase {
      * @param camera camera you would like to set the pipeline of
      * @param pipeline pipeline you want to set. int or pipeline from enum
      */
-    public void setPipeline(@NotNull PhotonCamera camera, @NotNull PIPELINES pipeline) {
+    public void setPipeline(@NotNull PhotonCamera camera, @NotNull PhotonVisionSubsystem.PIPELINE pipeline) {
         camera.setPipelineIndex(pipeline.index);
-        if (camera == Constants.CLAW_CAMERA) {
-            PIPELINES.clawCurrent = pipeline;
-        }
     }
 
      // enum to store pipelines by name
-    public enum PIPELINES {
-        CUBE(2, "Cube"),
-        CONE(1, "Cone"),
-        APRILTAGS(0, "AprilTag");
+    public enum PIPELINE {
+        APRILTAGS(0),
+        CONE(1),
+        CUBE(2);
 
-        public static PIPELINES clawCurrent = CONE;
+        public static PIPELINE clawCurrent = CONE;
 
         public final int index;
-        public final String name;
 
-        PIPELINES(int index, String name) {
+        PIPELINE(int index) {
             this.index = index;
-            this.name = name;
         }
     }
 
@@ -234,27 +375,19 @@ public class PhotonVisionSubsystem extends SubsystemBase {
         return Utl.clip((pitchOffsetAverage - center) / scale  -  (goal - center) / scale , -1.0, 1.0);
     }
 
-    public PIPELINES intToPipeline(int pipeline) {
+    public PIPELINE intToPipeline(int pipeline) {
         if(!(0 <= pipeline && pipeline <= 2)) {
             if(A05Constants.getPrintDebug()) {
                 System.out.println("passed integer outside of 0-2 into inToPipeline()");
             }
             return null;
         } else if(pipeline == 0) {
-            return PIPELINES.APRILTAGS;
+            return PIPELINE.APRILTAGS;
         } else if(pipeline == 1) {
-            return  PIPELINES.CONE;
+            return  PIPELINE.CONE;
         } else {
-            return PIPELINES.CUBE;
+            return PIPELINE.CUBE;
         }
-    }
-
-    public void canDriveTrue() {
-        SmartDashboard.putBoolean("Can Drive", true);
-    }
-
-    public void canDriveFalse() {
-        SmartDashboard.putBoolean("Can Drive", false);
     }
 }
 

@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.subsystems.SpeedCachedSwerve;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.commands.A05DriveCommand;
 import org.a05annex.frc.subsystems.DriveSubsystem;
@@ -9,11 +10,9 @@ import org.a05annex.util.Utl;
 
 
 public class FaceDownFieldCommand extends A05DriveCommand {
-    private final DriveSubsystem driveSubsystem = DriveSubsystem.getInstance();
-
     public FaceDownFieldCommand(XboxController xbox, A05Constants.DriverSettings driver) {
-        super(xbox, driver);
-        addRequirements(this.driveSubsystem);
+        // NOTE: the super adds the drive subsystem requirement
+        super(SpeedCachedSwerve.getInstance(), xbox, driver);
     }
 
     @Override
@@ -28,7 +27,7 @@ public class FaceDownFieldCommand extends A05DriveCommand {
         m_conditionedRotate = new AngleD(m_navx.getHeadingInfo().expectedHeading).subtract(new AngleD(m_navx.getHeadingInfo().heading))
                 .getRadians() * A05Constants.getDriveOrientationkp();
         m_conditionedRotate = Utl.clip(m_conditionedRotate, -0.5, 0.5);
-        driveSubsystem.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);
+        iSwerveDrive.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);
     }
 
     @Override

@@ -6,6 +6,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import frc.robot.subsystems.PhotonVisionSubsystem;
 import org.a05annex.frc.A05Constants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.photonvision.PhotonCamera;
@@ -25,7 +26,25 @@ public final class Constants extends A05Constants
                 // Non-Drive Motors
                 PIVOT_FORWARD_SUPPORT_MOTOR = 12,
                 PIVOT_BACKWARD_SUPPORT_MOTOR = 11,
-                ARM_EXTENSION_MOTOR = 13;
+                ARM_EXTENSION_MOTOR = 13,
+
+                CONE_MOTOR = 9,
+                CUBE_MOTOR = 14;
+    }
+
+    public enum AprilTagSet {
+        SUBSTATION(new int[] {4}, new int[] {5}, false),
+        NODE(new int[] {6, 7, 8}, new int[] {1, 2, 3}, true);
+
+        public final int[] blue;
+        public final int[] red;
+        public final boolean upfield;
+
+        AprilTagSet(int[] blue, int[] red, boolean upfield) {
+            this.blue = blue;
+            this.red = red;
+            this.upfield = upfield;
+        }
     }
 
     public static final int PNEUMATICS_FORWARD = 14, PNEUMATICS_REVERSE = 15;
@@ -34,8 +53,9 @@ public final class Constants extends A05Constants
     //DRIVE_XBOX_PORT = 0 (Set in A05Constants) Leave commented
     public static final int ALT_XBOX_PORT = 1; // 2nd Controller for more controls
 
-    public static final PhotonCamera DRIVE_CAMERA = new PhotonCamera("Camera 1");
-    public static final PhotonCamera CLAW_CAMERA = new PhotonCamera("Camera 2");
+    //public static final PhotonCamera DRIVE_CAMERA = new PhotonCamera("Camera 1");
+    public static final PhotonVisionSubsystem.Camera DRIVE_CAMERA = new PhotonVisionSubsystem.Camera(new PhotonCamera("IMX219"), PhotonVisionSubsystem.PIPELINE.APRILTAGS);
+    //public static final PhotonCamera CLAW_CAMERA = new PhotonCamera("Camera 2");
 
     // kP for keeping drive at the same orientation
     public static double DRIVE_ORIENTATION_kP = 1.2;
@@ -62,14 +82,20 @@ public final class Constants extends A05Constants
      */
     public static final A05Constants.RobotSettings[] ROBOT_SETTINGS = {
             new A05Constants.RobotSettings(0, "Competition", 0.5461, 0.5461, 2.700, 1.161,
-                    2.703, 2.443, 1.026,0.9650),
+                    2.723, 2.448, 1.026,0.9650),
             new A05Constants.RobotSettings(1, "Practice", 0.5969, 0.5969, 5.240, 5.654,
                     0.969, 5.039, 1.026, 0.9164)
     };
 
     public static final A05Constants.AutonomousPath[] AUTONOMOUS_PATHS = {
             new A05Constants.AutonomousPath("Balancer", 0, "middleBalance.json"),
-            new A05Constants.AutonomousPath("45 balance", 0, "testBalance.json")
+            new A05Constants.AutonomousPath("45 offset balance", 1, "135offset.json"),
+            new A05Constants.AutonomousPath("Side Auto", 2, "side.json"),
+            new A05Constants.AutonomousPath("sub side 1", 3, "subScoreAndPickup.json"),
+            new A05Constants.AutonomousPath("sub side 2", 4, "subDoubleScore.json"),
+            new A05Constants.AutonomousPath("bump side", 5, "bumpSide.json"),
+            new A05Constants.AutonomousPath("place only", 6, "justPlace.json")
+
     };
 
     public static final A05Constants.DriverSettings[] DRIVER_SETTINGS = {

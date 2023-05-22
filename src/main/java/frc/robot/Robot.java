@@ -5,14 +5,16 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
+import frc.robot.subsystems.SpeedCachedSwerve;
 import org.a05annex.frc.A05Constants;
 import org.a05annex.frc.A05Robot;
-import org.a05annex.frc.NavX;
+import org.a05annex.util.AngleD;
 
 import java.util.Collections;
 
@@ -33,6 +35,11 @@ public class Robot extends A05Robot
     @Override
     public void robotInit()
     {
+        System.out.println("***************************************");
+        System.out.println("ROBOT INIT STARTED: " + Timer.getFPGATimestamp());
+        System.out.println("***************************************");
+
+        Constants.setSparkConfig(false,false);
         // Set the drive constants that are specific to this swerve geometry.
         // Some drive geometry is passed in RobotContainer's constructor
         Constants.setDriveOrientationkp(Constants.DRIVE_ORIENTATION_kP);
@@ -45,16 +52,15 @@ public class Robot extends A05Robot
         // Load the driver list
         Collections.addAll(A05Constants.DRIVER_SETTINGS_LIST,Constants.DRIVER_SETTINGS);
 
+        //Constants.CLAW_CAMERA.setDriverMode(false);
 
-        SmartDashboard.putData("Cone High", new InstantCommand(ArmSubsystem.ArmPositions.CONE_HIGH::goTo));
+
+        SmartDashboard.putData("Cone High", new InstantCommand(ArmSubsystem.ArmPositions.CONE_HYBRID::goTo));
         SmartDashboard.putData("Cone Middle", new InstantCommand(ArmSubsystem.ArmPositions.CONE_MEDIUM::goTo));
         SmartDashboard.putData("Cube High", new InstantCommand(ArmSubsystem.ArmPositions.CUBE_HIGH::goTo));
         SmartDashboard.putData("Cube Middle", new InstantCommand(ArmSubsystem.ArmPositions.CUBE_MEDIUM::goTo));
-        SmartDashboard.putData("Hybrid", new InstantCommand(ArmSubsystem.ArmPositions.HYBRID::goTo));
+        SmartDashboard.putData("Cube Hybrid", new InstantCommand(ArmSubsystem.ArmPositions.CUBE_HYBRID::goTo));
         SmartDashboard.putData("Retracted", new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
-
-        Constants.updateConstant("angle", 0.0);
-        Constants.updateConstant("speed", 0.0);
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         setRobotContainer(new RobotContainer());
@@ -66,15 +72,17 @@ public class Robot extends A05Robot
     @Override
     public void disabledInit() {
         ArmSubsystem.getInstance().stopAllMotors();
+        SpeedCachedSwerve.getInstance().swerveDrive(AngleD.ZERO, 0.0,0.0);
     }
 
     
     @Override
     public void disabledPeriodic() {
         A05Constants.printIDs();
-        SmartDashboard.putNumber("heading", NavX.getInstance().getHeading().getDegrees());
-        SmartDashboard.putNumber("raw yaw", NavX.getInstance().getNavInfo().rawYaw.getDegrees());
-        SmartDashboard.putNumber("yaw", NavX.getInstance().getNavInfo().yaw.getDegrees());
+
+        Constants.DRIVE_CAMERA.updateLastFrameAndTarget();
+        SmartDashboard.putNumber("cam Y", Constants.DRIVE_CAMERA.getYFromLastTarget());
+        SmartDashboard.putNumber("cam X", Constants.DRIVE_CAMERA.getXFromLastTarget());
     }
 
     
@@ -100,11 +108,12 @@ public class Robot extends A05Robot
     public void teleopInit()
     {
         // Cancels autonomous command
+        System.out.println("TELEOP INIT CALLED AT: " + Timer.getFPGATimestamp());
         super.teleopInit();
         ArmSubsystem.getInstance().enableInit();
 
-        ArmSubsystem.getInstance().setExtensionPosition(ArmSubsystem.getInstance().getExtensionPosition());
-        ArmSubsystem.getInstance().setPivotPosition(ArmSubsystem.getInstance().getPivotPosition());
+        //ArmSubsystem.getInstance().setExtensionPosition(ArmSubsystem.getInstance().getExtensionPosition());
+        //ArmSubsystem.getInstance().setPivotPosition(ArmSubsystem.getInstance().getPivotPosition());
     }
     
     
@@ -113,9 +122,10 @@ public class Robot extends A05Robot
     public void teleopPeriodic() {
         super.teleopPeriodic();
         A05Constants.printIDs();
-        SmartDashboard.putNumber("heading", NavX.getInstance().getHeading().getDegrees());
-        SmartDashboard.putNumber("raw yaw", NavX.getInstance().getNavInfo().rawYaw.getDegrees());
-        SmartDashboard.putNumber("yaw", NavX.getInstance().getNavInfo().yaw.getDegrees());
+
+        Constants.DRIVE_CAMERA.updateLastFrameAndTarget();
+        SmartDashboard.putNumber("cam Y", Constants.DRIVE_CAMERA.getYFromLastTarget());
+        SmartDashboard.putNumber("cam X", Constants.DRIVE_CAMERA.getXFromLastTarget() - 1.0);
     }
     
     @Override

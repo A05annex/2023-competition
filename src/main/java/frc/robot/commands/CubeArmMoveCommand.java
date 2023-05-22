@@ -3,21 +3,21 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.ClawSubsystem;
+import frc.robot.subsystems.CollectorSubsystem;
 
 
 public class CubeArmMoveCommand extends CommandBase {
     private final ArmSubsystem armSubsystem = ArmSubsystem.getInstance();
-    private final ClawSubsystem clawSubsystem = ClawSubsystem.getInstance();
+    private final CollectorSubsystem collectorSubsystem = CollectorSubsystem.getInstance();
 
     private final XboxController altXbox;
-    private ArmSubsystem.ArmPositions position;
+    private ArmSubsystem.ArmPositions position = ArmSubsystem.ArmPositions.CUBE_MEDIUM;
 
 
     public CubeArmMoveCommand(XboxController altXbox) {
         this.altXbox = altXbox;
 
-        addRequirements(this.armSubsystem, this.clawSubsystem);
+        addRequirements(this.armSubsystem, this.collectorSubsystem);
     }
 
     @Override
@@ -27,14 +27,18 @@ public class CubeArmMoveCommand extends CommandBase {
         } else if (altXbox.getPOV() == -1) {
             position = ArmSubsystem.ArmPositions.CUBE_MEDIUM;
         } else if (altXbox.getPOV() == 180) {
-            position = ArmSubsystem.ArmPositions.HYBRID;
+            position = ArmSubsystem.ArmPositions.CUBE_HYBRID;
         }
 
         position.goTo();
     }
 
     @Override
-    public void execute() {}
+    public void execute() {
+        if(Math.abs(position.getPivot() - armSubsystem.getPivotPosition()) < 2.0 && position == ArmSubsystem.ArmPositions.CUBE_MEDIUM) {
+            new CollectorEjectCommand().schedule();
+        }
+    }
 
     @Override
     public boolean isFinished() {
@@ -44,7 +48,7 @@ public class CubeArmMoveCommand extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         if (!interrupted) {
-            clawSubsystem.open();
+            new CollectorEjectCommand().schedule();
         }
     }
 }
