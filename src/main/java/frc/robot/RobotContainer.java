@@ -38,25 +38,25 @@ public class RobotContainer extends A05RobotContainer
     // controller button declarations
     @SuppressWarnings("unused")
     JoystickButton
-            m_xboxA = new JoystickButton(m_driveXbox, 1),
+            m_xboxA = new JoystickButton(driveXbox, 1),
             m_altXboxA = new JoystickButton(m_altXbox, 1),
-            m_xboxB = new JoystickButton(m_driveXbox, 2),
+            m_xboxB = new JoystickButton(driveXbox, 2),
             m_altXboxB = new JoystickButton(m_altXbox, 2),
-            m_xboxX = new JoystickButton(m_driveXbox, 3),
+            m_xboxX = new JoystickButton(driveXbox, 3),
             m_altXboxX = new JoystickButton(m_altXbox, 3),
-            m_xboxY = new JoystickButton(m_driveXbox, 4),
+            m_xboxY = new JoystickButton(driveXbox, 4),
             m_altXboxY = new JoystickButton(m_altXbox, 4),
-            m_xboxLeftBumper = new JoystickButton(m_driveXbox, 5),
+            m_xboxLeftBumper = new JoystickButton(driveXbox, 5),
             m_altXboxLeftBumper = new JoystickButton(m_altXbox, 5),
-            m_xboxRightBumper = new JoystickButton(m_driveXbox, 6),
+            m_xboxRightBumper = new JoystickButton(driveXbox, 6),
             m_altXboxRightBumper = new JoystickButton(m_altXbox, 6),
-            m_xboxBack = new JoystickButton(m_driveXbox, 7),
+            m_xboxBack = new JoystickButton(driveXbox, 7),
             m_altXboxBack = new JoystickButton(m_altXbox, 7),
-            m_xboxStart = new JoystickButton(m_driveXbox, 8),
+            m_xboxStart = new JoystickButton(driveXbox, 8),
             m_altXboxStart = new JoystickButton(m_altXbox, 8),
-            m_xboxLeftStickPress = new JoystickButton(m_driveXbox, 9),
+            m_xboxLeftStickPress = new JoystickButton(driveXbox, 9),
             m_altXboxLeftStickPress = new JoystickButton(m_altXbox, 9),
-            m_xboxRightStickPress = new JoystickButton(m_driveXbox, 10),
+            m_xboxRightStickPress = new JoystickButton(driveXbox, 10),
             m_altXboxRightStickPress = new JoystickButton(m_altXbox, 10);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -64,22 +64,22 @@ public class RobotContainer extends A05RobotContainer
     {
         super();
         // finish swerve drive initialization for this specific robt.
-        m_navx.setYawCalibrationFactor(m_robotSettings.m_navxYawCalibration);
-        speedCachedSwerve.setDriveSubsystem(m_driveSubsystem);
+        navx.setYawCalibrationFactor(robotSettings.navxYawCalibration);
+        speedCachedSwerve.setDriveSubsystem(driveSubsystem);
         speedCachedSwerve.setCacheLength(1000);
-        speedCachedSwerve.setDriveGeometry(m_robotSettings.m_length, m_robotSettings.m_width,
-                m_robotSettings.m_rf, m_robotSettings.m_rr,
-                m_robotSettings.m_lf, m_robotSettings.m_lr,
-                m_robotSettings.m_maxSpeedCalibration);
+        driveSubsystem.setDriveGeometry(robotSettings.length, robotSettings.width,
+                robotSettings.rf, robotSettings.rr,
+                robotSettings.lf, robotSettings.lr,
+                robotSettings.maxSpeedCalibration);
 
-        m_driveCommand = new DriveCommand(m_driveXbox, m_driver);
+        driveCommand = new DriveCommand(driveXbox, driver);
 
-        m_driveSubsystem.setDefaultCommand(m_driveCommand);
+        driveSubsystem.setDefaultCommand(driveCommand);
         ArmSubsystem.getInstance().setDefaultCommand(new ManualArmCommand(m_altXbox));
         //ArmSubsystem.getInstance().setDefaultCommand(new ManualArmXYCommand(m_altXbox));
 
-        if (m_autoCommand != null) {
-            m_autoCommand.setMirror(!Constants.readMirrorSwitch()); // Something was backwards
+        if (autoCommand != null) {
+            autoCommand.setMirror(!Constants.readMirrorSwitch()); // Something was backwards
         }
 
         // Configure the button bindings
@@ -99,13 +99,13 @@ public class RobotContainer extends A05RobotContainer
         // See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
 
         // Reset field relative to current robot heading when drive Back is pressed
-        m_xboxBack.onTrue(new InstantCommand(m_navx::initializeHeadingAndNav));
+        m_xboxBack.onTrue(new InstantCommand(navx::initializeHeadingAndNav));
 
         // Toggle between robot and field relative when drive Start is pressed
         m_xboxStart.onTrue(new InstantCommand(speedCachedSwerve::toggleDriveMode));
 
-        m_xboxA.whileTrue(new FaceUpFieldCommand(m_driveXbox, m_driver));
-        m_xboxY.whileTrue(new FaceDownFieldCommand(m_driveXbox, m_driver));
+        m_xboxA.whileTrue(new FaceUpFieldCommand(driveXbox, driver));
+        m_xboxY.whileTrue(new FaceDownFieldCommand(driveXbox, driver));
 
         // Retract and go upright with the arm when either controller's B button is pressed
         m_xboxB.onTrue(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
@@ -113,15 +113,15 @@ public class RobotContainer extends A05RobotContainer
 
 
         // Do the Cone Place Sequence while alt Y is pressed, go to retracted when it's released
-        m_altXboxY.whileTrue(new ConePlaceCommandGroup(m_altXbox, m_driveXbox, m_driver));
+        m_altXboxY.whileTrue(new ConePlaceCommandGroup(m_altXbox, driveXbox, driver));
         m_altXboxY.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
 
         // Do the Cube Place Sequence while alt X is pressed, go to retracted when it's released
-        m_altXboxX.whileTrue(new CubePlaceCommandGroup(m_altXbox, m_driveXbox, m_driver));
+        m_altXboxX.whileTrue(new CubePlaceCommandGroup(m_altXbox, driveXbox, driver));
         m_altXboxX.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
 
         // Do the Substation Pickup Sequence while alt X is pressed, go to retracted when it's released
-        m_altXboxA.whileTrue(new SubstationPickUpCommandGroup(m_driveXbox, m_altXbox, m_driver));
+        m_altXboxA.whileTrue(new SubstationPickUpCommandGroup(driveXbox, m_altXbox, driver));
         m_altXboxA.onFalse(new InstantCommand(ArmSubsystem.ArmPositions.RETRACTED::goTo));
 
         m_xboxLeftBumper.onTrue(new CollectorEjectCommand());

@@ -23,11 +23,11 @@ public class FaceUpFieldCommand extends A05DriveCommand {
     @Override
     public void execute() {
         conditionStick();
-        m_navx.setExpectedHeading(m_navx.getHeadingInfo().getClosestUpField());
-        m_conditionedRotate = new AngleD(m_navx.getHeadingInfo().expectedHeading).subtract(new AngleD(m_navx.getHeadingInfo().heading))
+        navX.setExpectedHeading(navX.getHeadingInfo().getClosestUpField());
+        conditionedRotate = new AngleD(navX.getHeadingInfo().expectedHeading).subtract(new AngleD(navX.getHeadingInfo().heading))
                 .getRadians() * A05Constants.getDriveOrientationkp();
-        m_conditionedRotate = Utl.clip(m_conditionedRotate, -0.5, 0.5);
-        iSwerveDrive.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);
+        conditionedRotate = Utl.clip(conditionedRotate, -0.5, 0.5);
+        iSwerveDrive.swerveDrive(conditionedDirection, conditionedSpeed, conditionedRotate);
     }
 
     @Override

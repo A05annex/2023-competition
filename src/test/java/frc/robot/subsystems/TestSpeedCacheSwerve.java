@@ -18,9 +18,9 @@ public class TestSpeedCacheSwerve {
     SpeedCachedSwerve getInitializedSCS() {
         SpeedCachedSwerve SCS = SpeedCachedSwerve.getInstance();
         A05Constants.RobotSettings cc = ROBOT_SETTINGS[0];
-        SCS.setDriveGeometry(cc.m_length, cc.m_width,
-                cc.m_rf, cc.m_rr, cc.m_lf, cc.m_lr,
-                cc.m_maxSpeedCalibration);
+        SCS.setDriveGeometry(cc.length, cc.width,
+                cc.rf, cc.rr, cc.lf, cc.lr,
+                cc.maxSpeedCalibration);
         SCS.setCacheLength(TEST_CACHE_LENGTH);
         return SCS;
     }
@@ -30,10 +30,10 @@ public class TestSpeedCacheSwerve {
     void TestConfiguration() {
         SpeedCachedSwerve SCS = getInitializedSCS();
         A05Constants.RobotSettings cc = ROBOT_SETTINGS[0];
-        assertEquals(cc.m_length, SCS.getDriveLength());
-        assertEquals(cc.m_width, SCS.getDriveWidth());
-        assertEquals(Mk4NeoModule.MAX_METERS_PER_SEC * cc.m_maxSpeedCalibration, SCS.getMaxMetersPerSec());
-        double driveDiagonal = Utl.length(cc.m_length, cc.m_width);
+        assertEquals(cc.length, SCS.getDriveLength());
+        assertEquals(cc.width, SCS.getDriveWidth());
+        assertEquals(Mk4NeoModule.MAX_METERS_PER_SEC * cc.maxSpeedCalibration, SCS.getMaxMetersPerSec());
+        double driveDiagonal = Utl.length(cc.length, cc.width);
         assertEquals(SCS.getMaxMetersPerSec() / (0.5 * driveDiagonal), SCS.getMaxRadiansPerSec());
     }
 

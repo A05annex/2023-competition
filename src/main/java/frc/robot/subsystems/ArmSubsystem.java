@@ -26,6 +26,8 @@ public class ArmSubsystem extends SubsystemBase {
 
     private boolean manualControl = false;
 
+
+
     // Declaring everything for the forward support pivot motor
     private final CANSparkMax forwardSupportPivot = new CANSparkMax(Constants.CAN_Devices.PIVOT_FORWARD_SUPPORT_MOTOR,
             CANSparkMaxLowLevel.MotorType.kBrushless);

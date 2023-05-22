@@ -80,7 +80,7 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
         aprilTagIds = NetworkTableInstance.getDefault().getTable("FMSInfo").getEntry("IsRedAlliance").getBoolean(true) ? aprilTagSet.red : aprilTagSet.blue;
 
         startTime = System.currentTimeMillis();
-        //heading = upfield ? m_navx.getHeadingInfo().getClosestUpField() : m_navx.getHeadingInfo().getClosestDownField();
+        //heading = upfield ? navX.getHeadingInfo().getClosestUpField() : navX.getHeadingInfo().getClosestDownField();
     }
 
     @Override
@@ -98,7 +98,7 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
         }
 
         if(!goodID) {
-            if(m_driveXbox == null) {
+            if(driveXbox == null) {
                 isFinished = true;
                 return;
             }
@@ -115,7 +115,7 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
             ticksWithoutTarget++;
             if(ticksWithoutTarget > resumeDrivingTickThreshold) {
                 // We haven't had a target for a while. we are going to resume driver control
-                if(m_driveXbox == null) {
+                if(driveXbox == null) {
                     isFinished = true;
                     return;
                 }
@@ -138,43 +138,43 @@ public class SpeedAprilTagPositionCommand extends A05DriveCommand {
         double totalSpeed = Math.pow(Math.sqrt(Math.pow(Math.abs(calcX()), 2) + Math.pow(Math.abs(calcY()), 2)), speedSmoothingMultiplier);
 
         // Limit the speed delta
-        m_conditionedSpeed = Utl.clip(totalSpeed, m_lastConditionedSpeed - MAX_SPEED_DELTA, m_lastConditionedSpeed + MAX_SPEED_DELTA);
+        conditionedSpeed = Utl.clip(totalSpeed, lastConditionedSpeed - MAX_SPEED_DELTA, lastConditionedSpeed + MAX_SPEED_DELTA);
 
         // Slows the robot down as we go longer without a target. Hopefully allows the robot to "catch" the target again
-        m_conditionedSpeed *= ((double) (resumeDrivingTickThreshold - ticksWithoutTarget) / (double)resumeDrivingTickThreshold);
+        conditionedSpeed *= ((double) (resumeDrivingTickThreshold - ticksWithoutTarget) / (double)resumeDrivingTickThreshold);
 
-        m_conditionedSpeed = Utl.clip(m_conditionedSpeed, 0.0, maxSpeed);
+        conditionedSpeed = Utl.clip(conditionedSpeed, 0.0, maxSpeed);
 
 
         // ------- Calculate Rotation --------
-        AngleD heading = upfield ? m_navx.getHeadingInfo().getClosestUpField() : m_navx.getHeadingInfo().getClosestDownField();
-        m_navx.setExpectedHeading(heading);
-        m_conditionedRotate = new AngleD(m_navx.getHeadingInfo().expectedHeading).subtract(new AngleD(m_navx.getHeadingInfo().heading))
+        AngleD heading = upfield ? navX.getHeadingInfo().getClosestUpField() : navX.getHeadingInfo().getClosestDownField();
+        navX.setExpectedHeading(heading);
+        conditionedRotate = new AngleD(navX.getHeadingInfo().expectedHeading).subtract(new AngleD(navX.getHeadingInfo().heading))
                 .getRadians() * ROTATION_KP;
 
 
         // ------- Calculate Direction -------
-        m_conditionedDirection.atan2(calcY(), calcX());
+        conditionedDirection.atan2(calcY(), calcX());
 
         // Add heading offset
-        m_conditionedDirection.add(heading);
+        conditionedDirection.add(heading);
 
 
         // Update lasts
-        m_lastConditionedDirection = m_conditionedDirection;
-        m_lastConditionedSpeed = m_conditionedSpeed;
-        m_lastConditionedRotate = m_conditionedRotate;
+        lastConditionedDirection = conditionedDirection;
+        lastConditionedSpeed = conditionedSpeed;
+        lastConditionedRotate = conditionedRotate;
 
         if(Math.abs(camera.getXFromLastTarget() - postionAtFrame.forward - xPosition) < inZoneThreshold && Math.abs(camera.getYFromLastTarget() - postionAtFrame.strafe - yPosition) < inZoneThreshold) {
             ticksInZoneCounter++;
-            swerveDrive.swerveDrive(AngleD.ZERO, 0.0, m_conditionedRotate*0.1);
+            swerveDrive.swerveDrive(AngleD.ZERO, 0.0, conditionedRotate*0.1);
             if(ticksInZoneCounter > ticksInZone) {
                 isFinished = true;
             }
             return;
         }
 
-        swerveDrive.swerveDrive(m_conditionedDirection, m_conditionedSpeed, m_conditionedRotate);
+        swerveDrive.swerveDrive(conditionedDirection, conditionedSpeed, conditionedRotate);
     }
 
     @Override
