@@ -2,9 +2,9 @@ package frc.robot.subsystems;
 
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
+//import com.revrobotics.CANSparkMaxLowLevel;
+//import com.revrobotics.RelativeEncoder;
+//import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -14,15 +14,15 @@ import org.a05annex.frc.subsystems.SparkNeo;
 import org.a05annex.util.Utl;
 
 public class ArmSubsystem extends SubsystemBase {
-    enum PidSlot {
-        SMART_MOTION(0),
-        POSITION(1);
-
-        final int value;
-        PidSlot(int value) {
-            this.value = value;
-        }
-    }
+//    enum PidSlot {
+//        SMART_MOTION(0),
+//        POSITION(1);
+//
+//        final int value;
+//        PidSlot(int value) {
+//            this.value = value;
+//        }
+//    }
     private boolean enableInit = false;
     private boolean manualControl = false;
 
@@ -169,7 +169,7 @@ public class ArmSubsystem extends SubsystemBase {
         forwardPivot = SparkNeo.factory(Constants.CAN_Devices.PIVOT_FORWARD_SUPPORT_MOTOR);
         forwardPivot.startConfig();
         forwardPivot.setCurrentLimit(SparkNeo.UseType.POSITION, SparkNeo.BreakerAmps.Amps40);
-        forwardPivot.setPID(SparkNeo.PIDtype.POSITION, pivotPosKp, pivotPosKi, pivotPosKiZone, pivotPosKff);
+        forwardPivot.setPositionPID(pivotPosKp, pivotPosKi, pivotPosKiZone, pivotPosKff);
         forwardPivot.setSmartMotion(pivotSmKp, pivotSmKi, pivotSmKiZone, pivotSmKff,
                 pivotSmMaxRPM, pivotSmMaxRPMs, pivotSmMinRPM, pivotSmError);
         forwardPivot.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -180,7 +180,7 @@ public class ArmSubsystem extends SubsystemBase {
         backwardPivot.startConfig();
         backwardPivot.setDirection(SparkNeo.Direction.REVERSE);
         backwardPivot.setCurrentLimit(SparkNeo.UseType.POSITION, SparkNeo.BreakerAmps.Amps40);
-        backwardPivot.setPID(SparkNeo.PIDtype.POSITION, pivotPosKp, pivotPosKi, pivotPosKiZone, pivotPosKff);
+        backwardPivot.setPositionPID(pivotPosKp, pivotPosKi, pivotPosKiZone, pivotPosKff);
         backwardPivot.setSmartMotion(pivotSmKp, pivotSmKi, pivotSmKiZone, pivotSmKff,
                 pivotSmMaxRPM, pivotSmMaxRPMs, pivotSmMinRPM, pivotSmError);
         backwardPivot.setIdleMode(CANSparkMax.IdleMode.kBrake);
