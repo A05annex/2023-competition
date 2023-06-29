@@ -144,7 +144,7 @@ public class ArmSubsystem extends SubsystemBase {
         forwardPivot.setPositionPID(pivotPosKp, pivotPosKi, pivotPosKiZone, pivotPosKff);
         forwardPivot.setSmartMotion(pivotSmKp, pivotSmKi, pivotSmKiZone, pivotSmKff,
                 pivotSmMaxRPM, pivotSmMaxRPMs, pivotSmMinRPM, pivotSmError);
-        forwardPivot.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        //forwardPivot.setIdleMode(CANSparkMax.IdleMode.kBrake);
         forwardPivot.endConfig();
 
         // create and initialize the motor that provides backward arm support
@@ -192,8 +192,7 @@ public class ArmSubsystem extends SubsystemBase {
         System.out.println(String.format("TIME: %f; support = %f; tension = %f", Timer.getFPGATimestamp()-startTime,
                 forwardPivot.getEncoderPosition(), backwardPivot.getEncoderPosition()));
         // run the backwards motor at 1.2 volts, just enough to tension
-        backwardPivot.sparkMaxPID.setReference(1.2, CANSparkMax.ControlType.kVoltage,
-                SparkNeo.PIDtype.SMART_MOTION.slotId);
+        backwardPivot.sparkMaxPID.setReference(1.2, CANSparkMax.ControlType.kVoltage);
 
         while(true) {
             try {
@@ -219,7 +218,7 @@ public class ArmSubsystem extends SubsystemBase {
         System.out.println("****************************************************************");
         System.out.println("****************************************************************");
 
-        // Removed play, encoders are reset, tensioning may have displaced the armn, so reset the arm to the start position
+        // Removed play, encoders are reset, tensioning may have displaced the arm, so reset the arm to the start position
         forwardPivot.setSmartMotionTarget(pivotPositions[START_POSITION]);
         backwardPivot.setSmartMotionTarget(pivotPositions[START_POSITION]);
 
